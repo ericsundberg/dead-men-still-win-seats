@@ -446,4 +446,15 @@ describe('GameSession', () => {
       }),
     ).toBeNull();
   });
+
+  it('stores selected difficulty and total turn count when starting a game', () => {
+    const session = createGameSession();
+
+    session.startNewGame({
+      difficulty: 'far-gone',
+    });
+
+    expect(session.getDifficultyId()).toBe('far-gone');
+    expect(session.getTotalTurns()).toBe(78);
+  });
 });
