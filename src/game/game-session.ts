@@ -11,6 +11,11 @@ import { text } from '../localization/localized-text';
 import { createChildCharacter } from './character-birth';
 import { rollAnnualHealthChange, roundHealth } from './character-health';
 import {
+  defaultGameDifficultyId,
+  getGameDifficultySettings,
+  type GameDifficultyId,
+} from './difficulty';
+import {
   gameStartYear,
   getCurrentAge,
   getRulerReignYear,
@@ -49,6 +54,10 @@ export interface AddChildInput {
   readonly parentId?: CharacterId;
 }
 
+export interface StartNewGameInput extends Partial<RulerCreationInput> {
+  readonly difficulty?: GameDifficultyId;
+}
+
 export class GameSession {
   private engine: GameEngine | null = null;
   private lastOutcome: TurnOutcome | null = null;
@@ -56,16 +65,22 @@ export class GameSession {
   private currentRulerCharacterId: CharacterId | null = null;
   private nextGeneratedCharacterNumber = 2;
   private nextBirthOrder = 1;
+  private difficultyId: GameDifficultyId = defaultGameDifficultyId;
+  private totalTurns = getGameDifficultySettings(defaultGameDifficultyId).turnCount;
 
   public constructor(
     private readonly config: GameConfig = defaultGameConfig,
     private readonly random: () => number = Math.random,
   ) {}
 
-  public startNewGame(input: Partial<RulerCreationInput> | string): void {
+  public startNewGame(input: StartNewGameInput | string = {}): void {
     const rulerProfile = typeof input === 'string'
       ? createRulerProfile({ givenName: input })
       : createRulerProfile(input);
+
+    const difficultySettings = typeof input === 'string'
+      ? getGameDifficultySettings(defaultGameDifficultyId)
+      : getGameDifficultySettings(input.difficulty ?? defaultGameDifficultyId);
 
     const ruler = createStartingRulerCharacter(rulerProfile, gameStartYear);
     const startingChild = createChildCharacter({
@@ -79,6 +94,8 @@ export class GameSession {
 
     this.characters = [ruler, startingChild];
     this.currentRulerCharacterId = startingRulerCharacterId;
+    this.difficultyId = difficultySettings.id;
+    this.totalTurns = difficultySettings.turnCount;
     this.nextGeneratedCharacterNumber = 2;
     this.nextBirthOrder = 2;
     this.engine = new GameEngine(this.config, formatCharacterName(ruler));
@@ -111,6 +128,14 @@ export class GameSession {
 
   public getLastOutcome(): TurnOutcome | null {
     return this.lastOutcome;
+  }
+
+  public getDifficultyId(): GameDifficultyId {
+    return this.difficultyId;
+  }
+
+  public getTotalTurns(): number {
+    return this.totalTurns;
   }
 
   public getCharacters(): readonly GameCharacter[] {

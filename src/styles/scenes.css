@@ -1,66 +1,327 @@
 .scene-panel {
-  width: min(42rem, 100%);
+  width: min(46rem, 100%);
   padding: calc(2rem * var(--ui-scale));
-  border: 0.2rem solid var(--panel-border);
-  background: var(--panel-background);
-  box-shadow: 0 1rem 2rem rgb(0 0 0 / 0.35);
+  color: var(--color-text);
+  background:
+    linear-gradient(
+      180deg,
+      rgb(0 51 160 / 0.96),
+      rgb(0 31 91 / 0.98)
+    );
+  border: calc(0.22rem * var(--ui-scale)) solid var(--color-white);
+  box-shadow: var(--shadow-hard);
 }
 
 .title-panel {
+  position: relative;
+  overflow: hidden;
   text-align: center;
 }
 
+.title-panel::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(
+      120deg,
+      transparent 0%,
+      transparent 46%,
+      rgb(255 255 255 / 0.12) 47%,
+      rgb(255 255 255 / 0.12) 53%,
+      transparent 54%,
+      transparent 100%
+    );
+}
+
+.title-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+h1,
+h2,
+h3,
 .game-title {
   margin: 0;
-  font-size: calc(3rem * var(--ui-scale));
-  letter-spacing: 0.04em;
+  color: var(--color-white);
+  font-family:
+    Impact,
+    Haettenschweiler,
+    "Arial Narrow Bold",
+    "Franklin Gothic Heavy",
+    "Arial Black",
+    system-ui,
+    sans-serif;
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-variant: normal;
+  text-shadow:
+    0.12em 0.12em 0 var(--color-red),
+    0.2em 0.2em 0 rgb(0 0 0 / 0.45);
+}
+
+.game-title {
+  font-size: clamp(
+    calc(2.8rem * var(--ui-scale)),
+    7vw,
+    calc(5.4rem * var(--ui-scale))
+  );
+}
+
+.scene-panel > h1 {
+  font-size: clamp(
+    calc(2.1rem * var(--ui-scale)),
+    5vw,
+    calc(4rem * var(--ui-scale))
+  );
+}
+
+.scene-panel > h2 {
+  margin-top: calc(1.8rem * var(--ui-scale));
+  margin-bottom: calc(0.75rem * var(--ui-scale));
+  font-size: calc(1.55rem * var(--ui-scale));
 }
 
 .game-version,
 .scene-description,
 .setting-status {
+  max-width: 62ch;
+  margin-right: auto;
+  margin-left: auto;
+  color: var(--color-off-white);
+  font-family:
+    "Arial Narrow",
+    "Franklin Gothic Medium",
+    Arial,
+    system-ui,
+    sans-serif;
   font-size: calc(1rem * var(--ui-scale));
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: 0.04em;
+}
+
+.game-version {
+  display: inline-block;
+  margin-top: calc(0.9rem * var(--ui-scale));
+  margin-bottom: calc(0.35rem * var(--ui-scale));
+  padding: calc(0.2rem * var(--ui-scale)) calc(0.55rem * var(--ui-scale));
+  color: var(--color-blue-dark);
+  background: var(--color-white);
+  border: calc(0.12rem * var(--ui-scale)) solid var(--color-red);
+  font-size: calc(0.78rem * var(--ui-scale));
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 .title-menu,
 .menu-form,
 .button-row {
   display: grid;
-  gap: calc(0.75rem * var(--ui-scale));
+  gap: calc(0.8rem * var(--ui-scale));
   margin-top: calc(1.5rem * var(--ui-scale));
 }
 
 .menu-form label {
   display: grid;
   gap: calc(0.4rem * var(--ui-scale));
+  color: var(--color-white);
+  font-size: calc(0.95rem * var(--ui-scale));
+  font-weight: 900;
+  letter-spacing: 0.06em;
   text-align: left;
+  text-transform: uppercase;
 }
 
-.menu-form input {
+.menu-form input,
+.menu-form select,
+input[type="file"] {
   width: 100%;
-  padding: calc(0.5rem * var(--ui-scale));
-  border: 0.1rem solid var(--panel-border);
-  background: #fff8e8;
-  color: var(--text-color);
+  padding: calc(0.65rem * var(--ui-scale));
+  color: var(--color-text-dark);
+  background: var(--color-white);
+  border: calc(0.16rem * var(--ui-scale)) solid var(--color-red);
+  outline: none;
+}
+
+.menu-form input:focus,
+.menu-form select:focus,
+input[type="file"]:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 calc(0.18rem * var(--ui-scale)) rgb(255 255 255 / 0.85);
 }
 
 .menu-button,
 .secondary-button {
   width: 100%;
-  padding: calc(0.7rem * var(--ui-scale)) calc(1rem * var(--ui-scale));
-  border: 0.12rem solid var(--button-border);
-  background: var(--button-background);
-  color: var(--button-text);
+  padding: calc(0.78rem * var(--ui-scale)) calc(1rem * var(--ui-scale));
+  color: var(--color-white);
+  background:
+    linear-gradient(
+      180deg,
+      var(--color-red-bright),
+      var(--color-red)
+    );
+  border: calc(0.18rem * var(--ui-scale)) solid var(--color-white);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   cursor: pointer;
+  box-shadow: var(--shadow-button);
+  transition:
+    transform 90ms ease,
+    box-shadow 90ms ease,
+    filter 120ms ease;
 }
 
 .secondary-button {
   margin-top: calc(1.5rem * var(--ui-scale));
-  background: transparent;
-  color: var(--text-color);
+  background:
+    linear-gradient(
+      180deg,
+      var(--color-blue-bright),
+      var(--color-blue)
+    );
 }
 
 .menu-button:hover,
-.secondary-button:hover {
-  filter: brightness(1.15);
+.secondary-button:hover,
+.menu-button:focus-visible,
+.secondary-button:focus-visible {
+  filter: brightness(1.12);
+  transform: translate(
+    calc(-0.12rem * var(--ui-scale)),
+    calc(-0.12rem * var(--ui-scale))
+  );
+  box-shadow: calc(0.5rem * var(--ui-scale)) calc(0.5rem * var(--ui-scale)) 0
+    rgb(0 0 0 / 0.55);
+}
+
+.menu-button:active,
+.secondary-button:active {
+  transform: translate(
+    calc(0.12rem * var(--ui-scale)),
+    calc(0.12rem * var(--ui-scale))
+  );
+  box-shadow: calc(0.18rem * var(--ui-scale)) calc(0.18rem * var(--ui-scale)) 0
+    rgb(0 0 0 / 0.58);
+}
+
+.annual-report-list,
+.annual-event-list {
+  display: grid;
+  gap: calc(0.45rem * var(--ui-scale));
+  margin: calc(0.75rem * var(--ui-scale)) 0;
+  padding-left: calc(1.4rem * var(--ui-scale));
+  color: var(--color-off-white);
+  font-family:
+    "Arial Narrow",
+    "Franklin Gothic Medium",
+    Arial,
+    system-ui,
+    sans-serif;
+  font-size: calc(1rem * var(--ui-scale));
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.difficulty-selector {
+  display: grid;
+  gap: calc(0.85rem * var(--ui-scale));
+  margin-top: calc(1.5rem * var(--ui-scale));
+}
+
+.difficulty-selector-heading {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: calc(1.45rem * var(--ui-scale));
+}
+
+.difficulty-button-grid {
+  display: grid;
+  gap: calc(0.75rem * var(--ui-scale));
+}
+
+.difficulty-button {
+  display: grid;
+  gap: calc(0.25rem * var(--ui-scale));
+  width: 100%;
+  padding: calc(0.85rem * var(--ui-scale)) calc(1rem * var(--ui-scale));
+  color: var(--color-white);
+  text-align: left;
+  background:
+    linear-gradient(
+      180deg,
+      var(--color-blue-bright),
+      var(--color-blue)
+    );
+  border: calc(0.16rem * var(--ui-scale)) solid var(--color-white);
+  cursor: pointer;
+  box-shadow: var(--shadow-button);
+}
+
+.difficulty-button:hover,
+.difficulty-button:focus-visible {
+  filter: brightness(1.12);
+}
+
+.difficulty-button.is-selected {
+  background:
+    linear-gradient(
+      180deg,
+      var(--color-red-bright),
+      var(--color-red)
+    );
+  border-color: var(--color-gold);
+}
+
+.difficulty-button-label {
+  font-size: calc(1.15rem * var(--ui-scale));
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.difficulty-button-duration {
+  font-family:
+    "Arial Narrow",
+    "Franklin Gothic Medium",
+    Arial,
+    system-ui,
+    sans-serif;
+  font-size: calc(0.92rem * var(--ui-scale));
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.difficulty-button-description {
+  font-family:
+    "Arial Narrow",
+    "Franklin Gothic Medium",
+    Arial,
+    system-ui,
+    sans-serif;
+  font-size: calc(0.95rem * var(--ui-scale));
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+@media (max-width: 640px) {
+  .scene {
+    padding: calc(1rem * var(--ui-scale));
+  }
+
+  .scene-panel {
+    padding: calc(1.35rem * var(--ui-scale));
+  }
+
+  .game-title {
+    letter-spacing: 0.05em;
+  }
 }

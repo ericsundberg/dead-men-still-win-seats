@@ -21,7 +21,8 @@ function readPublicEnglishLocalization(): Record<string, string> {
 
 describe('localized text', () => {
   it('returns text for known keys', () => {
-    expect(text('gameSetup.title')).toBe('Create Ruler');
+    expect(text('gameSetup.title')).toBe('Game Setup');
+    expect(text('gameSetup.difficulty.easy.duration')).toBe('13 turns — about 3 months');
   });
 
   it('keeps the public English localization asset aligned with typed defaults', () => {

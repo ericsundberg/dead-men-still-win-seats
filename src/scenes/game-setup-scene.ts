@@ -1,7 +1,7 @@
 import type { SceneContext } from '../app/scene-router';
 import { text } from '../localization/localized-text';
 import { makeButton, makeElement } from '../ui/dom-helpers';
-import { makeRulerCreationForm } from './game-setup/ruler-creation-form';
+import { makeGameSetupForm } from './game-setup/game-setup-form';
 
 export function renderGameSetupScene(context: SceneContext): HTMLElement {
   const scene = makeElement('section', {
@@ -24,7 +24,7 @@ export function renderGameSetupScene(context: SceneContext): HTMLElement {
       className: 'scene-description',
       textContent: text('gameSetup.startYearNote'),
     }),
-    makeRulerCreationForm(context),
+    makeGameSetupForm(context),
     makeButton(text('gameSetup.backButton'), () => context.navigate('title'), 'secondary-button', {
       onBeforeClick: () => context.audio.sfx.play('button-cancel'),
     }),
