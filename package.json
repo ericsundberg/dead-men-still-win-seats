@@ -1,0 +1,21 @@
+{
+  "name": "dead-men-still-win-seats",
+  "private": true,
+  "version": "0.0.1-prealpha",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "headless": "tsx src/headless/node-console-runner.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "tsx": "^4.23.1",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.0",
+    "vitest": "^3.2.4"
+  },
+  "description": "A web-based turn-based political satire game for a game jam."
+}

@@ -1,0 +1,29 @@
+:root {
+  --ui-scale: 1;
+  --page-background: #15120d;
+  --panel-background: #f1e3c2;
+  --panel-border: #7d6744;
+  --text-color: #24190d;
+  --button-background: #332414;
+  --button-text: #f8ecd0;
+  --button-border: #8f7248;
+
+  font-family: Georgia, 'Times New Roman', serif;
+  color: var(--text-color);
+  background: var(--page-background);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input {
+  font: inherit;
+}

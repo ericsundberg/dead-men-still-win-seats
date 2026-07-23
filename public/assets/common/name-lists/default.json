@@ -1,0 +1,10 @@
+{
+  "cultureId": "default",
+  "givenNames": {
+    "man": ["Child"],
+    "woman": ["Child"],
+    "nonbinary": ["Child"],
+    "unspecified": ["Child"]
+  },
+  "familyNames": ["House"]
+}

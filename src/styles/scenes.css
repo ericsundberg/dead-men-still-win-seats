@@ -1,0 +1,66 @@
+.scene-panel {
+  width: min(42rem, 100%);
+  padding: calc(2rem * var(--ui-scale));
+  border: 0.2rem solid var(--panel-border);
+  background: var(--panel-background);
+  box-shadow: 0 1rem 2rem rgb(0 0 0 / 0.35);
+}
+
+.title-panel {
+  text-align: center;
+}
+
+.game-title {
+  margin: 0;
+  font-size: calc(3rem * var(--ui-scale));
+  letter-spacing: 0.04em;
+}
+
+.game-version,
+.scene-description,
+.setting-status {
+  font-size: calc(1rem * var(--ui-scale));
+}
+
+.title-menu,
+.menu-form,
+.button-row {
+  display: grid;
+  gap: calc(0.75rem * var(--ui-scale));
+  margin-top: calc(1.5rem * var(--ui-scale));
+}
+
+.menu-form label {
+  display: grid;
+  gap: calc(0.4rem * var(--ui-scale));
+  text-align: left;
+}
+
+.menu-form input {
+  width: 100%;
+  padding: calc(0.5rem * var(--ui-scale));
+  border: 0.1rem solid var(--panel-border);
+  background: #fff8e8;
+  color: var(--text-color);
+}
+
+.menu-button,
+.secondary-button {
+  width: 100%;
+  padding: calc(0.7rem * var(--ui-scale)) calc(1rem * var(--ui-scale));
+  border: 0.12rem solid var(--button-border);
+  background: var(--button-background);
+  color: var(--button-text);
+  cursor: pointer;
+}
+
+.secondary-button {
+  margin-top: calc(1.5rem * var(--ui-scale));
+  background: transparent;
+  color: var(--text-color);
+}
+
+.menu-button:hover,
+.secondary-button:hover {
+  filter: brightness(1.15);
+}

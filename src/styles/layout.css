@@ -1,0 +1,10 @@
+#app {
+  min-height: 100vh;
+}
+
+.scene {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: calc(2rem * var(--ui-scale));
+}

@@ -6,7 +6,7 @@
 ```md
 # Proprietary License
 
-Copyright © 2026 Eric Sundberg. All rights reserved.
+Copyright © 2026 Eric Sundberg and Ryan Thompson. All rights reserved.
 
 This software, game concept, source code, documentation, characters, narrative material, art direction, design material, and related project files are proprietary.
 
