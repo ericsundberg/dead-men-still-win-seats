@@ -40,8 +40,12 @@
   text-shadow: none;
 }
 
-.disclaimer-copy {
+.disclaimer-content {
   width: min(58rem, 86vw);
+  text-align: center;
+}
+
+.disclaimer-copy {
   margin: 0;
   color: #ffffff;
   font-family:
@@ -57,19 +61,22 @@
   line-height: 1.55;
   letter-spacing: 0.02em;
   text-align: center;
-
-  animation:
-    disclaimer-copy-cycle
-    var(--startup-scene-duration, 10s)
-    ease-in-out
-    both;
 }
 
 .disclaimer-continue-prompt {
-  margin: 1rem 0 0;
+  margin:
+    calc(2rem * var(--ui-scale))
+    0
+    0;
+  color: #ffffff;
+  font-family:
+    Arial,
+    system-ui,
+    sans-serif;
+  font-size: calc(1rem * var(--ui-scale));
+  line-height: 1.4;
   text-align: center;
 }
-
 .intro-scene {
   padding: 0;
 }
@@ -132,24 +139,6 @@
   }
 
   to {
-    opacity: 0;
-  }
-}
-
-@keyframes disclaimer-copy-cycle {
-  0% {
-    opacity: 0;
-  }
-
-  12% {
-    opacity: 1;
-  }
-
-  86% {
-    opacity: 1;
-  }
-
-  100% {
     opacity: 0;
   }
 }
@@ -1823,6 +1812,10 @@ input[type="file"]:focus {
   Full-width campaign news chyron
 */
 
+/*
+  Full-width campaign news chyron
+*/
+
 .campaign-news-ticker {
   position: fixed;
   right: 0;
@@ -1843,31 +1836,49 @@ input[type="file"]:focus {
   overflow: hidden;
 
   border-top:
-    calc(0.14rem * var(--ui-scale))
+    calc(0.12rem * var(--ui-scale))
     solid
-    var(--color-white);
+    rgb(255 255 255 / 0.98);
 
   border-bottom:
-    calc(0.14rem * var(--ui-scale))
+    calc(0.12rem * var(--ui-scale))
     solid
-    var(--color-white);
+    rgb(105 105 105 / 0.95);
 
   color:
-    var(--color-white);
+    rgb(20 30 48);
 
   background:
     linear-gradient(
-      90deg,
-      rgb(0 22 78 / 0.99),
-      rgb(0 48 145 / 0.99),
-      rgb(0 22 78 / 0.99)
+      180deg,
+      rgb(255 255 255) 0%,
+      rgb(244 244 244) 18%,
+      rgb(216 218 222) 62%,
+      rgb(187 190 196) 100%
     );
 
   box-shadow:
     0
     calc(-0.22rem * var(--ui-scale))
     0
-    var(--color-red);
+    var(--color-red),
+
+    inset
+    0
+    calc(0.12rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.95),
+
+    inset
+    0
+    calc(-0.18rem * var(--ui-scale))
+    calc(0.3rem * var(--ui-scale))
+    rgb(60 65 75 / 0.35),
+
+    0
+    calc(-0.28rem * var(--ui-scale))
+    calc(0.55rem * var(--ui-scale))
+    rgb(0 0 0 / 0.35);
 
   pointer-events: none;
 }
@@ -1885,15 +1896,20 @@ input[type="file"]:focus {
     calc(1rem * var(--ui-scale));
 
   border-right:
-    calc(0.14rem * var(--ui-scale))
+    calc(0.12rem * var(--ui-scale))
     solid
-    var(--color-white);
+    rgb(115 0 20);
 
   color:
     var(--color-white);
 
   background:
-    var(--color-red);
+    linear-gradient(
+      180deg,
+      rgb(255 36 71) 0%,
+      rgb(222 0 42) 45%,
+      rgb(160 0 29) 100%
+    );
 
   font-size:
     calc(0.72rem * var(--ui-scale));
@@ -1903,14 +1919,32 @@ input[type="file"]:focus {
   letter-spacing:
     0.1em;
 
+  text-shadow:
+    0
+    calc(0.08rem * var(--ui-scale))
+    0
+    rgb(70 0 10 / 0.85);
+
   text-transform:
     uppercase;
 
   box-shadow:
+    inset
+    0
+    calc(0.1rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.4),
+
+    inset
+    0
+    calc(-0.14rem * var(--ui-scale))
+    calc(0.2rem * var(--ui-scale))
+    rgb(70 0 15 / 0.48),
+
     calc(0.2rem * var(--ui-scale))
     0
-    0
-    rgb(0 0 0 / 0.32);
+    calc(0.28rem * var(--ui-scale))
+    rgb(0 0 0 / 0.28);
 }
 
 .campaign-news-viewport {
@@ -1932,7 +1966,7 @@ input[type="file"]:focus {
 
   animation:
     campaign-news-carousel
-    30s
+    40s
     linear
     infinite;
 }
@@ -1945,7 +1979,6 @@ input[type="file"]:focus {
   height: 100%;
 
   align-items: center;
-  justify-content: space-around;
 
   white-space: nowrap;
 }
@@ -1953,9 +1986,11 @@ input[type="file"]:focus {
 .campaign-news-item {
   flex: none;
 
-  padding:
-    0
-    calc(1.2rem * var(--ui-scale));
+  /*
+   * Eight character widths approximate two conventional
+   * four-character tab stops.
+   */
+  margin-inline-end: 8ch;
 
   font-family:
     Arial,
@@ -1972,39 +2007,32 @@ input[type="file"]:focus {
   letter-spacing:
     0.02em;
 
+  text-shadow:
+    0
+    calc(0.06rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.8);
+
   white-space: nowrap;
 }
 
-.campaign-news-separator {
-  flex: none;
-
-  color:
-    var(--color-gold);
-
-  font-size:
-    calc(0.62rem * var(--ui-scale));
-
-  opacity: 0.9;
-}
-
 /*
- * Starting at negative one-segment width and ending at zero
- * moves the text from the left side toward the right side.
- *
- * The two identical segments make the restart seamless.
+ * The track begins at its natural position and moves left by
+ * exactly one duplicated segment.
  */
 @keyframes campaign-news-carousel {
   from {
     transform:
-      translateX(-50%);
+      translateX(0);
   }
 
   to {
     transform:
-      translateX(0);
+      translateX(-50%);
   }
 }
 
+/*
 .campaign-news-ticker {
   display: grid;
 
@@ -2019,6 +2047,7 @@ input[type="file"]:focus {
 
   overflow: hidden;
 }
+*/
 
 .campaign-news-label {
   align-self: stretch;

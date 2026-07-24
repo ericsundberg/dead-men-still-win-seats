@@ -53,9 +53,8 @@ export function makeCampaignNewsTicker(
   );
 
   /*
-   * The animated text is hidden from accessibility tools because
-   * the ticker already exposes one concise aria-label above.
-   * This prevents every repeated copy from being announced.
+   * The moving copies are hidden from assistive technology.
+   * The ticker's aria-label provides one non-repeated version.
    */
   const viewport = makeElement(
     'div',
@@ -79,25 +78,16 @@ export function makeCampaignNewsTicker(
   );
 
   /*
-   * Two identical segments make the animation seamless.
-   *
-   * When the first segment reaches its destination, the second
-   * segment is in exactly the same visual position. The animation
-   * can restart without an observable jump.
+   * Two identical segments allow the carousel to loop without
+   * a visible jump.
    */
-  const firstSegment =
-    makeTickerSegment(
-      normalizedNewsItems,
-    );
-
-  const duplicateSegment =
-    makeTickerSegment(
-      normalizedNewsItems,
-    );
-
   track.append(
-    firstSegment,
-    duplicateSegment,
+    makeTickerSegment(
+      normalizedNewsItems,
+    ),
+    makeTickerSegment(
+      normalizedNewsItems,
+    ),
   );
 
   viewport.append(track);
@@ -111,8 +101,8 @@ export function makeCampaignNewsTicker(
     element: ticker,
 
     /*
-     * The ticker is now driven entirely by CSS animation, so it
-     * does not own a timer or subscription requiring cleanup.
+     * The carousel is controlled entirely by CSS, so there are
+     * no timers or subscriptions to clean up.
      */
     dispose: () => {},
   };
@@ -157,8 +147,8 @@ function makeTickerSegment(
   );
 
   /*
-   * Repeating the sequence fills the screen even when the only
-   * available item is the relatively short fallback message.
+   * Repeat the available sequence so even one short fallback
+   * message fills the chyron continuously.
    */
   for (
     let repetition = 0;
@@ -178,15 +168,6 @@ function makeTickerSegment(
               'campaign-news-item',
             textContent:
               newsItem,
-          },
-        ),
-        makeElement(
-          'span',
-          {
-            className:
-              'campaign-news-separator',
-            textContent:
-              '◆',
           },
         ),
       );
