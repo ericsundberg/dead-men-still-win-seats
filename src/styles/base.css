@@ -1,29 +1,101 @@
 :root {
   --ui-scale: 1;
-  --page-background: #15120d;
-  --panel-background: #f1e3c2;
-  --panel-border: #7d6744;
-  --text-color: #24190d;
-  --button-background: #332414;
-  --button-text: #f8ecd0;
-  --button-border: #8f7248;
 
-  font-family: Georgia, 'Times New Roman', serif;
-  color: var(--text-color);
-  background: var(--page-background);
+  font-family:
+    Impact,
+    Haettenschweiler,
+    "Arial Narrow Bold",
+    "Franklin Gothic Heavy",
+    "Arial Black",
+    system-ui,
+    sans-serif;
+
+  color: #ffffff;
+  background: #050814;
+
+  --color-bg: #050814;
+  --color-bg-deep: #02040d;
+
+  --color-red: #e0002a;
+  --color-red-bright: #ff1744;
+  --color-red-dark: #8f001c;
+
+  --color-blue: #0033a0;
+  --color-blue-bright: #0057ff;
+  --color-blue-dark: #001f5b;
+
+  --color-white: #ffffff;
+  --color-off-white: #f4f6ff;
+  --color-paper: #fff7df;
+  --color-gold: #ffd166;
+
+  --color-panel: rgb(0 31 91 / 0.94);
+  --color-panel-strong: rgb(0 40 104 / 0.98);
+  --color-panel-light: rgb(255 255 255 / 0.96);
+
+  --color-text: var(--color-white);
+  --color-text-dark: #06122f;
+  --color-muted: rgb(255 255 255 / 0.78);
+
+  --shadow-hard:
+    0 0 0 0.18rem rgb(255 255 255 / 0.95),
+    0 0 0 0.48rem rgb(224 0 42 / 0.92),
+    0 1.4rem 4rem rgb(0 0 0 / 0.68);
+
+  --shadow-button: 0.35rem 0.35rem 0 rgb(0 0 0 / 0.48);
+
+  /*
+    Future background image hook.
+
+    When an image exists, add something like this later:
+
+    --game-background-image: url("/assets/backgrounds/campaign-bg.webp");
+
+    The red/blue gradient below remains layered over the image.
+  */
+  --game-background-image: none;
 }
 
 * {
   box-sizing: border-box;
 }
 
-body {
+html,
+body,
+#app {
+  min-height: 100%;
   margin: 0;
+}
+
+body {
   min-width: 320px;
   min-height: 100vh;
+  color: var(--color-text);
+  background:
+    linear-gradient(
+      135deg,
+      rgb(224 0 42 / 0.82) 0%,
+      rgb(0 51 160 / 0.78) 45%,
+      rgb(0 10 35 / 0.92) 100%
+    ),
+    var(--game-background-image),
+    radial-gradient(circle at top, #1646b6 0%, #050814 55%, #02040d 100%);
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
+}
+
+button {
+  border-radius: 0;
+}
+
+::selection {
+  color: var(--color-blue-dark);
+  background: var(--color-white);
 }
