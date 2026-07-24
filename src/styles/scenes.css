@@ -1,3 +1,164 @@
+/*
+  Startup sequence
+  ----------------
+  Each scene retains a solid black background while its content
+  fades. This creates a dependable dip-to-black without requiring
+  two routed scenes to remain mounted simultaneously.
+*/
+
+.startup-scene {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: #ffffff;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  background: #000000;
+}
+
+.startup-scene-content {
+  animation:
+    startup-content-fade-in
+    600ms
+    ease-out
+    both;
+}
+
+.branding-title {
+  width: min(80rem, 90vw);
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(
+    calc(2.8rem * var(--ui-scale)),
+    8vw,
+    calc(7.5rem * var(--ui-scale))
+  );
+  line-height: 0.95;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-shadow: none;
+}
+
+.disclaimer-copy {
+  width: min(58rem, 86vw);
+  margin: 0;
+  color: #ffffff;
+  font-family:
+    Arial,
+    system-ui,
+    sans-serif;
+  font-size: clamp(
+    calc(1.1rem * var(--ui-scale)),
+    2.4vw,
+    calc(1.75rem * var(--ui-scale))
+  );
+  font-weight: 600;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  text-align: center;
+
+  animation:
+    disclaimer-copy-cycle
+    var(--startup-scene-duration, 10s)
+    ease-in-out
+    both;
+}
+
+.intro-scene {
+  padding: 0;
+}
+
+.intro-video {
+  display: block;
+  width: 80vw;
+  max-width: 80vw;
+  max-height: 100vh;
+  object-fit: contain;
+  background: #000000;
+}
+
+.startup-scene.is-leaving {
+  cursor: default;
+  pointer-events: none;
+}
+
+.startup-scene.is-leaving
+.startup-scene-content {
+  animation:
+    startup-content-fade-out
+    600ms
+    ease-in
+    both;
+}
+
+/*
+  Fade the title outward from black after the intro scene.
+  This also gives later returns to the title a brief fade.
+*/
+.title-scene::after {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  content: "";
+  background: #000000;
+
+  animation:
+    title-black-overlay-fade
+    600ms
+    ease-out
+    forwards;
+}
+
+@keyframes startup-content-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes startup-content-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes disclaimer-copy-cycle {
+  0% {
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  86% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes title-black-overlay-fade {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
 .gameplay-scene {
   position: relative;
   isolation: isolate;
@@ -1399,20 +1560,22 @@ input[type="file"]:focus {
     animation: none;
   }
 
+  .startup-scene-content,
+  .disclaimer-copy,
+  .startup-scene.is-leaving
+  .startup-scene-content {
+    animation: none;
+  }
+
+  .title-scene::after {
+    display: none;
+  }
+
   .title-background-star {
     opacity: 0.5;
   }
 
-  .secondary-menu-background-image {
-    opacity: 0.34;
-    transform:
-      translate3d(0, 0, 0)
-      scale(1.12);
-    filter:
-      blur(1.1rem)
-      saturate(0.9)
-      brightness(0.75);
-  }
+  /* Preserve the rest of the existing rule. */
 }
 
 @media (max-width: 640px) {

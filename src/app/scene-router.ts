@@ -3,6 +3,9 @@ import type { GameSession } from '../game/game-session';
 import { replaceChildren } from '../ui/dom-helpers';
 
 export type SceneName =
+  | 'branding'
+  | 'disclaimer'
+  | 'intro'
   | 'title'
   | 'game-setup'
   | 'yearly-turn'

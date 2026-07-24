@@ -1,4 +1,6 @@
 export const localizedTextKeys = [
+  'startup.disclaimer',
+
   'characterDefaults.childGivenName',
   'characterDefaults.heirGivenName',
 

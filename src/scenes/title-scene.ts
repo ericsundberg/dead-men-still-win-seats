@@ -3,10 +3,27 @@ import { makeButton, makeElement } from '../ui/dom-helpers';
 import { game_version } from '../version';
 import { makeTitleBackground } from './title/title-background';
 
-export function renderTitleScene(context: SceneContext): HTMLElement {
+export function renderTitleScene(
+  context: SceneContext,
+): HTMLElement {
   const scene = makeElement('section', {
     className: 'scene title-scene',
   });
+
+  if (context.audio.unlocker.getIsUnlocked()) {
+    context.audio.music.play(
+      'main-menu-theme',
+    );
+  } else {
+    context.audio.unlocker.bindToFirstGesture(
+      scene,
+      () => {
+        context.audio.music.play(
+          'main-menu-theme',
+        );
+      },
+    );
+  }
 
   context.audio.unlocker.bindToFirstGesture(scene, () => {
     context.audio.music.play('main-menu-theme');
