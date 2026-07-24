@@ -8,7 +8,8 @@ import {
 
 export function makeYearlyCommandForm(context: SceneContext): HTMLFormElement {
   const form = makeElement('form', {
-    className: 'menu-form',
+    className:
+      'menu-form yearly-command-form manila-folder-form',
   });
 
   const suggestedCommand = context.game.getSuggestedTurnCommand() ?? {

@@ -1,6 +1,7 @@
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/scenes.css';
+import './styles/manila-folder-form.css';
 
 import { AppController } from './app/app-controller';
 import { loadLocalizedText } from './localization/localized-text';
