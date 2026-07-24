@@ -1,8 +1,8 @@
 import type { SceneContext } from '../app/scene-router';
 import { makeButton, makeElement } from '../ui/dom-helpers';
 import {
-  appendSecondaryMenuBackground,
-} from './shared/secondary-menu-background';
+  appendTertiaryMenuBackground,
+} from './shared/tertiary-menu-background';
 
 export function renderCreditsScene(
   context: SceneContext,
@@ -11,7 +11,7 @@ export function renderCreditsScene(
     className: 'scene',
   });
 
-  appendSecondaryMenuBackground(scene);
+  appendTertiaryMenuBackground(scene);
 
   const panel = makeElement('div', {
     className: 'scene-panel',

@@ -3,8 +3,8 @@ import { text } from '../localization/localized-text';
 import { makeButton, makeElement } from '../ui/dom-helpers';
 import { makeGameSetupForm } from './game-setup/game-setup-form';
 import {
-  appendSecondaryMenuBackground,
-} from './shared/secondary-menu-background';
+  appendTertiaryMenuBackground,
+} from './shared/tertiary-menu-background';
 
 export function renderGameSetupScene(
   context: SceneContext,
@@ -13,7 +13,7 @@ export function renderGameSetupScene(
     className: 'scene',
   });
 
-  appendSecondaryMenuBackground(scene);
+  appendTertiaryMenuBackground(scene);
 
   const panel = makeElement('div', {
     className: 'scene-panel',

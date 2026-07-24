@@ -789,24 +789,198 @@ input[type="file"]:focus {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .secondary-menu-background-image {
-    opacity: 0.34;
-    animation: none;
-    transform: translate3d(0, 0, 0) scale(1.12);
-    filter: blur(1.1rem) saturate(0.9) brightness(0.75);
+/*
+  Tertiary menu background.
+
+  This background is used for the main-menu sub-scenes while the existing
+  secondary background remains available for later use.
+*/
+.tertiary-menu-scene {
+  --tertiary-menu-navy: #00050f;
+  --tertiary-menu-stripe-width: 3.5rem;
+  --tertiary-menu-stripe-period: 7rem;
+  --tertiary-menu-stripe-duration: 120s;
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--tertiary-menu-navy);
+}
+
+.tertiary-menu-scene > * {
+  position: relative;
+  z-index: 1;
+}
+
+.tertiary-menu-scene >
+.tertiary-menu-background {
+  z-index: 0;
+}
+
+.tertiary-menu-background {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tertiary-menu-background-stripes,
+.tertiary-menu-background-ripples,
+.tertiary-menu-background-shade,
+.tertiary-menu-background-grain {
+  position: absolute;
+  inset: 0;
+}
+
+/*
+  Vertical navy-and-white stripes.
+
+  The animation moves forty exact 7rem pattern periods over 120 seconds.
+  Since the ending pattern phase matches the beginning phase, the loop
+  remains visually seamless.
+*/
+.tertiary-menu-background-stripes {
+  background-image:
+    linear-gradient(
+      90deg,
+      var(--tertiary-menu-navy) 0,
+      var(--tertiary-menu-navy) 50%,
+      var(--color-white) 50%,
+      var(--color-white) 100%
+    );
+
+  background-repeat: repeat;
+  background-position: 0 0;
+  background-size:
+    var(--tertiary-menu-stripe-period)
+    100%;
+
+  animation:
+    tertiary-menu-stripes-travel
+    var(--tertiary-menu-stripe-duration)
+    linear
+    infinite;
+}
+
+/*
+  Broad highlight and shadow gradients simulate raised and lowered fabric.
+
+  This layer remains static so it does not interfere with the seamless
+  movement of the stripe texture below it.
+*/
+.tertiary-menu-background-ripples {
+  background:
+    radial-gradient(
+      ellipse 70% 28% at 18% 20%,
+      rgb(255 255 255 / 0.20) 0%,
+      rgb(255 255 255 / 0.08) 28%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 76% 30% at 78% 32%,
+      rgb(0 0 0 / 0.28) 0%,
+      rgb(0 0 0 / 0.12) 30%,
+      transparent 62%
+    ),
+    radial-gradient(
+      ellipse 72% 28% at 26% 62%,
+      rgb(255 255 255 / 0.16) 0%,
+      rgb(255 255 255 / 0.06) 30%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 78% 32% at 82% 78%,
+      rgb(0 0 0 / 0.26) 0%,
+      rgb(0 0 0 / 0.10) 30%,
+      transparent 62%
+    ),
+    linear-gradient(
+      100deg,
+      transparent 0%,
+      rgb(255 255 255 / 0.12) 14%,
+      transparent 27%,
+      rgb(0 0 0 / 0.18) 40%,
+      transparent 54%,
+      rgb(255 255 255 / 0.10) 68%,
+      transparent 82%,
+      rgb(0 0 0 / 0.14) 94%,
+      transparent 100%
+    );
+
+  opacity: 0.9;
+  mix-blend-mode: soft-light;
+  filter: blur(0.55rem);
+}
+
+/*
+  A 105-degree gradient is mirrored horizontally so its darkest area sits
+  in the lower-left and clears toward the upper-right.
+*/
+.tertiary-menu-background-shade {
+  background:
+    linear-gradient(
+      105deg,
+      transparent 0%,
+      transparent 30%,
+      rgb(0 0 0 / 0.08) 48%,
+      rgb(0 0 0 / 0.22) 70%,
+      rgb(0 0 0 / 0.46) 100%
+    );
+
+  transform: scaleX(-1);
+}
+
+/*
+  Static procedural grain.
+*/
+.tertiary-menu-background-grain {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' seed='13' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23noise)' opacity='0.58'/%3E%3C/svg%3E");
+
+  background-repeat: repeat;
+  background-size: 18rem 18rem;
+
+  opacity: 0.22;
+  mix-blend-mode: overlay;
+}
+
+@keyframes tertiary-menu-stripes-travel {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position:
+      calc(
+        -40 *
+        var(--tertiary-menu-stripe-period)
+      )
+      0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .title-background-stripes::before,
   .title-background-stripes::after,
-  .title-background-star {
+  .title-background-star,
+  .secondary-menu-background-image,
+  .tertiary-menu-background-stripes {
     animation: none;
   }
 
   .title-background-star {
     opacity: 0.5;
+  }
+
+  .secondary-menu-background-image {
+    opacity: 0.34;
+    transform:
+      translate3d(0, 0, 0)
+      scale(1.12);
+    filter:
+      blur(1.1rem)
+      saturate(0.9)
+      brightness(0.75);
   }
 }
 

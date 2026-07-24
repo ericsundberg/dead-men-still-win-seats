@@ -7,8 +7,8 @@ import {
   resetUiScale,
 } from '../ui/ui-scale';
 import {
-  appendSecondaryMenuBackground,
-} from './shared/secondary-menu-background';
+  appendTertiaryMenuBackground,
+} from './shared/tertiary-menu-background';
 
 export function renderSettingsScene(
   context: SceneContext,
@@ -17,7 +17,7 @@ export function renderSettingsScene(
     className: 'scene',
   });
 
-  appendSecondaryMenuBackground(scene);
+  appendTertiaryMenuBackground(scene);
 
   const panel = makeElement('div', {
     className: 'scene-panel',
