@@ -2,8 +2,7 @@ import {
   makeElement,
 } from '../../ui/dom-helpers';
 
-const newsItemDurationMs =
-  5_000;
+const tickerSequenceRepeatCount = 4;
 
 export const defaultCampaignNewsText =
   "There's no news. This must mean the world's ending.";
@@ -25,9 +24,22 @@ export function makeCampaignNewsTicker(
     },
   );
 
+  const normalizedNewsItems =
+    normalizeNewsItems(newsItems);
+
+  ticker.setAttribute(
+    'role',
+    'status',
+  );
+
+  ticker.setAttribute(
+    'aria-live',
+    'polite',
+  );
+
   ticker.setAttribute(
     'aria-label',
-    'Campaign news ticker',
+    `Campaign news: ${normalizedNewsItems.join(' ')}`,
   );
 
   const label = makeElement(
@@ -40,82 +52,69 @@ export function makeCampaignNewsTicker(
     },
   );
 
-  const normalizedNewsItems =
-    normalizeNewsItems(
-      newsItems,
-    );
-
-  const blurb = makeElement(
-    'span',
+  /*
+   * The animated text is hidden from accessibility tools because
+   * the ticker already exposes one concise aria-label above.
+   * This prevents every repeated copy from being announced.
+   */
+  const viewport = makeElement(
+    'div',
     {
       className:
-        'campaign-news-blurb',
+        'campaign-news-viewport',
     },
   );
 
-  let nextNewsIndex = 0;
-  let timerId:
-    number | null = null;
+  viewport.setAttribute(
+    'aria-hidden',
+    'true',
+  );
 
-  const showNextNewsItem =
-    (): void => {
-      const newsItem =
-        normalizedNewsItems[
-          nextNewsIndex
-        ];
+  const track = makeElement(
+    'div',
+    {
+      className:
+        'campaign-news-track',
+    },
+  );
 
-      blurb.textContent =
-        newsItem;
+  /*
+   * Two identical segments make the animation seamless.
+   *
+   * When the first segment reaches its destination, the second
+   * segment is in exactly the same visual position. The animation
+   * can restart without an observable jump.
+   */
+  const firstSegment =
+    makeTickerSegment(
+      normalizedNewsItems,
+    );
 
-      blurb.title =
-        newsItem;
+  const duplicateSegment =
+    makeTickerSegment(
+      normalizedNewsItems,
+    );
 
-      /*
-       * Remove and reapply the class so the printing animation
-       * restarts even when the fallback text is unchanged.
-       */
-      blurb.classList.remove(
-        'is-printing',
-      );
+  track.append(
+    firstSegment,
+    duplicateSegment,
+  );
 
-      void blurb.offsetWidth;
-
-      blurb.classList.add(
-        'is-printing',
-      );
-
-      nextNewsIndex =
-        (
-          nextNewsIndex + 1
-        )
-        % normalizedNewsItems.length;
-
-      timerId =
-        window.setTimeout(
-          showNextNewsItem,
-          newsItemDurationMs,
-        );
-    };
+  viewport.append(track);
 
   ticker.append(
     label,
-    blurb,
+    viewport,
   );
-
-  showNextNewsItem();
 
   return {
     element: ticker,
 
-    dispose: () => {
-      if (timerId !== null) {
-        window.clearTimeout(
-          timerId,
-        );
-
-        timerId = null;
-      }
-    },
+    /*
+     * The ticker is now driven entirely by CSS animation, so it
+     * does not own a timer or subscription requiring cleanup.
+     */
+    dispose: () => {},
   };
 }
 
@@ -143,4 +142,56 @@ export function normalizeNewsItems(
   }
 
   return usableNewsItems;
+}
+
+function makeTickerSegment(
+  newsItems:
+    readonly string[],
+): HTMLElement {
+  const segment = makeElement(
+    'div',
+    {
+      className:
+        'campaign-news-ticker-segment',
+    },
+  );
+
+  /*
+   * Repeating the sequence fills the screen even when the only
+   * available item is the relatively short fallback message.
+   */
+  for (
+    let repetition = 0;
+    repetition
+      < tickerSequenceRepeatCount;
+    repetition += 1
+  ) {
+    for (
+      const newsItem
+      of newsItems
+    ) {
+      segment.append(
+        makeElement(
+          'span',
+          {
+            className:
+              'campaign-news-item',
+            textContent:
+              newsItem,
+          },
+        ),
+        makeElement(
+          'span',
+          {
+            className:
+              'campaign-news-separator',
+            textContent:
+              '◆',
+          },
+        ),
+      );
+    }
+  }
+
+  return segment;
 }
