@@ -20,7 +20,7 @@ export function makeCampaignMusicHud(
     'section',
     {
       className:
-        'campaign-music-player',
+        'campaign-music-player streaming-music-hud',
     },
   );
 
@@ -81,10 +81,14 @@ export function makeCampaignMusicHud(
       'Restart current song',
     );
 
-  const pauseButton =
+    const pauseButton =
     makeMusicControlButton(
-      '▐▐',
-      'Pause current song',
+        '',
+        'Pause current song',
+    );
+
+    pauseButton.classList.add(
+    'campaign-music-primary-control',
     );
 
   const skipButton =
@@ -170,10 +174,10 @@ export function makeCampaignMusicHud(
         ? 'Resume current song'
         : 'Pause current song';
 
-    pauseButton.textContent =
-      state.isPaused
-        ? '▶'
-        : '▐▐';
+    pauseButton.dataset.transportIcon =
+    state.isPaused
+        ? 'play'
+        : 'pause';
 
     pauseButton.title =
       pauseLabel;

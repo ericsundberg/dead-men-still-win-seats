@@ -1,0 +1,623 @@
+/*
+  Compact modern streaming music HUD
+  ----------------------------------
+  A contemporary dark streaming-player surface with subtle
+  physical depth, a material drop shadow, and a centered
+  primary play/pause control.
+*/
+
+.campaign-hud {
+  position: fixed;
+
+  top:
+    calc(1.25rem * var(--ui-scale));
+
+  right:
+    calc(1.25rem * var(--ui-scale));
+
+  bottom: auto;
+  left: auto;
+
+  z-index: 70;
+
+  display: grid;
+
+  width:
+    min(
+      calc(22rem * var(--ui-scale)),
+      calc(100vw - 2.5rem)
+    );
+
+  pointer-events: none;
+}
+
+/*
+  Player body
+*/
+
+.streaming-music-hud {
+  --music-player-green:
+    #1ed760;
+
+  --music-player-green-hover:
+    #3be477;
+
+  --music-player-green-dark:
+    #11873d;
+
+  --music-player-surface:
+    #181818;
+
+  --music-player-surface-raised:
+    #242424;
+
+  --music-player-surface-dark:
+    #0d0d0d;
+
+  position: relative;
+  isolation: isolate;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap:
+    calc(0.72rem * var(--ui-scale));
+
+  justify-self: end;
+
+  width: 100%;
+
+  min-height:
+    calc(3.45rem * var(--ui-scale));
+
+  padding:
+    calc(0.55rem * var(--ui-scale))
+    calc(0.62rem * var(--ui-scale))
+    calc(0.55rem * var(--ui-scale))
+    calc(3.45rem * var(--ui-scale));
+
+  overflow: hidden;
+
+  /*
+   * Explicitly cancel the red outline from any stale or
+   * externally inherited campaign-player styling.
+   */
+  outline: none;
+
+  border:
+    calc(0.06rem * var(--ui-scale))
+    solid
+    rgb(255 255 255 / 0.13);
+
+  border-radius:
+    calc(0.72rem * var(--ui-scale));
+
+  color:
+    #fff;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgb(255 255 255 / 0.035),
+      transparent 38%
+    ),
+
+    linear-gradient(
+      135deg,
+      var(--music-player-surface-raised),
+      var(--music-player-surface) 54%,
+      var(--music-player-surface-dark)
+    );
+
+  /*
+   * The first two layers create a subtle raised casing.
+   * The later layers provide the stronger material shadow.
+   */
+  box-shadow:
+    inset
+    0
+    calc(0.06rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.1),
+
+    inset
+    0
+    calc(-0.08rem * var(--ui-scale))
+    calc(0.15rem * var(--ui-scale))
+    rgb(0 0 0 / 0.58),
+
+    0
+    calc(0.12rem * var(--ui-scale))
+    calc(0.18rem * var(--ui-scale))
+    rgb(0 0 0 / 0.42),
+
+    0
+    calc(0.55rem * var(--ui-scale))
+    calc(1.15rem * var(--ui-scale))
+    rgb(0 0 0 / 0.48),
+
+    0
+    calc(1rem * var(--ui-scale))
+    calc(2rem * var(--ui-scale))
+    rgb(0 0 0 / 0.24);
+
+  pointer-events: auto;
+}
+
+/*
+  Compact album-disc decoration.
+*/
+
+.streaming-music-hud::before {
+  content: "";
+
+  position: absolute;
+  top: 50%;
+
+  left:
+    calc(0.7rem * var(--ui-scale));
+
+  z-index: 2;
+
+  width:
+    calc(2.05rem * var(--ui-scale));
+
+  aspect-ratio: 1;
+
+  border:
+    calc(0.06rem * var(--ui-scale))
+    solid
+    rgb(255 255 255 / 0.12);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      #070707 0 9%,
+      var(--music-player-green) 10% 18%,
+      #111 19% 44%,
+      #303030 45% 48%,
+      #0a0a0a 49% 100%
+    );
+
+  box-shadow:
+    inset
+    calc(0.06rem * var(--ui-scale))
+    calc(0.06rem * var(--ui-scale))
+    calc(0.1rem * var(--ui-scale))
+    rgb(255 255 255 / 0.12),
+
+    0
+    calc(0.12rem * var(--ui-scale))
+    calc(0.22rem * var(--ui-scale))
+    rgb(0 0 0 / 0.8);
+
+  transform:
+    translateY(-50%);
+
+  pointer-events: none;
+}
+
+/*
+  Narrow green status accent.
+*/
+
+.streaming-music-hud::after {
+  content: "";
+
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  height:
+    calc(0.11rem * var(--ui-scale));
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      var(--music-player-green) 18%,
+      var(--music-player-green) 82%,
+      transparent
+    );
+
+  box-shadow:
+    0
+    calc(-0.04rem * var(--ui-scale))
+    calc(0.12rem * var(--ui-scale))
+    rgb(30 215 96 / 0.25);
+
+  pointer-events: none;
+}
+
+.streaming-music-hud > * {
+  position: relative;
+  z-index: 1;
+}
+
+/*
+  Track information
+*/
+
+.streaming-music-hud
+  .campaign-music-information {
+  display: grid;
+
+  min-width: 0;
+
+  gap:
+    calc(0.08rem * var(--ui-scale));
+}
+
+.streaming-music-hud
+  .campaign-hud-label {
+  color:
+    var(--music-player-green);
+
+  font-family:
+    Arial,
+    Helvetica,
+    system-ui,
+    sans-serif;
+
+  font-size:
+    calc(0.55rem * var(--ui-scale));
+
+  font-weight: 800;
+  line-height: 1;
+
+  letter-spacing:
+    0.12em;
+
+  text-transform:
+    uppercase;
+}
+
+.streaming-music-hud
+  .campaign-music-title {
+  overflow: hidden;
+
+  margin: 0;
+
+  color:
+    #fff;
+
+  font-family:
+    Arial,
+    Helvetica,
+    system-ui,
+    sans-serif;
+
+  font-size:
+    calc(0.76rem * var(--ui-scale));
+
+  font-weight: 650;
+  line-height: 1.15;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  text-shadow:
+    0
+    calc(0.05rem * var(--ui-scale))
+    0
+    rgb(0 0 0 / 0.8);
+}
+
+/*
+  Transport controls
+*/
+
+.streaming-music-hud
+  .campaign-music-controls {
+  display: grid;
+
+  grid-template-columns:
+    calc(1.7rem * var(--ui-scale))
+    calc(2.35rem * var(--ui-scale))
+    calc(1.7rem * var(--ui-scale));
+
+  align-items: center;
+
+  justify-items: center;
+
+  gap:
+    calc(0.25rem * var(--ui-scale));
+}
+
+.streaming-music-hud
+  .campaign-music-control {
+  display: grid;
+
+  width:
+    calc(1.7rem * var(--ui-scale));
+
+  min-width:
+    calc(1.7rem * var(--ui-scale));
+
+  height:
+    calc(1.7rem * var(--ui-scale));
+
+  place-items: center;
+
+  padding: 0;
+
+  border:
+    calc(0.05rem * var(--ui-scale))
+    solid
+    rgb(255 255 255 / 0.13);
+
+  border-radius: 50%;
+
+  color:
+    rgb(205 205 205);
+
+  background:
+    linear-gradient(
+      180deg,
+      #303030,
+      #171717
+    );
+
+  font-family:
+    Arial,
+    Helvetica,
+    system-ui,
+    sans-serif;
+
+  font-size:
+    calc(0.55rem * var(--ui-scale));
+
+  font-weight: 900;
+  line-height: 1;
+
+  cursor: pointer;
+
+  box-shadow:
+    inset
+    0
+    calc(0.05rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.1),
+
+    0
+    calc(0.08rem * var(--ui-scale))
+    calc(0.16rem * var(--ui-scale))
+    rgb(0 0 0 / 0.7);
+}
+
+/*
+  Primary play/pause button
+*/
+
+.streaming-music-hud
+  .campaign-music-primary-control {
+  position: relative;
+
+  width:
+    calc(2.35rem * var(--ui-scale));
+
+  min-width:
+    calc(2.35rem * var(--ui-scale));
+
+  height:
+    calc(2.35rem * var(--ui-scale));
+
+  border: 0;
+
+  color:
+    #07170c;
+
+  background:
+    var(--music-player-green);
+
+  box-shadow:
+    0
+    calc(0.12rem * var(--ui-scale))
+    calc(0.28rem * var(--ui-scale))
+    rgb(0 0 0 / 0.62),
+
+    inset
+    0
+    calc(0.07rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.24),
+
+    inset
+    0
+    calc(-0.08rem * var(--ui-scale))
+    calc(0.12rem * var(--ui-scale))
+    rgb(0 94 35 / 0.35);
+}
+
+/*
+  Optically centered play triangle.
+*/
+
+.streaming-music-hud
+  .campaign-music-primary-control[data-transport-icon="play"]::before {
+  content: "";
+
+  position: absolute;
+
+  top: 50%;
+  left: 53%;
+
+  width:
+    calc(0.68rem * var(--ui-scale));
+
+  height:
+    calc(0.82rem * var(--ui-scale));
+
+  background:
+    #07170c;
+
+  clip-path:
+    polygon(
+      0 0,
+      100% 50%,
+      0 100%
+    );
+
+  transform:
+    translate(-50%, -50%);
+}
+
+/*
+  Optically centered pause bars.
+*/
+
+.streaming-music-hud
+  .campaign-music-primary-control[data-transport-icon="pause"]::before,
+.streaming-music-hud
+  .campaign-music-primary-control[data-transport-icon="pause"]::after {
+  content: "";
+
+  position: absolute;
+
+  top: 50%;
+
+  width:
+    calc(0.2rem * var(--ui-scale));
+
+  height:
+    calc(0.78rem * var(--ui-scale));
+
+  border-radius:
+    calc(0.03rem * var(--ui-scale));
+
+  background:
+    #07170c;
+
+  transform:
+    translate(-50%, -50%);
+}
+
+.streaming-music-hud
+  .campaign-music-primary-control[data-transport-icon="pause"]::before {
+  left: 43%;
+}
+
+.streaming-music-hud
+  .campaign-music-primary-control[data-transport-icon="pause"]::after {
+  left: 57%;
+}
+
+/*
+  Interaction states
+*/
+
+.streaming-music-hud
+  .campaign-music-control:hover,
+.streaming-music-hud
+  .campaign-music-control:focus-visible {
+  border-color:
+    rgb(255 255 255 / 0.3);
+
+  color:
+    #fff;
+
+  background:
+    #323232;
+
+  transform:
+    scale(1.06);
+}
+
+.streaming-music-hud
+  .campaign-music-primary-control:hover,
+.streaming-music-hud
+  .campaign-music-primary-control:focus-visible {
+  color:
+    #07170c;
+
+  background:
+    var(--music-player-green-hover);
+
+  transform:
+    scale(1.07);
+}
+
+.streaming-music-hud
+  .campaign-music-control:focus-visible {
+  outline:
+    calc(0.1rem * var(--ui-scale))
+    solid
+    rgb(255 255 255 / 0.85);
+
+  outline-offset:
+    calc(0.08rem * var(--ui-scale));
+}
+
+.streaming-music-hud
+  .campaign-music-primary-control:focus-visible {
+  outline-color:
+    var(--music-player-green);
+}
+
+.streaming-music-hud
+  .campaign-music-control:active {
+  transform:
+    scale(0.94);
+
+  box-shadow:
+    inset
+    0
+    calc(0.1rem * var(--ui-scale))
+    calc(0.15rem * var(--ui-scale))
+    rgb(0 0 0 / 0.6);
+}
+
+.streaming-music-hud
+  .campaign-music-control:disabled {
+  opacity: 0.38;
+
+  cursor: not-allowed;
+
+  filter: grayscale(1);
+
+  transform: none;
+}
+
+/*
+  Responsive layout
+*/
+
+@media (max-width: 640px) {
+  .campaign-hud {
+    top:
+      calc(0.75rem * var(--ui-scale));
+
+    right:
+      calc(0.75rem * var(--ui-scale));
+
+    bottom: auto;
+
+    left:
+      calc(0.75rem * var(--ui-scale));
+
+    width: auto;
+  }
+
+  .streaming-music-hud {
+    width: 100%;
+
+    padding-left:
+      calc(3.1rem * var(--ui-scale));
+  }
+
+  .streaming-music-hud::before {
+    left:
+      calc(0.55rem * var(--ui-scale));
+
+    width:
+      calc(1.9rem * var(--ui-scale));
+  }
+}

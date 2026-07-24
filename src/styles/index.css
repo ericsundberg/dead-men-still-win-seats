@@ -10,6 +10,8 @@
 @import './layout.css';
 @import './scenes.css';
 
+@import './music-hud.css';
+@import './news-chyron.css';
 @import './lined-paper.css';
 @import './canary-legal-pad.css';
 @import './printed-report-paper.css';

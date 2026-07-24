@@ -1,0 +1,535 @@
+/*
+  POX News campaign chyron
+  ------------------------
+  Full-width broadcast-style news banner fixed to the bottom of
+  the campaign view.
+
+  This module owns the complete news presentation:
+  - POX News trapezoidal network bug
+  - campaign date strap
+  - white-grey scrolling headline bar
+*/
+
+.campaign-scene {
+  --campaign-chyron-bar-height:
+    calc(2.15rem * var(--ui-scale));
+
+  --campaign-chyron-total-height:
+    calc(4.35rem * var(--ui-scale));
+
+  --campaign-chyron-brand-width:
+    calc(8.6rem * var(--ui-scale));
+
+  padding-bottom:
+    calc(5.2rem * var(--ui-scale));
+}
+
+.campaign-news-ticker {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 60;
+
+  width: 100vw;
+  height:
+    var(--campaign-chyron-total-height);
+
+  overflow: visible;
+
+  pointer-events: none;
+}
+
+/*
+  White-grey scrolling headline bar.
+*/
+
+.campaign-news-viewport {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+
+  display: flex;
+  height:
+    var(--campaign-chyron-bar-height);
+
+  align-items: center;
+
+  overflow: hidden;
+
+  padding-left:
+    calc(
+      var(--campaign-chyron-brand-width)
+      - calc(0.8rem * var(--ui-scale))
+    );
+
+  border-top:
+    calc(0.14rem * var(--ui-scale))
+    solid
+    rgb(255 255 255);
+
+  border-bottom:
+    calc(0.12rem * var(--ui-scale))
+    solid
+    rgb(92 94 100);
+
+  color:
+    rgb(24 30 42);
+
+  background:
+    linear-gradient(
+      180deg,
+      #fff 0%,
+      #f7f7f8 15%,
+      #e1e2e5 55%,
+      #bfc2c8 100%
+    );
+
+  box-shadow:
+    inset
+    0
+    calc(0.11rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.95),
+
+    inset
+    0
+    calc(-0.18rem * var(--ui-scale))
+    calc(0.28rem * var(--ui-scale))
+    rgb(53 57 65 / 0.34),
+
+    0
+    calc(-0.22rem * var(--ui-scale))
+    calc(0.45rem * var(--ui-scale))
+    rgb(0 0 0 / 0.32);
+}
+
+.campaign-news-track {
+  display: flex;
+  width: max-content;
+  height: 100%;
+
+  align-items: center;
+
+  will-change: transform;
+
+  animation:
+    campaign-news-carousel
+    40s
+    linear
+    infinite;
+}
+
+.campaign-news-ticker-segment {
+  display: flex;
+  flex: none;
+
+  min-width: 100vw;
+  height: 100%;
+
+  align-items: center;
+
+  white-space: nowrap;
+}
+
+.campaign-news-item {
+  flex: none;
+
+  margin-inline-end: 8ch;
+
+  font-family:
+    Arial,
+    Helvetica,
+    system-ui,
+    sans-serif;
+
+  font-size:
+    calc(0.82rem * var(--ui-scale));
+
+  font-weight: 750;
+  line-height: 1;
+
+  letter-spacing:
+    0.015em;
+
+  text-shadow:
+    0
+    calc(0.06rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.9);
+
+  white-space: nowrap;
+}
+
+/*
+  POX News trapezoid.
+*/
+
+.campaign-news-brand {
+  position: absolute;
+  bottom:
+    calc(-0.02rem * var(--ui-scale));
+  left: 0;
+  z-index: 5;
+
+  display: grid;
+
+  width:
+    var(--campaign-chyron-brand-width);
+
+  height:
+    var(--campaign-chyron-total-height);
+
+  align-content: center;
+
+  justify-items: center;
+
+  padding:
+    calc(0.35rem * var(--ui-scale))
+    calc(1.5rem * var(--ui-scale))
+    calc(0.35rem * var(--ui-scale))
+    calc(0.4rem * var(--ui-scale));
+
+  clip-path:
+    polygon(
+      0 0,
+      100% 0,
+      76% 100%,
+      0 100%
+    );
+
+  color: white;
+
+  background:
+    repeating-linear-gradient(
+      120deg,
+      transparent
+      0
+      calc(0.42rem * var(--ui-scale)),
+
+      rgb(255 255 255 / 0.065)
+      calc(0.42rem * var(--ui-scale))
+      calc(0.48rem * var(--ui-scale))
+    ),
+
+    linear-gradient(
+      180deg,
+      rgb(255 59 83) 0%,
+      rgb(226 0 42) 43%,
+      rgb(151 0 28) 100%
+    );
+
+  filter:
+    drop-shadow(
+      calc(0.32rem * var(--ui-scale))
+      calc(0.34rem * var(--ui-scale))
+      0
+      rgb(35 0 7 / 0.85)
+    )
+
+    drop-shadow(
+      calc(0.65rem * var(--ui-scale))
+      calc(0.7rem * var(--ui-scale))
+      calc(0.65rem * var(--ui-scale))
+      rgb(0 0 0 / 0.7)
+    );
+
+  transform:
+    translateZ(0);
+}
+
+/*
+  Gloss and bottom bevel on the red network bug.
+*/
+
+.campaign-news-brand::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgb(255 255 255 / 0.36),
+      transparent 24%,
+      transparent 70%,
+      rgb(70 0 13 / 0.34)
+    );
+
+  pointer-events: none;
+}
+
+.campaign-news-brand::after {
+  content: "";
+
+  position: absolute;
+  right:
+    calc(1.3rem * var(--ui-scale));
+  bottom:
+    calc(0.12rem * var(--ui-scale));
+  left:
+    calc(0.2rem * var(--ui-scale));
+
+  height:
+    calc(0.13rem * var(--ui-scale));
+
+  background:
+    rgb(85 0 15 / 0.64);
+
+  box-shadow:
+    0
+    calc(-0.08rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.22);
+
+  transform:
+    rotate(-0.6deg);
+
+  pointer-events: none;
+}
+
+.campaign-news-network,
+.campaign-news-network-subtitle {
+  position: relative;
+  z-index: 1;
+
+  font-family:
+    "Arial Black",
+    Impact,
+    sans-serif;
+
+  font-weight: 900;
+  line-height: 0.82;
+
+  text-transform: uppercase;
+
+  transform:
+    skewX(-4deg);
+}
+
+.campaign-news-network {
+  font-size:
+    calc(2.7rem * var(--ui-scale));
+
+  letter-spacing:
+    -0.06em;
+
+  text-shadow:
+    calc(0.09rem * var(--ui-scale))
+    calc(0.09rem * var(--ui-scale))
+    0
+    rgb(80 0 14),
+
+    calc(0.2rem * var(--ui-scale))
+    calc(0.22rem * var(--ui-scale))
+    0
+    rgb(25 0 5 / 0.92),
+
+    calc(0.38rem * var(--ui-scale))
+    calc(0.42rem * var(--ui-scale))
+    calc(0.32rem * var(--ui-scale))
+    rgb(0 0 0 / 0.78);
+}
+
+.campaign-news-network-subtitle {
+  margin-top:
+    calc(0.22rem * var(--ui-scale));
+
+  font-size:
+    calc(0.9rem * var(--ui-scale));
+
+  letter-spacing:
+    0.38em;
+
+  text-shadow:
+    calc(0.07rem * var(--ui-scale))
+    calc(0.08rem * var(--ui-scale))
+    0
+    rgb(80 0 14),
+
+    calc(0.16rem * var(--ui-scale))
+    calc(0.18rem * var(--ui-scale))
+    calc(0.18rem * var(--ui-scale))
+    rgb(0 0 0 / 0.8);
+}
+
+/*
+  Red developing-story-style extension.
+*/
+
+.campaign-news-date-strap {
+  position: absolute;
+
+    top: auto;
+
+    bottom:
+    calc(
+        var(--campaign-chyron-bar-height)
+        - calc(0.00rem * var(--ui-scale))
+    );
+
+  right: 0;
+  left: auto;
+
+  z-index: 4;
+
+  display: flex;
+
+  min-width:
+    calc(19rem * var(--ui-scale));
+
+  height:
+    calc(1.35rem * var(--ui-scale));
+
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    calc(1.4rem * var(--ui-scale))
+    0
+    calc(2rem * var(--ui-scale));
+
+  /*
+    The angled left edge makes the strap appear to extend
+    inward from the right side of the screen.
+  */
+  clip-path:
+    polygon(
+      calc(1rem * var(--ui-scale)) 0,
+      100% 0,
+      100% 100%,
+      0 100%
+    );
+
+  border-top:
+    calc(0.07rem * var(--ui-scale))
+    solid
+    rgb(255 255 255 / 0.48);
+
+  border-left:
+    calc(0.08rem * var(--ui-scale))
+    solid
+    rgb(116 0 22 / 0.75);
+
+  color:
+    white;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgb(255 53 78),
+      rgb(210 0 39) 55%,
+      rgb(137 0 25)
+    );
+
+  font-family:
+    Arial,
+    Helvetica,
+    system-ui,
+    sans-serif;
+
+  font-size:
+    calc(0.7rem * var(--ui-scale));
+
+  font-weight: 900;
+  line-height: 1;
+
+  letter-spacing:
+    0.1em;
+
+  text-shadow:
+    0
+    calc(0.07rem * var(--ui-scale))
+    0
+    rgb(75 0 14);
+
+  text-transform:
+    uppercase;
+
+  box-shadow:
+    inset
+    0
+    calc(0.08rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.22),
+
+    inset
+    0
+    calc(-0.12rem * var(--ui-scale))
+    calc(0.18rem * var(--ui-scale))
+    rgb(75 0 14 / 0.45),
+
+    calc(-0.25rem * var(--ui-scale))
+    calc(0.28rem * var(--ui-scale))
+    calc(0.38rem * var(--ui-scale))
+    rgb(0 0 0 / 0.52);
+
+  transform:
+    translateZ(0);
+}
+
+@keyframes campaign-news-carousel {
+  from {
+    transform:
+      translateX(0);
+  }
+
+  to {
+    transform:
+      translateX(-50%);
+  }
+}
+
+@media (max-width: 640px) {
+  .campaign-scene {
+    --campaign-chyron-brand-width:
+      calc(6.6rem * var(--ui-scale));
+
+    --campaign-chyron-total-height:
+      calc(3.65rem * var(--ui-scale));
+
+    padding-bottom:
+      calc(4.5rem * var(--ui-scale));
+  }
+
+  .campaign-news-network {
+    font-size:
+      calc(2rem * var(--ui-scale));
+  }
+
+  .campaign-news-network-subtitle {
+    font-size:
+      calc(0.68rem * var(--ui-scale));
+  }
+
+    .campaign-news-date-strap {
+    right: 0;
+    left: auto;
+
+    min-width:
+        calc(13rem * var(--ui-scale));
+
+    padding:
+        0
+        calc(0.7rem * var(--ui-scale))
+        0
+        calc(1.25rem * var(--ui-scale));
+
+    font-size:
+        calc(0.55rem * var(--ui-scale));
+
+    letter-spacing:
+        0.06em;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .campaign-news-track {
+    animation: none;
+    transform: none;
+  }
+}

@@ -48,9 +48,20 @@ export function makeCampaignShell(
       context,
     );
 
-  const newsTicker =
+    const gameState =
+    context.game.getState();
+
+    const newsTicker =
     makeCampaignNewsTicker(
-      newsItems,
+        newsItems,
+        {
+        turnNumber:
+            gameState?.year
+            ?? 1,
+
+        difficultyId:
+            context.game.getDifficultyId(),
+        },
     );
 
   hud.append(
