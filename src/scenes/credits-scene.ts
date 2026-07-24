@@ -21,9 +21,15 @@ export function renderCreditsScene(
     textContent: 'Credits',
   });
 
+  const creditsText = [
+    'DIRECTED BY ERIC AND RYAN',
+    'PROGRAMMING BY ERIC',
+    'DESIGN BY ERIC AND RYAN',
+  ].join('\n');
+
   const description = makeElement('p', {
-    className: 'scene-description',
-    textContent: 'DIRECTED BY ERIC AND RYAN',
+    className: 'scene-description credits-text',
+    textContent: creditsText,
   });
 
   panel.append(

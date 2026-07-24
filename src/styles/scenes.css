@@ -598,6 +598,11 @@ h3,
   letter-spacing: 0.04em;
 }
 
+.credits-text {
+  white-space: pre-line;
+  text-align: center;
+}
+
 .game-version {
   display: inline-block;
   margin-top: calc(0.9rem * var(--ui-scale));
