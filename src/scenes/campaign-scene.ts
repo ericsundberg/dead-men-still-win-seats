@@ -48,11 +48,11 @@ export function renderCampaignScene(
 
   const campaignContent =
     makeElement(
-      'main',
-      {
+        'main',
+        {
         className:
-          'campaign-content',
-      },
+            'campaign-content printed-report-paper',
+        },
     );
 
   const gameOverState =

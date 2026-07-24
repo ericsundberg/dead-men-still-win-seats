@@ -1,0 +1,552 @@
+/*
+  Reusable lined-paper surface
+  ----------------------------
+  Apply .lined-paper to a content container that should resemble
+  a ruled sheet of office or notebook paper.
+*/
+
+.lined-paper {
+  --office-paper-stock:
+    #f1ecdc;
+
+  --office-paper-stock-light:
+    #fffdf5;
+
+  --office-paper-stock-shadow:
+    #d7cfbb;
+
+  --office-paper-edge:
+    #aaa18e;
+
+  --office-paper-ink:
+    #272521;
+
+  --office-paper-blue-ink:
+    #17375e;
+
+  --office-paper-red-ink:
+    #8e2630;
+
+  --office-paper-rule:
+    rgb(62 101 146 / 0.15);
+
+  --office-paper-margin:
+    rgb(176 48 57 / 0.28);
+
+  position: relative;
+  isolation: isolate;
+
+  display: block;
+
+  width:
+    min(
+      calc(48rem * var(--ui-scale)),
+      calc(100vw - 3rem)
+    );
+
+  padding:
+    calc(3.25rem * var(--ui-scale))
+    calc(2.8rem * var(--ui-scale))
+    calc(2.7rem * var(--ui-scale))
+    calc(4.15rem * var(--ui-scale));
+
+  overflow: visible;
+
+  border:
+    calc(0.08rem * var(--ui-scale))
+    solid
+    var(--office-paper-edge);
+
+  border-radius:
+    calc(0.08rem * var(--ui-scale));
+
+  color:
+    var(--office-paper-ink);
+
+  /*
+    Background layers, from front to back:
+
+    1. Red office-paper margin.
+    2. Faint horizontal ruling.
+    3–4. Tiny simulated paper fibers.
+    5. Directional light and age variation.
+    6. Base paper stock.
+  */
+  background:
+    linear-gradient(
+      90deg,
+      transparent
+      0
+      calc(3.1rem * var(--ui-scale)),
+
+      var(--office-paper-margin)
+      calc(3.1rem * var(--ui-scale))
+      calc(3.18rem * var(--ui-scale)),
+
+      transparent
+      calc(3.18rem * var(--ui-scale))
+      100%
+    ),
+
+    repeating-linear-gradient(
+      180deg,
+      transparent
+      0
+      calc(1.72rem * var(--ui-scale)),
+
+      var(--office-paper-rule)
+      calc(1.72rem * var(--ui-scale))
+      calc(1.77rem * var(--ui-scale))
+    ),
+
+    radial-gradient(
+      circle,
+      rgb(92 78 51 / 0.075)
+      0
+      calc(0.025rem * var(--ui-scale)),
+
+      transparent
+      calc(0.04rem * var(--ui-scale))
+    )
+    0
+    0
+    /
+    calc(1.3rem * var(--ui-scale))
+    calc(1.1rem * var(--ui-scale)),
+
+    radial-gradient(
+      circle,
+      rgb(255 255 255 / 0.42)
+      0
+      calc(0.03rem * var(--ui-scale)),
+
+      transparent
+      calc(0.045rem * var(--ui-scale))
+    )
+    calc(0.5rem * var(--ui-scale))
+    calc(0.35rem * var(--ui-scale))
+    /
+    calc(1.8rem * var(--ui-scale))
+    calc(1.55rem * var(--ui-scale)),
+
+    linear-gradient(
+      112deg,
+      rgb(255 255 255 / 0.58)
+      0%,
+
+      transparent
+      30%,
+
+      rgb(103 83 50 / 0.035)
+      72%,
+
+      rgb(83 68 45 / 0.12)
+      100%
+    ),
+
+    linear-gradient(
+      180deg,
+      var(--office-paper-stock-light)
+      0%,
+
+      var(--office-paper-stock)
+      64%,
+
+      var(--office-paper-stock-shadow)
+      100%
+    );
+
+  box-shadow:
+    calc(0.2rem * var(--ui-scale))
+    calc(0.22rem * var(--ui-scale))
+    0
+    rgb(81 69 51 / 0.34),
+
+    calc(0.65rem * var(--ui-scale))
+    calc(0.85rem * var(--ui-scale))
+    calc(0.7rem * var(--ui-scale))
+    rgb(0 0 0 / 0.4),
+
+    calc(1.1rem * var(--ui-scale))
+    calc(1.35rem * var(--ui-scale))
+    calc(2.6rem * var(--ui-scale))
+    rgb(0 0 0 / 0.3),
+
+    inset
+    0
+    calc(0.12rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.78),
+
+    inset
+    calc(-0.12rem * var(--ui-scale))
+    0
+    calc(0.2rem * var(--ui-scale))
+    rgb(84 68 44 / 0.08),
+
+    inset
+    0
+    calc(-0.18rem * var(--ui-scale))
+    calc(0.28rem * var(--ui-scale))
+    rgb(84 68 44 / 0.13);
+
+  transform:
+    rotate(-0.12deg);
+
+  transform-origin:
+    center top;
+}
+
+/*
+  Folded upper-right corner.
+*/
+
+.lined-paper::before {
+  content: "";
+
+  position: absolute;
+  top:
+    calc(-0.08rem * var(--ui-scale));
+  right:
+    calc(-0.08rem * var(--ui-scale));
+  z-index: 4;
+
+  width:
+    calc(2.35rem * var(--ui-scale));
+
+  height:
+    calc(2.35rem * var(--ui-scale));
+
+  clip-path:
+    polygon(
+      0 0,
+      100% 0,
+      100% 100%
+    );
+
+  background:
+    linear-gradient(
+      225deg,
+      #f7f1df
+      0%,
+
+      #ded5bf
+      45%,
+
+      #9d907a
+      48%,
+
+      #c8bea8
+      51%,
+
+      #eee7d7
+      100%
+    );
+
+  filter:
+    drop-shadow(
+      calc(-0.13rem * var(--ui-scale))
+      calc(0.15rem * var(--ui-scale))
+      calc(0.1rem * var(--ui-scale))
+      rgb(0 0 0 / 0.28)
+    );
+
+  pointer-events: none;
+}
+
+/*
+  Faded rubber-stamp watermark.
+*/
+
+.lined-paper::after {
+  content:
+    "FILE COPY";
+
+  position: absolute;
+  right:
+    calc(2rem * var(--ui-scale));
+  bottom:
+    calc(8.5rem * var(--ui-scale));
+  z-index: 0;
+
+  padding:
+    calc(0.25rem * var(--ui-scale))
+    calc(0.55rem * var(--ui-scale));
+
+  border:
+    calc(0.18rem * var(--ui-scale))
+    solid
+    rgb(132 28 38 / 0.07);
+
+  color:
+    rgb(132 28 38 / 0.065);
+
+  font-family:
+    "Arial Black",
+    Impact,
+    sans-serif;
+
+  font-size:
+    calc(2.7rem * var(--ui-scale));
+
+  font-weight: 900;
+
+  letter-spacing:
+    0.08em;
+
+  line-height: 1;
+
+  text-transform:
+    uppercase;
+
+  transform:
+    rotate(-12deg);
+
+  pointer-events: none;
+}
+
+/*
+  Keep actual content above the watermark and surface details.
+*/
+
+.lined-paper > * {
+  position: relative;
+  z-index: 1;
+}
+
+/*
+  Campaign migration support
+  --------------------------
+  The temporary Hamurabi-derived panel is currently placed
+  directly inside campaign-content. Remove that panel's blue
+  container treatment so its contents sit directly on the paper.
+
+  This only affects a scene-panel that is an immediate child of
+  an office-paper surface. Other scene panels retain their
+  existing appearance.
+*/
+
+.lined-paper > .scene-panel {
+  width: 100%;
+  max-width: none;
+
+  padding: 0;
+
+  border: 0;
+  outline: 0;
+
+  color:
+    inherit;
+
+  background:
+    transparent;
+
+  box-shadow:
+    none;
+}
+
+/*
+  Paper typography
+*/
+
+.lined-paper h1 {
+  color:
+    var(--office-paper-blue-ink);
+
+  text-shadow:
+    calc(0.06rem * var(--ui-scale))
+    calc(0.06rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.85),
+
+    calc(0.15rem * var(--ui-scale))
+    calc(0.15rem * var(--ui-scale))
+    0
+    rgb(142 38 48 / 0.23);
+}
+
+.lined-paper h2,
+.lined-paper h3 {
+  color:
+    var(--office-paper-red-ink);
+
+  text-shadow:
+    0
+    calc(0.05rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.82);
+}
+
+.lined-paper p,
+.lined-paper li,
+.lined-paper label,
+.lined-paper output {
+  color:
+    var(--office-paper-ink);
+}
+
+.lined-paper p,
+.lined-paper li {
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+}
+
+.lined-paper .scene-description {
+  color:
+    rgb(45 43 38 / 0.82);
+}
+
+/*
+  Keep links readable on the light stock.
+*/
+
+.lined-paper a {
+  color:
+    #174f8c;
+
+  text-decoration-color:
+    rgb(23 79 140 / 0.5);
+}
+
+.lined-paper a:hover,
+.lined-paper a:focus-visible {
+  color:
+    #8e2630;
+}
+
+/*
+  A subtle crease near the bottom makes the sheet look handled
+  without interfering with controls.
+*/
+
+.lined-paper > .scene-panel::after {
+  content: "";
+
+  position: absolute;
+  right:
+    calc(1rem * var(--ui-scale));
+  bottom:
+    calc(4.8rem * var(--ui-scale));
+  left:
+    calc(0.8rem * var(--ui-scale));
+
+  height:
+    calc(0.1rem * var(--ui-scale));
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgb(91 75 50 / 0.1),
+      transparent
+    );
+
+  box-shadow:
+    0
+    calc(0.1rem * var(--ui-scale))
+    calc(0.25rem * var(--ui-scale))
+    rgb(91 75 50 / 0.08);
+
+  transform:
+    rotate(0.35deg);
+
+  pointer-events: none;
+}
+
+/*
+  Responsive paper treatment.
+*/
+
+@media (max-width: 640px) {
+  .lined-paper {
+    width:
+      calc(100vw - 1.5rem);
+
+    padding:
+      calc(2.8rem * var(--ui-scale))
+      calc(1rem * var(--ui-scale))
+      calc(1.7rem * var(--ui-scale))
+      calc(2.35rem * var(--ui-scale));
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent
+        0
+        calc(1.7rem * var(--ui-scale)),
+
+        var(--office-paper-margin)
+        calc(1.7rem * var(--ui-scale))
+        calc(1.76rem * var(--ui-scale)),
+
+        transparent
+        calc(1.76rem * var(--ui-scale))
+        100%
+      ),
+
+      repeating-linear-gradient(
+        180deg,
+        transparent
+        0
+        calc(1.72rem * var(--ui-scale)),
+
+        var(--office-paper-rule)
+        calc(1.72rem * var(--ui-scale))
+        calc(1.77rem * var(--ui-scale))
+      ),
+
+      radial-gradient(
+        circle,
+        rgb(92 78 51 / 0.075)
+        0
+        calc(0.025rem * var(--ui-scale)),
+
+        transparent
+        calc(0.04rem * var(--ui-scale))
+      )
+      0
+      0
+      /
+      calc(1.3rem * var(--ui-scale))
+      calc(1.1rem * var(--ui-scale)),
+
+      linear-gradient(
+        112deg,
+        rgb(255 255 255 / 0.58),
+        transparent 35%,
+        rgb(83 68 45 / 0.1)
+      ),
+
+      linear-gradient(
+        180deg,
+        var(--office-paper-stock-light),
+        var(--office-paper-stock)
+        64%,
+        var(--office-paper-stock-shadow)
+      );
+
+    transform:
+      none;
+  }
+
+  .lined-paper::before {
+    width:
+      calc(1.75rem * var(--ui-scale));
+
+    height:
+      calc(1.75rem * var(--ui-scale));
+  }
+
+  .lined-paper::after {
+    right:
+      calc(0.8rem * var(--ui-scale));
+
+    bottom:
+      calc(7rem * var(--ui-scale));
+
+    font-size:
+      calc(1.7rem * var(--ui-scale));
+  }
+}

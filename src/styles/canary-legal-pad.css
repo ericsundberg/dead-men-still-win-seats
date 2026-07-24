@@ -1,0 +1,354 @@
+/*
+  Reusable canary legal-pad surface
+  ---------------------------------
+  Apply .canary-legal-pad to a container that should resemble
+  a yellow legal pad with a brown bound header.
+*/
+
+.canary-legal-pad {
+  --legal-pad-paper-light: #fff3a8;
+  --legal-pad-paper: #f2dd70;
+  --legal-pad-paper-dark: #d7bb4f;
+  --legal-pad-rule: rgb(72 122 172 / 0.26);
+  --legal-pad-margin: rgb(185 54 54 / 0.34);
+  --legal-pad-edge: #a98b32;
+  --legal-pad-ink: #252318;
+
+  --legal-pad-binding-light: #76502f;
+  --legal-pad-binding: #4b2e1b;
+  --legal-pad-binding-dark: #27160d;
+
+  --legal-pad-company-title:
+    "Statesyltucky Stationery Co.";
+
+  position: relative;
+  isolation: isolate;
+
+  display: block;
+
+  width:
+    min(
+      calc(48rem * var(--ui-scale)),
+      calc(100vw - 3rem)
+    );
+
+  padding:
+    calc(4.8rem * var(--ui-scale))
+    calc(2.6rem * var(--ui-scale))
+    calc(2.8rem * var(--ui-scale))
+    calc(4.1rem * var(--ui-scale));
+
+  overflow: visible;
+
+  border:
+    calc(0.1rem * var(--ui-scale))
+    solid
+    var(--legal-pad-edge);
+
+  border-radius:
+    calc(0.12rem * var(--ui-scale));
+
+  color:
+    var(--legal-pad-ink);
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent
+      0
+      calc(3rem * var(--ui-scale)),
+
+      var(--legal-pad-margin)
+      calc(3rem * var(--ui-scale))
+      calc(3.08rem * var(--ui-scale)),
+
+      transparent
+      calc(3.08rem * var(--ui-scale))
+      100%
+    ),
+
+    repeating-linear-gradient(
+      180deg,
+      transparent
+      0
+      calc(1.64rem * var(--ui-scale)),
+
+      var(--legal-pad-rule)
+      calc(1.64rem * var(--ui-scale))
+      calc(1.7rem * var(--ui-scale))
+    ),
+
+    radial-gradient(
+      circle,
+      rgb(98 78 20 / 0.075)
+      0
+      calc(0.025rem * var(--ui-scale)),
+
+      transparent
+      calc(0.045rem * var(--ui-scale))
+    )
+    0
+    0
+    /
+    calc(1.25rem * var(--ui-scale))
+    calc(1rem * var(--ui-scale)),
+
+    linear-gradient(
+      105deg,
+      rgb(255 255 255 / 0.3),
+      transparent 34%,
+      rgb(99 72 15 / 0.08) 78%,
+      rgb(74 50 10 / 0.15)
+    ),
+
+    linear-gradient(
+      180deg,
+      var(--legal-pad-paper-light),
+      var(--legal-pad-paper) 72%,
+      var(--legal-pad-paper-dark)
+    );
+
+  box-shadow:
+    calc(0.14rem * var(--ui-scale))
+    calc(0.18rem * var(--ui-scale))
+    0
+    rgb(115 89 30 / 0.4),
+
+    calc(0.65rem * var(--ui-scale))
+    calc(0.9rem * var(--ui-scale))
+    calc(0.85rem * var(--ui-scale))
+    rgb(0 0 0 / 0.42),
+
+    calc(1.1rem * var(--ui-scale))
+    calc(1.35rem * var(--ui-scale))
+    calc(2.4rem * var(--ui-scale))
+    rgb(0 0 0 / 0.24),
+
+    inset
+    0
+    calc(0.12rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.38),
+
+    inset
+    0
+    calc(-0.18rem * var(--ui-scale))
+    calc(0.3rem * var(--ui-scale))
+    rgb(98 70 12 / 0.17);
+
+  transform:
+    rotate(0.1deg);
+
+  transform-origin:
+    center top;
+}
+
+/*
+  Brown glued binding strip.
+*/
+
+.canary-legal-pad::before {
+  content: "";
+
+  position: absolute;
+  top:
+    calc(-0.1rem * var(--ui-scale));
+  right:
+    calc(-0.1rem * var(--ui-scale));
+  left:
+    calc(-0.1rem * var(--ui-scale));
+  z-index: 3;
+
+  height:
+    calc(3.25rem * var(--ui-scale));
+
+  border:
+    calc(0.1rem * var(--ui-scale))
+    solid
+    var(--legal-pad-binding-dark);
+
+  border-bottom-color:
+    #180d08;
+
+  border-radius:
+    calc(0.12rem * var(--ui-scale))
+    calc(0.12rem * var(--ui-scale))
+    0
+    0;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent
+      0
+      calc(1.3rem * var(--ui-scale)),
+
+      rgb(0 0 0 / 0.08)
+      calc(1.3rem * var(--ui-scale))
+      calc(1.34rem * var(--ui-scale))
+    ),
+
+    linear-gradient(
+      180deg,
+      rgb(255 255 255 / 0.18),
+      transparent 22%,
+      rgb(0 0 0 / 0.13) 72%,
+      rgb(0 0 0 / 0.34)
+    ),
+
+    linear-gradient(
+      90deg,
+      var(--legal-pad-binding-light),
+      var(--legal-pad-binding) 50%,
+      var(--legal-pad-binding-dark)
+    );
+
+  box-shadow:
+    inset
+    0
+    calc(0.12rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.18),
+
+    inset
+    0
+    calc(-0.18rem * var(--ui-scale))
+    calc(0.26rem * var(--ui-scale))
+    rgb(0 0 0 / 0.5),
+
+    0
+    calc(0.2rem * var(--ui-scale))
+    calc(0.25rem * var(--ui-scale))
+    rgb(0 0 0 / 0.3);
+
+  pointer-events: none;
+}
+
+/*
+  Gold cursive supplier mark printed on the binding.
+*/
+
+.canary-legal-pad::after {
+  content:
+    var(--legal-pad-company-title);
+
+  position: absolute;
+  top:
+    calc(0.55rem * var(--ui-scale));
+  left:
+    calc(1.15rem * var(--ui-scale));
+  z-index: 4;
+
+  color:
+    #d8b74f;
+
+  font-family:
+    "Brush Script MT",
+    "Segoe Script",
+    "URW Chancery L",
+    cursive;
+
+  font-size:
+    calc(1.35rem * var(--ui-scale));
+
+  font-weight: 700;
+  line-height: 1;
+
+  letter-spacing:
+    0.025em;
+
+  text-shadow:
+    0
+    calc(0.08rem * var(--ui-scale))
+    0
+    rgb(28 14 7 / 0.9),
+
+    0
+    0
+    calc(0.18rem * var(--ui-scale))
+    rgb(255 220 112 / 0.28);
+
+  transform:
+    rotate(-2deg);
+
+  pointer-events: none;
+}
+
+.canary-legal-pad > * {
+  position: relative;
+  z-index: 1;
+}
+
+.canary-legal-pad > .scene-panel {
+  width: 100%;
+  max-width: none;
+
+  padding: 0;
+
+  border: 0;
+  outline: 0;
+
+  color:
+    inherit;
+
+  background:
+    transparent;
+
+  box-shadow:
+    none;
+}
+
+.canary-legal-pad h1 {
+  color:
+    #233a59;
+
+  text-shadow:
+    calc(0.06rem * var(--ui-scale))
+    calc(0.06rem * var(--ui-scale))
+    0
+    rgb(255 251 195 / 0.85);
+}
+
+.canary-legal-pad h2,
+.canary-legal-pad h3 {
+  color:
+    #842b2b;
+
+  text-shadow:
+    0
+    calc(0.05rem * var(--ui-scale))
+    0
+    rgb(255 251 195 / 0.8);
+}
+
+.canary-legal-pad p,
+.canary-legal-pad li,
+.canary-legal-pad label,
+.canary-legal-pad output {
+  color:
+    var(--legal-pad-ink);
+}
+
+@media (max-width: 640px) {
+  .canary-legal-pad {
+    width:
+      calc(100vw - 1.5rem);
+
+    padding:
+      calc(4.3rem * var(--ui-scale))
+      calc(1rem * var(--ui-scale))
+      calc(1.8rem * var(--ui-scale))
+      calc(2.3rem * var(--ui-scale));
+
+    transform:
+      none;
+  }
+
+  .canary-legal-pad::after {
+    left:
+      calc(0.7rem * var(--ui-scale));
+
+    font-size:
+      calc(1rem * var(--ui-scale));
+  }
+}

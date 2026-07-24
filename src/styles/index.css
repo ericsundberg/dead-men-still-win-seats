@@ -1,0 +1,16 @@
+/*
+  Application stylesheet bootstrap
+  --------------------------------
+  Foundational styles load first. Reusable skeuomorphic themes
+  load after scene styling so their narrowly scoped selectors can
+  provide the intended visual treatment.
+*/
+
+@import './base.css';
+@import './layout.css';
+@import './scenes.css';
+
+@import './lined-paper.css';
+@import './canary-legal-pad.css';
+@import './printed-report-paper.css';
+@import './manila-folder-form.css';
