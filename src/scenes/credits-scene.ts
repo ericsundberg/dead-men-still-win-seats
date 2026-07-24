@@ -1,10 +1,17 @@
 import type { SceneContext } from '../app/scene-router';
 import { makeButton, makeElement } from '../ui/dom-helpers';
+import {
+  appendSecondaryMenuBackground,
+} from './shared/secondary-menu-background';
 
-export function renderCreditsScene(context: SceneContext): HTMLElement {
+export function renderCreditsScene(
+  context: SceneContext,
+): HTMLElement {
   const scene = makeElement('section', {
     className: 'scene',
   });
+
+  appendSecondaryMenuBackground(scene);
 
   const panel = makeElement('div', {
     className: 'scene-panel',
@@ -16,16 +23,22 @@ export function renderCreditsScene(context: SceneContext): HTMLElement {
 
   const description = makeElement('p', {
     className: 'scene-description',
-    textContent:
-      'DIRECTED BY ERIC AND RYAN',
+    textContent: 'DIRECTED BY ERIC AND RYAN',
   });
 
   panel.append(
     title,
     description,
-    makeButton('Back', () => context.navigate('title'), 'secondary-button', {
-      onBeforeClick: () => context.audio.sfx.play('button-cancel'),
-    }),
+    makeButton(
+      'Back',
+      () => context.navigate('title'),
+      'secondary-button',
+      {
+        onBeforeClick: () => {
+          context.audio.sfx.play('button-cancel');
+        },
+      },
+    ),
   );
 
   scene.append(panel);

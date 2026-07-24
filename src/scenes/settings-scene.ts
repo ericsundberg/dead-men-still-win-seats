@@ -6,11 +6,18 @@ import {
   increaseUiScale,
   resetUiScale,
 } from '../ui/ui-scale';
+import {
+  appendSecondaryMenuBackground,
+} from './shared/secondary-menu-background';
 
-export function renderSettingsScene(context: SceneContext): HTMLElement {
+export function renderSettingsScene(
+  context: SceneContext,
+): HTMLElement {
   const scene = makeElement('section', {
     className: 'scene',
   });
+
+  appendSecondaryMenuBackground(scene);
 
   const panel = makeElement('div', {
     className: 'scene-panel',
@@ -22,7 +29,8 @@ export function renderSettingsScene(context: SceneContext): HTMLElement {
 
   const description = makeElement('p', {
     className: 'scene-description',
-    textContent: 'Basic UI scale controls for early testing.',
+    textContent:
+      'Basic UI scale controls for early testing.',
   });
 
   const scaleStatus = makeElement('p', {
@@ -30,7 +38,8 @@ export function renderSettingsScene(context: SceneContext): HTMLElement {
   });
 
   const refreshScaleStatus = (): void => {
-    scaleStatus.textContent = `Current UI scale: ${getUiScale().toFixed(2)}x`;
+    scaleStatus.textContent =
+      `Current UI scale: ${getUiScale().toFixed(2)}x`;
   };
 
   refreshScaleStatus();
@@ -45,11 +54,13 @@ export function renderSettingsScene(context: SceneContext): HTMLElement {
       decreaseUiScale();
       refreshScaleStatus();
     }),
+
     makeButton('Increase Scale', () => {
       context.audio.sfx.play('button-click');
       increaseUiScale();
       refreshScaleStatus();
     }),
+
     makeButton('Reset Scale', () => {
       context.audio.sfx.play('button-click');
       resetUiScale();
@@ -62,9 +73,16 @@ export function renderSettingsScene(context: SceneContext): HTMLElement {
     description,
     scaleStatus,
     controls,
-    makeButton('Back', () => context.navigate('title'), 'secondary-button', {
-      onBeforeClick: () => context.audio.sfx.play('button-cancel'),
-    }),
+    makeButton(
+      'Back',
+      () => context.navigate('title'),
+      'secondary-button',
+      {
+        onBeforeClick: () => {
+          context.audio.sfx.play('button-cancel');
+        },
+      },
+    ),
   );
 
   scene.append(panel);

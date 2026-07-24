@@ -1,10 +1,17 @@
 import type { SceneContext } from '../app/scene-router';
 import { makeButton, makeElement } from '../ui/dom-helpers';
+import {
+  appendSecondaryMenuBackground,
+} from './shared/secondary-menu-background';
 
-export function renderLoadGameScene(context: SceneContext): HTMLElement {
+export function renderLoadGameScene(
+  context: SceneContext,
+): HTMLElement {
   const scene = makeElement('section', {
     className: 'scene',
   });
+
+  appendSecondaryMenuBackground(scene);
 
   const panel = makeElement('div', {
     className: 'scene-panel',
@@ -16,7 +23,8 @@ export function renderLoadGameScene(context: SceneContext): HTMLElement {
 
   const description = makeElement('p', {
     className: 'scene-description',
-    textContent: 'Upload a JSON save file. Save validation will be added with the save system.',
+    textContent:
+      'Upload a JSON save file. Save validation will be added with the save system.',
   });
 
   const input = document.createElement('input');
@@ -31,7 +39,9 @@ export function renderLoadGameScene(context: SceneContext): HTMLElement {
       return;
     }
 
-    console.log(`[ui] selected save file: ${selectedFile.name}`);
+    console.log(
+      `[ui] selected save file: ${selectedFile.name}`,
+    );
     console.log('[headless] command: load-game');
     console.log('[headless] save codec is not wired yet');
   });
@@ -40,9 +50,16 @@ export function renderLoadGameScene(context: SceneContext): HTMLElement {
     title,
     description,
     input,
-    makeButton('Back', () => context.navigate('title'), 'secondary-button', {
-      onBeforeClick: () => context.audio.sfx.play('button-cancel'),
-    }),
+    makeButton(
+      'Back',
+      () => context.navigate('title'),
+      'secondary-button',
+      {
+        onBeforeClick: () => {
+          context.audio.sfx.play('button-cancel');
+        },
+      },
+    ),
   );
 
   scene.append(panel);
