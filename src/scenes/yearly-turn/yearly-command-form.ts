@@ -7,10 +7,13 @@ import {
 } from './number-field';
 
 export function makeYearlyCommandForm(context: SceneContext): HTMLFormElement {
-  const form = makeElement('form', {
-    className:
-      'menu-form yearly-command-form manila-folder-form',
-  });
+  const form = makeElement(
+    'form',
+    {
+      className:
+        'menu-form yearly-command-form manila-folder-form',
+    },
+  );
 
   const suggestedCommand = context.game.getSuggestedTurnCommand() ?? {
     acresToBuy: 0,
@@ -42,14 +45,6 @@ export function makeYearlyCommandForm(context: SceneContext): HTMLFormElement {
     makeNumberLabel('Grain to feed people', grainToFeedInput),
     makeNumberLabel('Acres to plant', acresToPlantInput),
   );
-
-  const submitButton = document.createElement('button');
-
-  submitButton.type = 'submit';
-  submitButton.className = 'menu-button';
-  submitButton.textContent = 'Submit Year';
-
-  form.append(submitButton);
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();

@@ -67,15 +67,39 @@ export function makeCampaignShell(
         },
     );
 
-    const electionCountdown =
-    makeCampaignElectionCountdown({
-        turnNumber:
-        gameState?.year
-        ?? 1,
+const requestEndTurn = (): void => {
+  const commandForm =
+    campaignContent
+      .querySelector<HTMLFormElement>(
+        '.yearly-command-form',
+      );
 
-        difficultyId:
-        context.game.getDifficultyId(),
-    });
+  if (!commandForm) {
+    console.warn(
+      '[campaign] cannot end turn because the active campaign form was not found',
+    );
+
+    return;
+  }
+
+  commandForm.requestSubmit();
+};
+
+const electionCountdown =
+  makeCampaignElectionCountdown({
+    turnNumber:
+      gameState?.year
+      ?? 1,
+
+    difficultyId:
+      context.game.getDifficultyId(),
+
+    onEndTurn:
+      requestEndTurn,
+
+    disabled:
+      context.game.isGameOver(),
+  });
 
     hud.append(
     musicHud.element,
@@ -83,10 +107,10 @@ export function makeCampaignShell(
     newsTicker.element,
     );
 
-  shell.append(
+    shell.append(
     campaignContent,
     hud,
-  );
+    );
 
   return {
     element: shell,

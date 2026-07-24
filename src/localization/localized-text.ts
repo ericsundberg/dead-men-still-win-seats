@@ -1,5 +1,14 @@
 export const localizedTextKeys = [
   'startup.disclaimer',
+  'startup.continuePrompt',
+
+  'campaign.electionCountdown.label',
+  'campaign.electionCountdown.week',
+  'campaign.electionCountdown.weeks',
+  'campaign.electionCountdown.endTurnLabel',
+  'campaign.electionCountdown.endTurnHoverLabel',
+  'campaign.electionCountdown.endTurnOverlay',
+  'campaign.electionCountdown.accessibleLabel',
 
   'characterDefaults.childGivenName',
   'characterDefaults.heirGivenName',
@@ -52,6 +61,37 @@ let activeLocalization = createKeyFallbackLocalization();
 
 export function text(key: LocalizedTextKey): string {
   return activeLocalization[key];
+}
+
+export type LocalizedTextReplacements =
+  Readonly<
+    Record<
+      string,
+      string | number
+    >
+  >;
+
+export function formatText(
+  key: LocalizedTextKey,
+  replacements:
+    LocalizedTextReplacements,
+): string {
+  let result = text(key);
+
+  for (
+    const [
+      replacementKey,
+      replacementValue,
+    ]
+    of Object.entries(replacements)
+  ) {
+    result = result.replaceAll(
+      `{${replacementKey}}`,
+      String(replacementValue),
+    );
+  }
+
+  return result;
 }
 
 export function setLocalizedText(

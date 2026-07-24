@@ -142,7 +142,21 @@
   transform-origin:
     center top;
 
-  pointer-events: none;
+    appearance: none;
+
+    font: inherit;
+    text-align: inherit;
+
+    cursor: pointer;
+    pointer-events: auto;
+
+    transition:
+    transform 150ms ease,
+    filter 150ms ease,
+    box-shadow 150ms ease;
+
+    overflow: visible;
+    isolation: isolate;
 }
 
 /*
@@ -225,6 +239,7 @@
 }
 
 .sticky-note-hud > * {
+  pointer-events: none;
   position: relative;
   z-index: 1;
 }
@@ -325,6 +340,582 @@
   transform:
     rotate(0.7deg)
     scaleX(1.04);
+}
+
+/*
+  Permanent label-maker instruction
+  ---------------------------------
+*/
+
+.sticky-note-end-turn-label {
+  position: absolute;
+
+  right:
+    calc(0.65rem * var(--ui-scale));
+
+  bottom:
+    calc(0.52rem * var(--ui-scale));
+
+  left:
+    calc(0.65rem * var(--ui-scale));
+
+  z-index: 5;
+
+  display: block;
+
+  padding:
+    calc(0.2rem * var(--ui-scale))
+    calc(0.3rem * var(--ui-scale));
+
+  overflow: visible;
+  isolation: isolate;
+
+  border:
+    calc(0.05rem * var(--ui-scale))
+    solid
+    rgb(0 0 0 / 0.9);
+
+  border-radius:
+    calc(0.08rem * var(--ui-scale));
+
+  color:
+    rgb(248 248 242);
+
+  background:
+    linear-gradient(
+      180deg,
+      #262626 0%,
+      #0b0b0b 52%,
+      #000 100%
+    );
+
+  font-family:
+    "Courier New",
+    ui-monospace,
+    monospace !important;
+
+  font-size:
+    calc(0.6rem * var(--ui-scale));
+
+  font-weight: 700;
+  line-height: 1;
+
+  letter-spacing:
+    0.06em;
+
+  text-align: center;
+  white-space: pre;
+
+  text-shadow:
+    0
+    calc(0.05rem * var(--ui-scale))
+    0
+    #000;
+
+  box-shadow:
+    inset
+    0
+    calc(0.06rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.18),
+
+    inset
+    0
+    calc(-0.08rem * var(--ui-scale))
+    calc(0.12rem * var(--ui-scale))
+    rgb(0 0 0 / 0.9),
+
+    0
+    calc(0.14rem * var(--ui-scale))
+    calc(0.18rem * var(--ui-scale))
+    rgb(0 0 0 / 0.5);
+
+  transform:
+    rotate(-0.7deg);
+
+  pointer-events: none;
+}
+
+/*
+  End-turn hover and focus confirmation
+  -------------------------------------
+*/
+
+.sticky-note-end-turn-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+
+  display: grid;
+  place-items: center;
+
+  padding:
+    calc(0.75rem * var(--ui-scale));
+
+  color: #fff;
+
+  background: transparent;
+
+  font-family:
+    "Courier New",
+    ui-monospace,
+    monospace !important;
+
+  font-size:
+    calc(1.32rem * var(--ui-scale));
+
+  font-weight: 900;
+  line-height: 1;
+
+  letter-spacing:
+    0.08em;
+
+  text-align: center;
+  text-transform: uppercase;
+
+  text-shadow:
+    0
+    calc(0.08rem * var(--ui-scale))
+    calc(0.12rem * var(--ui-scale))
+    rgb(0 0 0 / 0.95),
+
+    0
+    0
+    calc(0.45rem * var(--ui-scale))
+    rgb(0 0 0 / 0.8),
+
+    0
+    0
+    calc(0.9rem * var(--ui-scale))
+    rgb(255 255 255 / 0.12);
+
+  opacity: 0;
+
+  transition:
+    opacity 130ms ease;
+
+  pointer-events: none;
+}
+
+.sticky-note-hud:hover,
+.sticky-note-hud:focus-visible {
+  z-index: 80;
+
+  transform:
+    translateY(
+      calc(-0.4rem * var(--ui-scale))
+    )
+    rotate(0.25deg)
+    scale(1.1);
+
+  filter:
+    drop-shadow(
+      calc(0.85rem * var(--ui-scale))
+      calc(1.1rem * var(--ui-scale))
+      calc(0.8rem * var(--ui-scale))
+      rgb(0 0 0 / 0.62)
+    )
+
+    drop-shadow(
+      calc(1.25rem * var(--ui-scale))
+      calc(1.6rem * var(--ui-scale))
+      calc(1.8rem * var(--ui-scale))
+      rgb(0 0 0 / 0.38)
+    );
+}
+
+.sticky-note-hud:hover
+  .sticky-note-end-turn-label,
+.sticky-note-hud:focus-visible
+  .sticky-note-end-turn-label {
+    background:
+    linear-gradient(
+        180deg,
+        #b10019 0%,
+        #7d0011 52%,
+        #54000b 100%
+    );
+
+  box-shadow:
+    inset
+    0
+    calc(0.06rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.18),
+
+    inset
+    0
+    calc(-0.08rem * var(--ui-scale))
+    calc(0.12rem * var(--ui-scale))
+    rgb(0 0 0 / 0.9),
+
+    0
+    calc(0.18rem * var(--ui-scale))
+    calc(0.24rem * var(--ui-scale))
+    rgb(0 0 0 / 0.62);
+}
+
+.sticky-note-hud:hover
+  .sticky-note-end-turn-label::after,
+.sticky-note-hud:focus-visible
+  .sticky-note-end-turn-label::after {
+  opacity: 1;
+}
+
+.sticky-note-hud:focus-visible {
+  outline:
+    calc(0.14rem * var(--ui-scale))
+    solid
+    rgb(255 255 255 / 0.95);
+
+  outline-offset:
+    calc(0.2rem * var(--ui-scale));
+}
+
+.sticky-note-hud:active {
+  transform:
+    translateY(
+      calc(0.08rem * var(--ui-scale))
+    )
+    rotate(1deg)
+    scale(1.03);
+
+  filter:
+    drop-shadow(
+      calc(0.25rem * var(--ui-scale))
+      calc(0.3rem * var(--ui-scale))
+      calc(0.22rem * var(--ui-scale))
+      rgb(0 0 0 / 0.5)
+    );
+}
+
+.sticky-note-hud:disabled {
+  cursor: not-allowed;
+
+  filter:
+    grayscale(0.5)
+    brightness(0.82);
+
+  opacity: 0.72;
+}
+
+.sticky-note-hud:disabled:hover {
+  transform:
+    rotate(1.3deg);
+}
+
+.sticky-note-hud:disabled
+  .sticky-note-end-turn-overlay {
+  content: "";
+  opacity: 0;
+}
+
+/*
+  Large hover veil
+  ----------------
+  This layer sits over the sticky note and extends onto the
+  surrounding desk. It remains below the white action text and
+  the permanent label-maker strip.
+*/
+
+.sticky-note-hover-veil {
+  position: absolute;
+
+  top:
+    calc(-1.2rem * var(--ui-scale));
+
+  right:
+    calc(-1.8rem * var(--ui-scale));
+
+  bottom:
+    calc(-2.35rem * var(--ui-scale));
+
+  left:
+    calc(-2.7rem * var(--ui-scale));
+
+  z-index: 4;
+
+  border-radius:
+    calc(2.4rem * var(--ui-scale));
+
+  transform-origin: 58% 52%;
+
+  transform:
+    translateX(
+      calc(-0.18rem * var(--ui-scale))
+    )
+    translateY(
+      calc(0.18rem * var(--ui-scale))
+    )
+    rotate(-7deg)
+    scale(30);
+
+background:
+  /*
+    Moderately dark central wash:
+    stronger than the first version, but not as heavy as the
+    second version.
+  */
+  radial-gradient(
+    ellipse at 58% 52%,
+    rgb(0 0 0 / 0.53) 0%,
+    rgb(0 0 0 / 0.43) 27%,
+    rgb(0 0 0 / 0.30) 47%,
+    rgb(0 0 0 / 0.18) 65%,
+    rgb(0 0 0 / 0.07) 81%,
+    transparent 100%
+  ),
+
+  /*
+    Wider, softer supporting shadow.
+  */
+  radial-gradient(
+    ellipse at 42% 58%,
+    rgb(0 0 0 / 0.35) 0%,
+    rgb(0 0 0 / 0.25) 29%,
+    rgb(0 0 0 / 0.14) 53%,
+    rgb(0 0 0 / 0.05) 75%,
+    transparent 100%
+  ),
+
+  /*
+    Low-opacity rectangular base that keeps the veil cohesive
+    without turning the whole area nearly black.
+  */
+  linear-gradient(
+    180deg,
+    rgb(0 0 0 / 0.19),
+    rgb(0 0 0 / 0.14)
+  );
+
+    box-shadow:
+    0
+    0
+    calc(2.5rem * var(--ui-scale))
+    calc(0.9rem * var(--ui-scale))
+    rgb(0 0 0 / 0.09),
+
+    calc(-0.7rem * var(--ui-scale))
+    calc(0.5rem * var(--ui-scale))
+    calc(4.25rem * var(--ui-scale))
+    calc(1.7rem * var(--ui-scale))
+    rgb(0 0 0 / 0.045);
+
+  mix-blend-mode: multiply;
+
+  opacity: 0;
+
+  filter:
+    blur(
+      calc(1rem * var(--ui-scale))
+    );
+
+  transform:
+    translateY(
+      calc(0.18rem * var(--ui-scale))
+    )
+    scale(0.94);
+
+  transition:
+    opacity 150ms ease,
+    transform 180ms ease,
+    filter 180ms ease;
+
+  pointer-events: none;
+}
+
+.sticky-note-hud:hover
+  .sticky-note-hover-veil,
+.sticky-note-hud:focus-visible
+  .sticky-note-hover-veil {
+  opacity: 1;
+
+  transform:
+    translateX(
+      calc(-0.18rem * var(--ui-scale))
+    )
+    translateY(0)
+    rotate(-5deg)
+    scale(1);
+}
+
+.sticky-note-hud:hover
+  .sticky-note-end-turn-overlay,
+.sticky-note-hud:focus-visible
+  .sticky-note-end-turn-overlay {
+  opacity: 1;
+}
+
+.campaign-end-turn-ambient-veil {
+  position: fixed;
+
+  right:
+    calc(0.7rem * var(--ui-scale));
+
+  bottom:
+    calc(
+      var(--campaign-chyron-total-height)
+      - calc(0.5rem * var(--ui-scale))
+    );
+
+  z-index: 55;
+
+  width:
+    calc(18rem * var(--ui-scale));
+
+  height:
+    calc(17rem * var(--ui-scale));
+
+  border-radius:
+    calc(3.25rem * var(--ui-scale));
+
+  background:
+    radial-gradient(
+      ellipse at 57% 51%,
+      rgb(0 0 0 / 0.18) 0%,
+      rgb(0 0 0 / 0.12) 36%,
+      rgb(0 0 0 / 0.065) 58%,
+      rgb(0 0 0 / 0.025) 76%,
+      transparent 100%
+    );
+
+  box-shadow:
+    0
+    0
+    calc(3rem * var(--ui-scale))
+    calc(1.1rem * var(--ui-scale))
+    rgb(0 0 0 / 0.055);
+
+  filter:
+    blur(
+      calc(0.75rem * var(--ui-scale))
+    );
+
+  opacity: 0;
+
+  transform-origin: 58% 52%;
+
+  transform:
+    rotate(-5deg)
+    scale(0.9);
+
+  transition:
+    opacity 150ms ease,
+    transform 180ms ease;
+
+  pointer-events: none;
+}
+
+.campaign-shell:has(
+  .sticky-note-hud:hover
+)
+  .campaign-end-turn-ambient-veil,
+.campaign-shell:has(
+  .sticky-note-hud:focus-visible
+)
+  .campaign-end-turn-ambient-veil {
+  opacity: 1;
+
+  transform:
+    rotate(-5deg)
+    scale(1);
+}
+
+.campaign-end-turn-ambient-veil {
+  z-index: 55;
+}
+
+.campaign-news-ticker {
+  z-index: 60;
+}
+
+.sticky-note-hud {
+  z-index: 70;
+}
+
+.sticky-note-hud:hover,
+.sticky-note-hud:focus-visible {
+  z-index: 80;
+}
+
+.sticky-note-end-turn-label {
+  display: grid;
+  place-items: center;
+
+  /*
+    Existing position, dimensions, background, border,
+    and box-shadow declarations remain.
+  */
+}
+
+.sticky-note-end-turn-label-default,
+.sticky-note-end-turn-label-hover {
+  grid-area:
+    1
+    /
+    1;
+
+  display: block;
+
+  width: 100%;
+
+  color:
+    rgb(248 248 242);
+
+  font-family:
+    "Courier New",
+    ui-monospace,
+    monospace;
+
+  font-weight: 700;
+  line-height: 1;
+
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  text-shadow:
+    0
+    calc(0.05rem * var(--ui-scale))
+    0
+    #000;
+
+  transition:
+    opacity 120ms ease;
+}
+
+.sticky-note-end-turn-label-default {
+  font-size:
+    calc(0.6rem * var(--ui-scale));
+
+  letter-spacing:
+    0.34em;
+
+  opacity: 1;
+}
+
+.sticky-note-end-turn-label-hover {
+  font-size:
+    calc(0.42rem * var(--ui-scale));
+
+  letter-spacing:
+    0.045em;
+
+  opacity: 0;
+}
+
+.sticky-note-hud:hover
+  .sticky-note-end-turn-label-default,
+.sticky-note-hud:focus-visible
+  .sticky-note-end-turn-label-default {
+  opacity: 0;
+}
+
+.sticky-note-hud:hover
+  .sticky-note-end-turn-label-hover,
+.sticky-note-hud:focus-visible
+  .sticky-note-end-turn-label-hover {
+  opacity: 1;
 }
 
 @media (max-width: 640px) {

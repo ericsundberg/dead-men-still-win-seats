@@ -1618,30 +1618,6 @@ input[type="file"]:focus {
   Full-width campaign news chyron
 */
 
-.campaign-news-blurb {
-  display: block;
-  overflow: hidden;
-
-  padding:
-    calc(0.45rem * var(--ui-scale))
-    calc(0.7rem * var(--ui-scale));
-
-  font-family:
-    Arial,
-    Helvetica,
-    system-ui,
-    sans-serif;
-
-  font-size:
-    calc(0.8rem * var(--ui-scale));
-
-  font-weight: 700;
-  line-height: 1.2;
-
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
 @media (max-width: 640px) {
 
   .streaming-music-hud {
@@ -1657,13 +1633,6 @@ input[type="file"]:focus {
 
     width:
       calc(1.9rem * var(--ui-scale));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .campaign-news-track {
-    animation: none;
-    transform: none;
   }
 }
 
