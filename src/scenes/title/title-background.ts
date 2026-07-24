@@ -69,7 +69,7 @@ function createTitleWaveFilterDefinitions(): SVGSVGElement {
   turbulence.setAttribute('type', 'fractalNoise');
   turbulence.setAttribute(
     'baseFrequency',
-    '0.003 0.016',
+    '0.0025 0.011',
   );
   turbulence.setAttribute('numOctaves', '1');
   turbulence.setAttribute('seed', '23');
@@ -99,9 +99,9 @@ function createTitleWaveFilterDefinitions(): SVGSVGElement {
   if (!prefersReducedMotion()) {
     movingNoise.append(
       createAttributeAnimation({
-        attributeName: 'dx',
-        values: '-80;80;-80',
-        duration: '28s',
+        attributeName: 'dy',
+        values: '-40;40;-40',
+        duration: '40s',
       }),
       createAttributeAnimation({
         attributeName: 'dy',
@@ -119,7 +119,7 @@ function createTitleWaveFilterDefinitions(): SVGSVGElement {
     'in2',
     'moving-wave-noise',
   );
-  displacement.setAttribute('scale', '20');
+  displacement.setAttribute('scale', '32');
   displacement.setAttribute(
     'xChannelSelector',
     'R',

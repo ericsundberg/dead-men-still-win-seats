@@ -842,8 +842,8 @@ input[type="file"]:focus {
   --tertiary-menu-red: #a4002b;
   --tertiary-menu-red-dark: #5f0019;
   --tertiary-menu-white: #c5ccd6;
-  --tertiary-menu-stripe-period: 7rem;
-  --tertiary-menu-stripe-duration: 140s;
+  --tertiary-menu-stripe-period: 15rem;
+  --tertiary-menu-stripe-duration: 500s;
   --tertiary-menu-noise:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' seed='19' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23noise)'/%3E%3C/svg%3E");
 
@@ -1158,10 +1158,11 @@ input[type="file"]:focus {
   }
 
   to {
-    background-position: calc(-40 * var(--tertiary-menu-stripe-period)) 0;
+    background-position:
+      calc(-40 * var(--tertiary-menu-stripe-period))
+      0;
   }
 }
-
 @keyframes tertiary-menu-ripple-highlight {
   0%,
   100% {
