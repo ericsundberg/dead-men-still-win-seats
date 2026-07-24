@@ -97,6 +97,72 @@
     infinite;
 }
 
+.title-background-wave-filter-definitions {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/*
+  The displacement filter is applied only to this stripe container.
+
+  The star field is a separate sibling and is therefore unaffected.
+*/
+.title-background-stripes {
+  position: absolute;
+  inset: -8%;
+  z-index: 0;
+  overflow: hidden;
+
+  filter: url("#title-background-wave-filter");
+
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/*
+  Seamlessly moving red-and-white stripe texture.
+
+  The large inner surface gives the displacement filter enough overscan to
+  bend the edges without exposing the background beneath it.
+*/
+.title-background-stripes::before {
+  position: absolute;
+  inset: -40vmax;
+  content: "";
+
+  background-image:
+    linear-gradient(
+      90deg,
+      var(--color-red) 0,
+      var(--color-red) 50%,
+      var(--color-white) 50%,
+      var(--color-white) 100%
+    );
+
+  background-repeat: repeat;
+  background-position: 0 0;
+  background-size:
+    var(--title-stripe-period)
+    100%;
+
+  opacity: 0.82;
+
+  transform:
+    rotate(15deg)
+    translateZ(0);
+
+  transform-origin: center;
+  backface-visibility: hidden;
+
+  animation:
+    title-stripes-travel
+    var(--title-stripe-speed-1x)
+    linear
+    infinite;
+}
+
 .title-background-stripes::after {
   position: absolute;
   inset: -8%;
@@ -308,34 +374,9 @@
   }
 
   to {
-    background-position: calc(-40 * var(--title-stripe-period)) 0;
-  }
-}
-
-@keyframes title-stripe-wave {
-  0% {
-    transform: translate3d(-1.5%, -1%, 0) scale(1.015) skewX(0deg);
-    opacity: 0.82;
-  }
-
-  25% {
-    transform: translate3d(1%, 0.5%, 0) scale(1.03) skewX(-0.4deg);
-    opacity: 0.94;
-  }
-
-  50% {
-    transform: translate3d(-0.75%, 1.25%, 0) scale(1.02) skewX(0.35deg);
-    opacity: 0.88;
-  }
-
-  75% {
-    transform: translate3d(1.25%, -0.5%, 0) scale(1.035) skewX(-0.25deg);
-    opacity: 0.95;
-  }
-
-  100% {
-    transform: translate3d(-1.25%, 0.75%, 0) scale(1.018) skewX(0.2deg);
-    opacity: 0.84;
+    background-position:
+      calc(-40 * var(--title-stripe-period))
+      0;
   }
 }
 
