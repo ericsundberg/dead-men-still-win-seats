@@ -616,6 +616,18 @@ h3,
   text-transform: uppercase;
 }
 
+.title-menu > .game-version {
+  width: fit-content;
+  justify-self: center;
+
+  /*
+    The menu already supplies its normal grid gap.
+    This adds extra separation below Quit Game.
+  */
+  margin-top: calc(0.7rem * var(--ui-scale));
+  margin-bottom: 0;
+}
+
 .title-menu,
 .menu-form,
 .button-row {

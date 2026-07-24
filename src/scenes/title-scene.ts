@@ -65,9 +65,10 @@ export function renderTitleScene(context: SceneContext): HTMLElement {
         onBeforeClick: playButtonClick,
       },
     ),
+    version,
   );
 
-  panel.append(title, version, subtitle, menu);
+  panel.append(title, subtitle, menu);
   scene.append(makeTitleBackground(), panel);
 
   return scene;
