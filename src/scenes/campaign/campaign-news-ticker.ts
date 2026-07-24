@@ -9,7 +9,8 @@ const tickerSequenceRepeatCount = 4;
 
 const easyCampaignStartYear = 2026;
 const easyCampaignStartMonthIndex = 7;
-const easyCampaignStartDay = 1;
+const campaignWeeksPerMonth = 4;
+const campaignMonthsPerYear = 12;
 
 export const defaultCampaignNewsText =
   "There's no news. This must mean the world's ending.";
@@ -148,12 +149,48 @@ export function formatCampaignDateLabel(
   time: CampaignNewsTickerTime,
 ): string {
   const turnNumber =
-    normalizeTurnNumber(time.turnNumber);
+    normalizeTurnNumber(
+      time.turnNumber,
+    );
 
-  const campaignDate =
-    getEasyCampaignDate(
-      turnNumber,
-      time.difficultyId,
+  const elapsedTurns =
+    turnNumber - 1;
+
+  const weekOfMonth =
+    (
+      elapsedTurns
+      % campaignWeeksPerMonth
+    )
+    + 1;
+
+  const elapsedMonths =
+    Math.floor(
+      elapsedTurns
+      / campaignWeeksPerMonth,
+    );
+
+  const absoluteMonthIndex =
+    easyCampaignStartMonthIndex
+    + elapsedMonths;
+
+  const year =
+    easyCampaignStartYear
+    + Math.floor(
+      absoluteMonthIndex
+      / campaignMonthsPerYear,
+    );
+
+  const monthIndex =
+    absoluteMonthIndex
+    % campaignMonthsPerYear;
+
+  const monthDate =
+    new Date(
+      Date.UTC(
+        year,
+        monthIndex,
+        1,
+      ),
     );
 
   const monthName =
@@ -164,15 +201,13 @@ export function formatCampaignDateLabel(
         timeZone: 'UTC',
       },
     )
-      .format(campaignDate)
+      .format(monthDate)
       .toUpperCase();
 
   return [
-    `WEEK ${turnNumber}`,
+    `WEEK ${weekOfMonth}`,
     monthName,
-    String(
-      campaignDate.getUTCFullYear(),
-    ),
+    String(year),
   ].join(', ');
 }
 
@@ -199,40 +234,6 @@ function makeTickerSegment(
   }
 
   return segment;
-}
-
-function getEasyCampaignDate(
-  turnNumber: number,
-  difficultyId: GameDifficultyId,
-): Date {
-  /*
-   * Easy mode is currently the implemented calendar model.
-   * Other difficulties temporarily use the same weekly cadence
-   * until their distinct campaign calendars are defined.
-   */
-  const weeksPerTurn =
-    difficultyId === 'easy'
-      ? 1
-      : 1;
-
-  const elapsedWeeks =
-    (turnNumber - 1)
-    * weeksPerTurn;
-
-  const date = new Date(
-    Date.UTC(
-      easyCampaignStartYear,
-      easyCampaignStartMonthIndex,
-      easyCampaignStartDay,
-    ),
-  );
-
-  date.setUTCDate(
-    date.getUTCDate()
-      + elapsedWeeks * 7,
-  );
-
-  return date;
 }
 
 function normalizeTurnNumber(
