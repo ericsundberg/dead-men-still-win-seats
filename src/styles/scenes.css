@@ -11,10 +11,12 @@
   border: calc(0.22rem * var(--ui-scale)) solid var(--color-white);
   box-shadow: var(--shadow-hard);
 }
+
 .title-scene {
-  --title-stripe-speed-1x: 12s;
-  --title-stripe-width: 3.5rem;
   --title-stripe-period: 7rem;
+  --title-stripe-speed-1x: 120s;
+  --title-flag-noise:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23noise)'/%3E%3C/svg%3E");
 
   position: relative;
   isolation: isolate;
@@ -31,37 +33,49 @@
 }
 
 /*
-  The container is rotated but does not move.
+  Dark compensation layer.
 
-  The large overscan keeps all corners covered after rotation.
+  This darkens from the lower-left and fades to transparent by roughly the
+  halfway point of the screen, clearing toward the upper-right.
+*/
+.title-background::after {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  content: "";
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      to top right,
+      rgb(0 0 0 / 0.34) 0%,
+      rgb(0 0 0 / 0.24) 16%,
+      rgb(0 0 0 / 0.14) 32%,
+      rgb(0 0 0 / 0.06) 42%,
+      transparent 50%,
+      transparent 100%
+    );
+}
+
+/*
+  Layer 1: the stripe field itself.
 */
 .title-background-stripes {
   position: absolute;
   inset: -40vmax;
   z-index: 0;
   overflow: hidden;
-
   transform: rotate(15deg) translateZ(0);
   transform-origin: center;
   backface-visibility: hidden;
+  isolation: isolate;
 }
 
-/*
-  The gradient itself is orthogonal rather than diagonal.
-
-  This gives it an exact horizontal repeat period of 7rem. The animated
-  texture travels four complete periods, or 28rem, before resetting.
-*/
 .title-background-stripes::before {
   position: absolute;
   inset: 0;
-
   content: "";
 
-  /*
-    One exact 7rem tile:
-    3.5rem red + 3.5rem white.
-  */
   background-image:
     linear-gradient(
       90deg,
@@ -70,66 +84,165 @@
       var(--color-white) 50%,
       var(--color-white) 100%
     );
-
   background-repeat: repeat;
   background-position: 0 0;
   background-size: var(--title-stripe-period) 100%;
 
   opacity: 0.82;
 
-  /*
-    280rem is exactly forty 7rem tiles.
-
-    This preserves the current movement speed:
-    28rem / 12s = 280rem / 120s.
-  */
   animation:
     title-stripes-travel
-    120s
+    var(--title-stripe-speed-1x)
     linear
     infinite;
 }
 
-@keyframes title-stripes-travel {
-  from {
-    background-position: 0 0;
-  }
+.title-background-stripes::after {
+  position: absolute;
+  inset: -8%;
+  z-index: 1;
+  content: "";
+  pointer-events: none;
 
-  to {
-    background-position: -280rem 0;
-  }
+  background:
+    radial-gradient(
+      140% 18% at 12% 12%,
+      rgb(255 255 255 / 0.22) 0%,
+      rgb(255 255 255 / 0.10) 28%,
+      transparent 56%
+    ),
+    radial-gradient(
+      150% 20% at 78% 28%,
+      rgb(0 0 0 / 0.16) 0%,
+      rgb(0 0 0 / 0.08) 24%,
+      transparent 54%
+    ),
+    radial-gradient(
+      145% 18% at 24% 50%,
+      rgb(255 255 255 / 0.18) 0%,
+      rgb(255 255 255 / 0.08) 26%,
+      transparent 58%
+    ),
+    radial-gradient(
+      150% 20% at 74% 68%,
+      rgb(0 0 0 / 0.14) 0%,
+      rgb(0 0 0 / 0.08) 24%,
+      transparent 55%
+    ),
+    radial-gradient(
+      140% 18% at 32% 86%,
+      rgb(255 255 255 / 0.16) 0%,
+      rgb(255 255 255 / 0.07) 24%,
+      transparent 56%
+    );
+
+  opacity: 0.9;
+  mix-blend-mode: soft-light;
+  filter: blur(0.6rem);
+  will-change: transform, opacity;
+
+  animation:
+    title-stripe-wave
+    18s
+    ease-in-out
+    infinite;
 }
 
 /*
-  Layer 2: individually moving gold stars.
-
-  The subtle blue wash keeps the stripes from overpowering the title panel
-  while leaving the stars clearly visible.
+  Layer 2: fabric depth and static noise.
 */
 .title-background-stars {
+  position: absolute;
+  inset: 0;
   z-index: 1;
+  isolation: isolate;
 
   background:
     linear-gradient(
       135deg,
       rgb(0 31 91 / 0.08),
-      rgb(0 31 91 / 0.38)
+      rgb(0 31 91 / 0.36)
     );
 }
 
+.title-background-stars::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  content: "";
+  pointer-events: none;
+
+  background-image:
+    radial-gradient(
+      ellipse at 18% 24%,
+      rgb(255 255 255 / 0.20) 0%,
+      rgb(255 255 255 / 0.08) 18%,
+      transparent 36%
+    ),
+    radial-gradient(
+      ellipse at 78% 32%,
+      rgb(0 0 0 / 0.18) 0%,
+      rgb(0 0 0 / 0.10) 16%,
+      transparent 34%
+    ),
+    radial-gradient(
+      ellipse at 34% 78%,
+      rgb(255 255 255 / 0.12) 0%,
+      transparent 30%
+    ),
+    radial-gradient(
+      ellipse at 88% 82%,
+      rgb(0 0 0 / 0.16) 0%,
+      transparent 28%
+    ),
+    linear-gradient(
+      100deg,
+      transparent 0%,
+      rgb(255 255 255 / 0.10) 14%,
+      rgb(255 255 255 / 0.05) 22%,
+      transparent 31%,
+      rgb(0 0 0 / 0.14) 45%,
+      rgb(0 0 0 / 0.08) 53%,
+      transparent 63%,
+      rgb(255 255 255 / 0.09) 76%,
+      transparent 100%
+    ),
+    var(--title-flag-noise);
+
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+  background-size:
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    18rem 18rem;
+  background-position:
+    center,
+    center,
+    center,
+    center,
+    center,
+    center;
+
+  opacity: 0.72;
+  mix-blend-mode: soft-light;
+}
+
+/*
+  Layer 3: individually moving gold stars.
+*/
 .title-background-star {
   position: absolute;
   top: var(--star-top);
   left: var(--star-left);
+  z-index: 1;
 
   width: var(--star-size);
   aspect-ratio: 1;
 
   background: var(--color-gold);
 
-  /*
-    Five-point star shape without requiring an image asset or font glyph.
-  */
   clip-path: polygon(
     50% 0%,
     61% 35%,
@@ -160,35 +273,8 @@
 }
 
 .title-panel {
-  z-index: 2;
-}
-
-@keyframes title-stripes-travel {
-  from {
-    background-position: 0 0;
-  }
-
-  to {
-    background-position: -10rem 0;
-  }
-}
-
-@keyframes title-star-fall {
-  from {
-    transform:
-      translate3d(var(--star-origin-x), -115vh, 0)
-      rotate(0deg);
-  }
-
-  to {
-    transform:
-      translate3d(var(--star-destination-x), 115vh, 0)
-      rotate(var(--star-spin));
-  }
-}
-
-.title-panel {
   position: relative;
+  z-index: 2;
   overflow: hidden;
   text-align: center;
 }
@@ -214,6 +300,57 @@
 .title-panel > * {
   position: relative;
   z-index: 1;
+}
+
+@keyframes title-stripes-travel {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: calc(-40 * var(--title-stripe-period)) 0;
+  }
+}
+
+@keyframes title-stripe-wave {
+  0% {
+    transform: translate3d(-1.5%, -1%, 0) scale(1.015) skewX(0deg);
+    opacity: 0.82;
+  }
+
+  25% {
+    transform: translate3d(1%, 0.5%, 0) scale(1.03) skewX(-0.4deg);
+    opacity: 0.94;
+  }
+
+  50% {
+    transform: translate3d(-0.75%, 1.25%, 0) scale(1.02) skewX(0.35deg);
+    opacity: 0.88;
+  }
+
+  75% {
+    transform: translate3d(1.25%, -0.5%, 0) scale(1.035) skewX(-0.25deg);
+    opacity: 0.95;
+  }
+
+  100% {
+    transform: translate3d(-1.25%, 0.75%, 0) scale(1.018) skewX(0.2deg);
+    opacity: 0.84;
+  }
+}
+
+@keyframes title-star-fall {
+  from {
+    transform:
+      translate3d(var(--star-origin-x), -115vh, 0)
+      rotate(0deg);
+  }
+
+  to {
+    transform:
+      translate3d(var(--star-destination-x), 115vh, 0)
+      rotate(var(--star-spin));
+  }
 }
 
 h1,
@@ -488,7 +625,8 @@ input[type="file"]:focus {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .title-background-stripes,
+  .title-background-stripes::before,
+  .title-background-stripes::after,
   .title-background-star {
     animation: none;
   }
