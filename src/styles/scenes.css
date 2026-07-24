@@ -628,7 +628,11 @@ input[type="file"]:focus {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background: var(--color-blue-dark);
+
+  /*
+    Dark navy fallback visible beneath the image cross-fades.
+  */
+  background: #00050f;
 }
 
 .secondary-menu-scene > * {
@@ -698,9 +702,9 @@ input[type="file"]:focus {
   background:
     linear-gradient(
       135deg,
-      rgb(0 31 91 / 0.18) 0%,
-      rgb(0 31 91 / 0.42) 48%,
-      rgb(2 10 28 / 0.7) 100%
+      rgb(3 20 58 / 0.58) 0%,
+      rgb(1 11 38 / 0.76) 48%,
+      rgb(0 4 18 / 0.92) 100%
     );
 }
 
