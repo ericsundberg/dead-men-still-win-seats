@@ -1,4 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { setLocalizedText } from '../localization/localized-text';
 import {
   calculateBaseCharacterHealth,
   childCharacterHealth,
@@ -11,7 +14,23 @@ import {
 } from './game-character';
 import { createGameSession } from './game-session';
 
+function readPublicEnglishLocalization(): Record<string, string> {
+  const filePath = join(
+    process.cwd(),
+    'public',
+    'assets',
+    'localization',
+    'en-us.json',
+  );
+
+  return JSON.parse(readFileSync(filePath, 'utf8')) as Record<string, string>;
+}
+
 describe('GameSession', () => {
+  beforeEach(() => {
+    setLocalizedText(readPublicEnglishLocalization());
+  });
+
   it('starts without an active game', () => {
     const session = createGameSession();
 

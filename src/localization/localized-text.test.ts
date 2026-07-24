@@ -2,9 +2,11 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  defaultLocalizedText,
+  getExtraLocalizationKeys,
+  getMissingLocalizationKeys,
+  localizedTextKeys,
+  setLocalizedText,
   text,
-  type LocalizedTextKey,
 } from './localized-text';
 
 function readPublicEnglishLocalization(): Record<string, string> {
@@ -20,22 +22,23 @@ function readPublicEnglishLocalization(): Record<string, string> {
 }
 
 describe('localized text', () => {
-  it('returns text for known keys', () => {
+  it('loads text from the public English localization asset', () => {
+    const publicLocalization = readPublicEnglishLocalization();
+
+    setLocalizedText(publicLocalization);
+
     expect(text('gameSetup.title')).toBe('Game Setup');
     expect(text('gameSetup.difficulty.easy.duration')).toBe('3 months (13 turns)');
+    expect(text('characterDefaults.childGivenName')).toBe('Child');
   });
 
-  it('keeps the public English localization asset aligned with typed defaults', () => {
+  it('keeps the public English localization asset aligned with typed keys', () => {
     const publicLocalization = readPublicEnglishLocalization();
-    const defaultKeys = Object.keys(defaultLocalizedText).sort();
+    const expectedKeys = [...localizedTextKeys].sort();
     const publicKeys = Object.keys(publicLocalization).sort();
 
-    expect(publicKeys).toEqual(defaultKeys);
-
-    for (const key of defaultKeys) {
-      expect(publicLocalization[key]).toBe(
-        defaultLocalizedText[key as LocalizedTextKey],
-      );
-    }
+    expect(publicKeys).toEqual(expectedKeys);
+    expect(getMissingLocalizationKeys(publicLocalization)).toEqual([]);
+    expect(getExtraLocalizationKeys(publicLocalization)).toEqual([]);
   });
 });
