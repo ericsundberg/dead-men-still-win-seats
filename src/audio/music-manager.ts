@@ -1,8 +1,5 @@
 import {
   musicManifest,
-  rememberGameplayMusicTrack,
-  selectGameplayMusicTrackId,
-  type GameplayMusicTrackId,
   type MusicTrackId,
 } from '../content/music-manifest';
 import {
@@ -10,6 +7,9 @@ import {
   mergeAudioSettings,
   resolveEffectiveVolume,
 } from './audio-settings';
+import {
+  GameplayMusicPlaylist,
+} from './gameplay-music-playlist';
 import type {
   AudioSettings,
   MusicManifest,
@@ -26,100 +26,149 @@ interface InternalMusicPlayOptions
   readonly onApproachingEnd?: () => void;
 }
 
+export interface MusicPlaybackState {
+  readonly trackId: string | null;
+  readonly trackLabel: string | null;
+  readonly isPlaying: boolean;
+  readonly isPaused: boolean;
+}
+
+export type MusicPlaybackListener = (
+  state: MusicPlaybackState,
+) => void;
+
 const defaultCrossfadeDurationMs = 2_000;
 const crossfadeUpdateIntervalMs = 50;
 
 export class MusicManager {
   private settings: AudioSettings;
 
-  private currentAudio: HTMLAudioElement | null = null;
-  private currentTrackId: string | null = null;
+  private currentAudio:
+    HTMLAudioElement | null = null;
+
+  private currentTrackId:
+    string | null = null;
+
   private currentTargetVolume = 0;
 
-  private outgoingAudio: HTMLAudioElement | null = null;
+  private outgoingAudio:
+    HTMLAudioElement | null = null;
 
   private crossfadeIntervalId:
-    ReturnType<typeof globalThis.setInterval> | null = null;
+    ReturnType<
+      typeof globalThis.setInterval
+    > | null = null;
 
-  /*
-   * Incrementing this value invalidates callbacks belonging to
-   * an older gameplay playlist.
-   */
-  private gameplayPlaylistGeneration = 0;
-
-  /*
-   * This history persists between tracks and is limited to the
-   * five most recently selected gameplay songs.
-   */
-  private recentGameplayTrackIds:
-    readonly GameplayMusicTrackId[] = [];
+  private readonly playbackListeners =
+    new Set<MusicPlaybackListener>();
 
   public constructor(
-    private readonly manifest: MusicManifest = musicManifest,
-    initialSettings: AudioSettings = defaultAudioSettings,
+    private readonly manifest:
+      MusicManifest = musicManifest,
+
+    initialSettings:
+      AudioSettings = defaultAudioSettings,
+
+    private readonly gameplayPlaylist =
+      new GameplayMusicPlaylist(),
   ) {
     this.settings = initialSettings;
   }
 
   /**
-   * Plays a standalone music track.
+   * Plays one standalone music track.
    *
-   * Starting standalone music cancels any active gameplay
-   * playlist, but it still crossfades from the current track.
+   * Standalone playback cancels the gameplay playlist, while
+   * still allowing the new track to crossfade from the current
+   * gameplay song.
    */
   public play(
     trackId: MusicTrackId | string,
     options: MusicPlayOptions = {},
   ): void {
-    this.gameplayPlaylistGeneration += 1;
-    this.recentGameplayTrackIds = [];
+    this.gameplayPlaylist.stop();
 
-    this.playTrack(trackId, options);
-  }
-
-  /**
-   * Begins continuous gameplay music.
-   *
-   * Each track is selected randomly. Tracks heard during the
-   * previous five selections are excluded from the next choice.
-   */
-  public playGameplayPlaylist(
-    fadeDurationMs = defaultCrossfadeDurationMs,
-  ): void {
-    this.gameplayPlaylistGeneration += 1;
-    this.recentGameplayTrackIds = [];
-
-    const playlistGeneration =
-      this.gameplayPlaylistGeneration;
-
-    this.playNextGameplayTrack(
-      playlistGeneration,
-      normalizeFadeDuration(fadeDurationMs),
+    this.playTrack(
+      trackId,
+      options,
     );
   }
 
   /**
-   * Stops all current music and invalidates any playlist
-   * callbacks that could otherwise start another track.
+   * Starts a continuous randomized gameplay playlist.
+   *
+   * Songs played during the previous five selections are
+   * excluded from the next random choice.
+   */
+  public playGameplayPlaylist(
+    fadeDurationMs =
+      defaultCrossfadeDurationMs,
+  ): void {
+    const normalizedFadeDuration =
+      normalizeFadeDuration(
+        fadeDurationMs,
+      );
+
+    const playlistGeneration =
+      this.gameplayPlaylist.start(
+        normalizedFadeDuration,
+      );
+
+    this.playNextGameplayTrack(
+      playlistGeneration,
+      normalizedFadeDuration,
+    );
+  }
+
+  /**
+   * Skips directly to another randomly selected eligible
+   * gameplay song.
+   */
+  public skipGameplayTrack(): boolean {
+    if (
+      !this.gameplayPlaylist
+        .getIsActive()
+    ) {
+      return false;
+    }
+
+    this.playNextGameplayTrack(
+      this.gameplayPlaylist
+        .getGeneration(),
+
+      this.gameplayPlaylist
+        .getFadeDurationMs(),
+    );
+
+    return true;
+  }
+
+  /**
+   * Stops all current music and prevents an old playlist
+   * callback from starting another song.
    */
   public stop(): void {
-    this.gameplayPlaylistGeneration += 1;
-    this.recentGameplayTrackIds = [];
-
+    this.gameplayPlaylist.stop();
     this.cancelCrossfade(true);
 
     if (this.currentAudio) {
-      this.disposeAudio(this.currentAudio);
+      this.disposeAudio(
+        this.currentAudio,
+      );
     }
 
     this.currentAudio = null;
     this.currentTrackId = null;
     this.currentTargetVolume = 0;
+
+    this.notifyPlaybackStateChanged();
   }
 
   public pause(): void {
     this.currentAudio?.pause();
     this.outgoingAudio?.pause();
+
+    this.notifyPlaybackStateChanged();
   }
 
   public resume(): void {
@@ -130,29 +179,98 @@ export class MusicManager {
       return;
     }
 
-    const playResult = this.currentAudio.play();
+    const audio = this.currentAudio;
+    const trackId = this.currentTrackId;
 
-    playResult.catch((error: unknown) => {
-      console.warn(
-        `[audio:music] failed to resume asset: ${this.currentTrackId}`,
-        error,
+    audio.play()
+      .then(() => {
+        if (
+          this.currentAudio
+          !== audio
+        ) {
+          return;
+        }
+
+        this.notifyPlaybackStateChanged();
+      })
+      .catch(
+        (error: unknown) => {
+          console.warn(
+            `[audio:music] failed to resume asset: ${trackId}`,
+            error,
+          );
+
+          this.notifyPlaybackStateChanged();
+        },
       );
-    });
   }
 
-  public setVolume(volume: number): void {
+  /**
+   * Restarts the current song from the beginning.
+   *
+   * Restarting a paused song also resumes it.
+   */
+  public restartCurrentTrack(): boolean {
+    if (!this.currentAudio) {
+      return false;
+    }
+
+    try {
+      this.currentAudio.currentTime = 0;
+    } catch (error) {
+      console.warn(
+        '[audio:music] failed to restart current track',
+        error,
+      );
+
+      return false;
+    }
+
+    if (this.currentAudio.paused) {
+      this.resume();
+    } else {
+      this.notifyPlaybackStateChanged();
+    }
+
+    return true;
+  }
+
+  /**
+   * Toggles the current pause state.
+   *
+   * Returns the new paused state.
+   */
+  public togglePause(): boolean {
+    if (!this.currentAudio) {
+      return true;
+    }
+
+    if (this.currentAudio.paused) {
+      this.resume();
+      return false;
+    }
+
+    this.pause();
+    return true;
+  }
+
+  public setVolume(
+    volume: number,
+  ): void {
     this.updateSettings({
       musicVolume: volume,
     });
   }
 
   public updateSettings(
-    partialSettings: Partial<AudioSettings>,
+    partialSettings:
+      Partial<AudioSettings>,
   ): void {
-    this.settings = mergeAudioSettings(
-      this.settings,
-      partialSettings,
-    );
+    this.settings =
+      mergeAudioSettings(
+        this.settings,
+        partialSettings,
+      );
 
     if (
       !this.currentAudio
@@ -173,27 +291,98 @@ export class MusicManager {
       this.getEntryVolume(entry);
 
     /*
-     * During a crossfade, the transition timer applies the
-     * current target volume to the incoming track.
+     * The crossfade timer updates the incoming volume while a
+     * transition is active. Outside a transition, update the
+     * audio element immediately.
      */
-    if (this.crossfadeIntervalId === null) {
+    if (
+      this.crossfadeIntervalId
+      === null
+    ) {
       this.currentAudio.volume =
         this.currentTargetVolume;
     }
   }
 
-  public getCurrentTrackId(): string | null {
+  public getCurrentTrackId():
+    string | null {
     return this.currentTrackId;
+  }
+
+  public getCurrentTrackLabel():
+    string | null {
+    if (!this.currentTrackId) {
+      return null;
+    }
+
+    return this.getEntry(
+      this.currentTrackId,
+    )?.label ?? null;
+  }
+
+  public getIsPaused(): boolean {
+    return (
+      this.currentAudio?.paused
+      ?? true
+    );
+  }
+
+  public getPlaybackState():
+    MusicPlaybackState {
+    const isPaused =
+      this.getIsPaused();
+
+    return {
+      trackId:
+        this.currentTrackId,
+
+      trackLabel:
+        this.getCurrentTrackLabel(),
+
+      isPlaying:
+        this.currentAudio !== null
+        && !isPaused,
+
+      isPaused,
+    };
+  }
+
+  /**
+   * Allows the future campaign HUD to update immediately when
+   * playback changes, rather than polling the manager.
+   */
+  public subscribe(
+    listener: MusicPlaybackListener,
+  ): () => void {
+    this.playbackListeners.add(
+      listener,
+    );
+
+    listener(
+      this.getPlaybackState(),
+    );
+
+    return () => {
+      this.playbackListeners.delete(
+        listener,
+      );
+    };
   }
 
   public has(
     trackId: MusicTrackId | string,
   ): boolean {
-    return this.getEntry(trackId) !== undefined;
+    return (
+      this.getEntry(trackId)
+      !== undefined
+    );
   }
 
-  public getIds(): readonly string[] {
-    return Object.keys(this.manifest);
+  public getIds():
+    readonly string[] {
+    return Object.keys(
+      this.manifest,
+    );
   }
 
   /**
@@ -204,72 +393,82 @@ export class MusicManager {
     fadeDurationMs: number,
   ): void {
     if (
-      playlistGeneration
-      !== this.gameplayPlaylistGeneration
+      !this.gameplayPlaylist
+        .isCurrentGeneration(
+          playlistGeneration,
+        )
     ) {
       return;
     }
 
     const nextTrackId =
-      selectGameplayMusicTrackId(
-        this.recentGameplayTrackIds,
-      );
+      this.gameplayPlaylist
+        .selectNextTrackId();
 
-    this.recentGameplayTrackIds =
-      rememberGameplayMusicTrack(
-        this.recentGameplayTrackIds,
-        nextTrackId,
-      );
+    this.playTrack(
+      nextTrackId,
+      {
+        restart: true,
+        fadeDurationMs,
 
-    this.playTrack(nextTrackId, {
-      restart: true,
-      fadeDurationMs,
-
-      onApproachingEnd: () => {
-        this.playNextGameplayTrack(
-          playlistGeneration,
-          fadeDurationMs,
-        );
+        onApproachingEnd: () => {
+          this.playNextGameplayTrack(
+            playlistGeneration,
+            fadeDurationMs,
+          );
+        },
       },
-    });
+    );
   }
 
   /**
-   * Plays one track without automatically cancelling playlist
-   * state. Public standalone playback calls this after cancelling
-   * the playlist; playlist advancement calls it directly.
+   * Plays one track without automatically cancelling the
+   * gameplay playlist.
+   *
+   * Public standalone playback cancels the playlist before
+   * calling this method. Playlist advancement calls it directly.
    */
   private playTrack(
-    trackId: MusicTrackId | string,
-    options: InternalMusicPlayOptions = {},
+    trackId:
+      MusicTrackId | string,
+
+    options:
+      InternalMusicPlayOptions = {},
   ): void {
-    const entry = this.getEntry(trackId);
+    const entry =
+      this.getEntry(trackId);
 
     if (!entry) {
       console.warn(
         `[audio:music] missing asset id: ${trackId}`,
       );
+
       return;
     }
 
     if (
       !options.restart
-      && this.currentTrackId === trackId
+      && this.currentTrackId
+        === trackId
     ) {
       return;
     }
 
-    if (typeof Audio === 'undefined') {
+    if (
+      typeof Audio
+      === 'undefined'
+    ) {
       console.warn(
         `[audio:music] browser Audio API unavailable for: ${trackId}`,
       );
+
       return;
     }
 
     /*
-     * If another crossfade was still running, dispose its oldest
-     * outgoing track. The currently active incoming track remains
-     * available to become the outgoing side of this transition.
+     * Dispose the oldest outgoing track if another crossfade
+     * was still active. The current incoming track remains
+     * available to become this transition's outgoing track.
      */
     this.cancelCrossfade(true);
 
@@ -282,7 +481,8 @@ export class MusicManager {
     const previousTargetVolume =
       this.currentTargetVolume;
 
-    const audio = new Audio(entry.path);
+    const audio =
+      new Audio(entry.path);
 
     const targetVolume =
       this.getEntryVolume(entry);
@@ -296,12 +496,13 @@ export class MusicManager {
     audio.loop = entry.loop;
 
     /*
-     * With no previous song, begin at normal volume. Otherwise
-     * begin silently and let the crossfade raise the volume.
+     * The first song starts at its target volume. Replacement
+     * songs start silently and are raised by the crossfade.
      */
-    audio.volume = previousAudio
-      ? 0
-      : targetVolume;
+    audio.volume =
+      previousAudio
+        ? 0
+        : targetVolume;
 
     audio.addEventListener(
       'error',
@@ -310,81 +511,109 @@ export class MusicManager {
           `[audio:music] failed to load asset: ${trackId}`,
         );
       },
-      { once: true },
+      {
+        once: true,
+      },
     );
+
+    const onApproachingEnd =
+      options.onApproachingEnd;
 
     if (
       !entry.loop
-      && options.onApproachingEnd
+      && onApproachingEnd
     ) {
       this.bindApproachingEnd(
         audio,
         fadeDurationMs,
-        options.onApproachingEnd,
+        () => {
+          /*
+           * A manually skipped song may still exist as the
+           * outgoing side of a crossfade. It must not advance
+           * the playlist after it stops being the active track.
+           */
+          if (
+            this.currentAudio
+            !== audio
+          ) {
+            return;
+          }
+
+          onApproachingEnd();
+        },
       );
     }
 
     this.currentAudio = audio;
     this.currentTrackId = trackId;
-    this.currentTargetVolume = targetVolume;
+    this.currentTargetVolume =
+      targetVolume;
 
-    const beginTransition = (): void => {
-      /*
-       * Another track may have replaced this one before its
-       * playback promise resolved.
-       */
-      if (this.currentAudio !== audio) {
-        this.disposeAudio(audio);
-        return;
-      }
-
-      if (!previousAudio) {
-        audio.volume =
-          this.currentTargetVolume;
-
-        return;
-      }
-
-      this.startCrossfade(
-        previousAudio,
-        audio,
-        fadeDurationMs,
-      );
-    };
-
-    const playResult = audio.play();
-
-    playResult
-      .then(beginTransition)
-      .catch((error: unknown) => {
-        console.warn(
-          `[audio:music] failed to play asset: ${trackId}`,
-          error,
-        );
-
-        this.disposeAudio(audio);
-
-        if (this.currentAudio === audio) {
-          this.currentAudio =
-            previousAudio;
-
-          this.currentTrackId =
-            previousTrackId;
-
-          this.currentTargetVolume =
-            previousTargetVolume;
+    const beginTransition =
+      (): void => {
+        /*
+         * Another song may have replaced this one before its
+         * play promise resolved.
+         */
+        if (
+          this.currentAudio
+          !== audio
+        ) {
+          this.disposeAudio(audio);
+          return;
         }
 
-        /*
-         * If this was a gameplay playlist track, try another
-         * selection rather than leaving gameplay silent.
-         */
-        options.onApproachingEnd?.();
-      });
+        if (!previousAudio) {
+          audio.volume =
+            this.currentTargetVolume;
+        } else {
+          this.startCrossfade(
+            previousAudio,
+            audio,
+            fadeDurationMs,
+          );
+        }
+
+        this.notifyPlaybackStateChanged();
+      };
+
+    audio.play()
+      .then(beginTransition)
+      .catch(
+        (error: unknown) => {
+          console.warn(
+            `[audio:music] failed to play asset: ${trackId}`,
+            error,
+          );
+
+          this.disposeAudio(audio);
+
+          if (
+            this.currentAudio
+            === audio
+          ) {
+            this.currentAudio =
+              previousAudio;
+
+            this.currentTrackId =
+              previousTrackId;
+
+            this.currentTargetVolume =
+              previousTargetVolume;
+          }
+
+          /*
+           * Do not automatically select another song here.
+           * Doing so would create a rapid recursive failure loop
+           * when the server or media assets are unavailable.
+           */
+          this.notifyPlaybackStateChanged();
+        },
+      );
   }
 
   /**
-   * Calls the supplied callback when a non-looping track reaches
+   * Calls the supplied callback when a non-looping track enters
    * the beginning of its crossfade window.
    */
   private bindApproachingEnd(
@@ -411,37 +640,42 @@ export class MusicManager {
       );
     };
 
-    const advanceOnce = (): void => {
-      if (hasAdvanced) {
-        return;
-      }
+    const advanceOnce =
+      (): void => {
+        if (hasAdvanced) {
+          return;
+        }
 
-      hasAdvanced = true;
-      cleanup();
-      onApproachingEnd();
-    };
+        hasAdvanced = true;
+        cleanup();
+        onApproachingEnd();
+      };
 
-    const handleTimeUpdate = (): void => {
-      if (
-        !Number.isFinite(audio.duration)
-        || audio.duration <= 0
-      ) {
-        return;
-      }
+    const handleTimeUpdate =
+      (): void => {
+        if (
+          !Number.isFinite(
+            audio.duration,
+          )
+          || audio.duration <= 0
+        ) {
+          return;
+        }
 
-      const remainingDurationMs =
-        Math.max(
-          0,
-          audio.duration - audio.currentTime,
-        ) * 1_000;
+        const remainingDurationMs =
+          Math.max(
+            0,
+            audio.duration
+              - audio.currentTime,
+          ) * 1_000;
 
-      if (
-        remainingDurationMs
-        <= fadeDurationMs
-      ) {
-        advanceOnce();
-      }
-    };
+        if (
+          remainingDurationMs
+          <= fadeDurationMs
+        ) {
+          advanceOnce();
+        }
+      };
 
     audio.addEventListener(
       'timeupdate',
@@ -449,8 +683,8 @@ export class MusicManager {
     );
 
     /*
-     * This also handles unusually short tracks whose total
-     * duration is shorter than the requested crossfade.
+     * Also handles tracks whose total duration is shorter
+     * than the requested crossfade window.
      */
     audio.addEventListener(
       'loadedmetadata',
@@ -458,23 +692,31 @@ export class MusicManager {
     );
 
     /*
-     * Fallback if the browser does not emit a sufficiently
-     * precise timeupdate event near the ending.
+     * Fallback if the browser misses the final useful
+     * timeupdate event.
      */
     audio.addEventListener(
       'ended',
       advanceOnce,
-      { once: true },
+      {
+        once: true,
+      },
     );
   }
 
   private startCrossfade(
-    outgoingAudio: HTMLAudioElement,
-    incomingAudio: HTMLAudioElement,
+    outgoingAudio:
+      HTMLAudioElement,
+
+    incomingAudio:
+      HTMLAudioElement,
+
     fadeDurationMs: number,
   ): void {
     if (fadeDurationMs === 0) {
-      this.disposeAudio(outgoingAudio);
+      this.disposeAudio(
+        outgoingAudio,
+      );
 
       incomingAudio.volume =
         this.currentTargetVolume;
@@ -491,52 +733,63 @@ export class MusicManager {
     const transitionStartTime =
       getCurrentTimestamp();
 
-    const updateCrossfade = (): void => {
-      /*
-       * Stop this transition if another track has already
-       * replaced the incoming track.
-       */
-      if (
-        this.currentAudio
-        !== incomingAudio
-      ) {
+    const updateCrossfade =
+      (): void => {
+        /*
+         * Stop the transition if another song has already
+         * replaced the incoming track.
+         */
+        if (
+          this.currentAudio
+          !== incomingAudio
+        ) {
+          this.cancelCrossfade(
+            true,
+          );
+
+          return;
+        }
+
+        const elapsedTime =
+          getCurrentTimestamp()
+          - transitionStartTime;
+
+        const progress =
+          Math.min(
+            1,
+            Math.max(
+              0,
+              elapsedTime
+                / fadeDurationMs,
+            ),
+          );
+
+        outgoingAudio.volume =
+          outgoingStartVolume
+          * (1 - progress);
+
+        incomingAudio.volume =
+          this.currentTargetVolume
+          * progress;
+
+        if (progress < 1) {
+          return;
+        }
+
         this.cancelCrossfade(true);
-        return;
-      }
 
-      const elapsedTime =
-        getCurrentTimestamp()
-        - transitionStartTime;
+        incomingAudio.volume =
+          this.currentTargetVolume;
 
-      const progress = Math.min(
-        1,
-        Math.max(
-          0,
-          elapsedTime / fadeDurationMs,
-        ),
-      );
-
-      outgoingAudio.volume =
-        outgoingStartVolume
-        * (1 - progress);
-
-      incomingAudio.volume =
-        this.currentTargetVolume
-        * progress;
-
-      if (progress < 1) {
-        return;
-      }
-
-      this.cancelCrossfade(true);
-
-      incomingAudio.volume =
-        this.currentTargetVolume;
-    };
+        this.notifyPlaybackStateChanged();
+      };
 
     updateCrossfade();
 
-    if (this.outgoingAudio !== outgoingAudio) {
+    if (
+      this.outgoingAudio
+      !== outgoingAudio
+    ) {
       return;
     }
 
@@ -547,12 +800,6 @@ export class MusicManager {
       );
   }
 
-  /**
-   * Cancels the active transition.
-   *
-   * The outgoing track is normally disposed because it is no
-   * longer the current active music track.
-   */
   private cancelCrossfade(
     disposeOutgoingAudio: boolean,
   ): void {
@@ -564,7 +811,8 @@ export class MusicManager {
         this.crossfadeIntervalId,
       );
 
-      this.crossfadeIntervalId = null;
+      this.crossfadeIntervalId =
+        null;
     }
 
     if (
@@ -588,8 +836,8 @@ export class MusicManager {
       audio.currentTime = 0;
     } catch {
       /*
-       * Some browsers reject currentTime changes when an audio
-       * element never loaded successfully.
+       * Some browsers reject currentTime changes when the
+       * media element did not finish loading.
        */
     }
 
@@ -608,23 +856,47 @@ export class MusicManager {
   }
 
   private getEntry(
-    trackId: MusicTrackId | string,
+    trackId:
+      MusicTrackId | string,
   ): MusicManifestEntry | undefined {
-    return this.manifest[trackId];
+    return this.manifest[
+      trackId
+    ];
+  }
+
+  private notifyPlaybackStateChanged():
+    void {
+    const state =
+      this.getPlaybackState();
+
+    for (
+      const listener
+      of this.playbackListeners
+    ) {
+      listener(state);
+    }
   }
 }
 
 function normalizeFadeDuration(
   durationMs: number,
 ): number {
-  if (!Number.isFinite(durationMs)) {
+  if (
+    !Number.isFinite(durationMs)
+  ) {
     return defaultCrossfadeDurationMs;
   }
 
-  return Math.max(0, durationMs);
+  return Math.max(
+    0,
+    durationMs,
+  );
 }
 
-function getCurrentTimestamp(): number {
-  return globalThis.performance?.now()
-    ?? Date.now();
+function getCurrentTimestamp():
+  number {
+  return (
+    globalThis.performance?.now()
+    ?? Date.now()
+  );
 }

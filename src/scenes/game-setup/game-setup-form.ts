@@ -5,9 +5,6 @@ import { makeElement } from '../../ui/dom-helpers';
 import {
   createDifficultySelectionFields,
 } from './difficulty-selection-fields';
-import {
-  selectGameplayMusicTrackId,
-} from '../../content/music-manifest';
 
 export function makeGameSetupForm(
   context: SceneContext,
@@ -42,9 +39,6 @@ export function makeGameSetupForm(
     context.game.startNewGame({
       difficulty,
     });
-
-    const gameplayTrackId =
-      selectGameplayMusicTrackId();
 
     context.audio.music.playGameplayPlaylist();
 
