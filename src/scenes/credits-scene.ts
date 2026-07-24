@@ -17,7 +17,7 @@ export function renderCreditsScene(context: SceneContext): HTMLElement {
   const description = makeElement('p', {
     className: 'scene-description',
     textContent:
-      'Dead Men Still Win Seats is a TypeScript game jam project about managing a political campaign that cannot admit its candidate is dead.',
+      'DIRECTED BY ERIC AND RYAN',
   });
 
   panel.append(

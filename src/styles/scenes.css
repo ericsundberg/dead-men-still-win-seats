@@ -624,6 +624,176 @@ input[type="file"]:focus {
   line-height: 1.35;
 }
 
+.secondary-menu-scene {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--color-blue-dark);
+}
+
+.secondary-menu-scene > * {
+  position: relative;
+  z-index: 1;
+}
+
+.secondary-menu-scene > .secondary-menu-background {
+  z-index: 0;
+}
+
+.secondary-menu-background {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.secondary-menu-background-image,
+.secondary-menu-background-tint,
+.secondary-menu-background-grain {
+  position: absolute;
+  inset: 0;
+}
+
+.secondary-menu-background-image {
+  position: absolute;
+  inset: -8%;
+
+  background-image: var(--secondary-menu-image);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+
+  opacity: 0;
+
+  transform: translate3d(4%, 2%, 0) scale(1.12);
+  filter:
+    blur(2.2rem)
+    saturate(0.82)
+    brightness(0.7);
+
+  backface-visibility: hidden;
+  will-change: transform, filter, opacity;
+
+  animation:
+    secondary-menu-background-fade
+      60s
+      ease-in-out
+      var(--secondary-menu-cycle-delay)
+      infinite,
+
+    secondary-menu-background-drift
+      20s
+      linear
+      var(--secondary-menu-cycle-delay)
+      infinite,
+
+    secondary-menu-background-focus
+      20s
+      cubic-bezier(0.25, 0.46, 0.45, 0.94)
+      var(--secondary-menu-cycle-delay)
+      infinite;
+}
+
+.secondary-menu-background-tint {
+  background:
+    linear-gradient(
+      135deg,
+      rgb(0 31 91 / 0.18) 0%,
+      rgb(0 31 91 / 0.42) 48%,
+      rgb(2 10 28 / 0.7) 100%
+    );
+}
+
+.secondary-menu-background-grain {
+  opacity: 0.28;
+  background-image:
+    radial-gradient(
+      circle at 20% 30%,
+      rgb(255 255 255 / 0.18) 0,
+      rgb(255 255 255 / 0.18) 0.04rem,
+      transparent 0.05rem
+    ),
+    radial-gradient(
+      circle at 75% 65%,
+      rgb(0 0 0 / 0.22) 0,
+      rgb(0 0 0 / 0.22) 0.045rem,
+      transparent 0.055rem
+    ),
+    radial-gradient(
+      circle at 45% 80%,
+      rgb(255 255 255 / 0.1) 0,
+      rgb(255 255 255 / 0.1) 0.03rem,
+      transparent 0.04rem
+    );
+  background-size:
+    0.7rem 0.7rem,
+    0.95rem 0.95rem,
+    0.8rem 0.8rem;
+  background-position:
+    0 0,
+    0.2rem 0.35rem,
+    0.4rem 0.15rem;
+  mix-blend-mode: soft-light;
+}
+
+@keyframes secondary-menu-background-fade {
+  0%,
+  26% {
+    opacity: 1;
+  }
+
+  33%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes secondary-menu-background-drift {
+  from {
+    transform: translate3d(4%, 2%, 0) scale(1.12);
+  }
+
+  to {
+    transform: translate3d(-4%, -2%, 0) scale(1.18);
+  }
+}
+
+@keyframes secondary-menu-background-focus {
+  0% {
+    filter:
+      blur(2.2rem)
+      saturate(0.82)
+      brightness(0.7);
+  }
+
+  /*
+    The major unblur happens during the first 4.8 seconds
+    of the image's 20-second visible cycle.
+  */
+  24% {
+    filter:
+      blur(0.45rem)
+      saturate(0.94)
+      brightness(0.82);
+  }
+
+  100% {
+    filter:
+      blur(0.3rem)
+      saturate(0.98)
+      brightness(0.86);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .secondary-menu-background-image {
+    opacity: 0.34;
+    animation: none;
+    transform: translate3d(0, 0, 0) scale(1.12);
+    filter: blur(1.1rem) saturate(0.9) brightness(0.75);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .title-background-stripes::before,
   .title-background-stripes::after,
