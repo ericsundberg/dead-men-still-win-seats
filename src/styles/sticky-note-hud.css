@@ -1,0 +1,348 @@
+/*
+  Sticky-note election countdown
+  ------------------------------
+  A skeuomorphic pad fixed above the right-hand chyron strap.
+*/
+
+.sticky-note-hud {
+  --sticky-note-marker-font:
+  "Permanent Marker",
+  cursive;
+
+  --sticky-note-light:
+    #fff89a;
+
+  --sticky-note-paper:
+    #f6e86b;
+
+  --sticky-note-dark:
+    #d6c248;
+
+  --sticky-note-ink:
+    #292716;
+
+  position: fixed;
+
+  /*
+    Shift the note inward so it visually sits above the
+    right-hand date strap rather than hugging the viewport edge.
+  */
+  right:
+    calc(4.25rem * var(--ui-scale));
+
+  bottom:
+    calc(
+      var(--campaign-chyron-total-height)
+      + calc(2.15rem * var(--ui-scale))
+    );
+
+  z-index: 45;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 0;
+
+    width:
+    calc(10.25rem * var(--ui-scale));
+
+    min-height:
+    calc(9.75rem * var(--ui-scale));
+
+    padding:
+    calc(0.78rem * var(--ui-scale))
+    calc(0.55rem * var(--ui-scale))
+    calc(0.62rem * var(--ui-scale));
+
+  overflow: hidden;
+
+  border:
+    calc(0.06rem * var(--ui-scale))
+    solid
+    rgb(132 117 42 / 0.52);
+
+  border-radius:
+    calc(0.08rem * var(--ui-scale));
+
+  color:
+    var(--sticky-note-ink);
+
+  font-family:
+    var(--sticky-note-marker-font);
+
+  background:
+    radial-gradient(
+      circle,
+      rgb(102 87 31 / 0.07)
+      0
+      calc(0.025rem * var(--ui-scale)),
+
+      transparent
+      calc(0.04rem * var(--ui-scale))
+    )
+    0
+    0
+    /
+    calc(1rem * var(--ui-scale))
+    calc(0.9rem * var(--ui-scale)),
+
+    linear-gradient(
+      112deg,
+      rgb(255 255 255 / 0.3),
+      transparent 38%,
+      rgb(94 78 20 / 0.09)
+    ),
+
+    linear-gradient(
+      180deg,
+      var(--sticky-note-light),
+      var(--sticky-note-paper) 72%,
+      var(--sticky-note-dark)
+    );
+
+  box-shadow:
+    calc(0.16rem * var(--ui-scale))
+    calc(0.18rem * var(--ui-scale))
+    0
+    #d0bd48,
+
+    calc(0.3rem * var(--ui-scale))
+    calc(0.36rem * var(--ui-scale))
+    0
+    #b9a539,
+
+    calc(0.72rem * var(--ui-scale))
+    calc(0.9rem * var(--ui-scale))
+    calc(0.9rem * var(--ui-scale))
+    rgb(0 0 0 / 0.48),
+
+    calc(1.1rem * var(--ui-scale))
+    calc(1.35rem * var(--ui-scale))
+    calc(2rem * var(--ui-scale))
+    rgb(0 0 0 / 0.25),
+
+    inset
+    0
+    calc(0.12rem * var(--ui-scale))
+    0
+    rgb(255 255 255 / 0.42),
+
+    inset
+    0
+    calc(-0.15rem * var(--ui-scale))
+    calc(0.22rem * var(--ui-scale))
+    rgb(99 82 20 / 0.2);
+
+  transform:
+    rotate(1.3deg);
+
+  transform-origin:
+    center top;
+
+  pointer-events: none;
+}
+
+/*
+  Darker adhesive strip along the top.
+*/
+
+.sticky-note-hud::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+
+  height:
+    calc(0.6rem * var(--ui-scale));
+
+  background:
+    linear-gradient(
+      180deg,
+      rgb(117 97 25 / 0.2),
+      rgb(255 255 255 / 0.12),
+      transparent
+    );
+
+  box-shadow:
+    0
+    calc(0.08rem * var(--ui-scale))
+    calc(0.14rem * var(--ui-scale))
+    rgb(94 78 20 / 0.13);
+
+  pointer-events: none;
+}
+
+/*
+  Slightly curled lower-right corner.
+*/
+
+.sticky-note-hud::after {
+  content: "";
+
+  position: absolute;
+
+  right:
+    calc(-0.05rem * var(--ui-scale));
+
+  bottom:
+    calc(-0.05rem * var(--ui-scale));
+
+  width:
+    calc(1.45rem * var(--ui-scale));
+
+  height:
+    calc(1.45rem * var(--ui-scale));
+
+  clip-path:
+    polygon(
+      100% 0,
+      100% 100%,
+      0 100%
+    );
+
+  background:
+    linear-gradient(
+      315deg,
+      #c7b43e,
+      #eee06e 52%,
+      #fff5a0 55%
+    );
+
+  filter:
+    drop-shadow(
+      calc(-0.1rem * var(--ui-scale))
+      calc(-0.08rem * var(--ui-scale))
+      calc(0.08rem * var(--ui-scale))
+      rgb(71 59 16 / 0.28)
+    );
+
+  pointer-events: none;
+}
+
+.sticky-note-hud > * {
+  position: relative;
+  z-index: 1;
+}
+
+/*
+  Strong and span elements can inherit unrelated global type
+  rules. Force every countdown element onto the marker stack.
+*/
+
+.sticky-note-hud,
+.sticky-note-countdown-label,
+.sticky-note-countdown-number,
+.sticky-note-countdown-unit {
+  font-family:
+    var(--sticky-note-marker-font) !important;
+
+  font-style: normal;
+  font-weight: 400;
+  font-synthesis: none;
+  font-variant-ligatures: none;
+
+  color:
+    var(--sticky-note-ink);
+}
+
+.sticky-note-countdown-label,
+.sticky-note-countdown-number,
+.sticky-note-countdown-unit {
+  display: block;
+
+  flex: none;
+
+  width: 100%;
+  margin: 0;
+
+  text-align: center;
+
+  text-shadow:
+    calc(0.018rem * var(--ui-scale))
+    0
+    0
+    rgb(20 19 12 / 0.28),
+
+    calc(-0.018rem * var(--ui-scale))
+    calc(0.018rem * var(--ui-scale))
+    0
+    rgb(20 19 12 / 0.18);
+}
+
+.sticky-note-countdown-label {
+  font-size:
+    calc(1.5rem * var(--ui-scale));
+
+  line-height: 0.78;
+
+  letter-spacing: 0;
+
+  text-transform:
+    uppercase;
+
+  transform:
+    rotate(-1.1deg)
+    scaleX(1.04);
+}
+
+.sticky-note-countdown-number {
+  margin-top:
+    calc(-0.05rem * var(--ui-scale));
+
+  margin-bottom:
+    calc(-0.35rem * var(--ui-scale));
+
+  font-size:
+    calc(6.1rem * var(--ui-scale));
+
+  line-height: 0.72;
+
+  letter-spacing:
+    -0.045em;
+
+  transform:
+    rotate(-1.7deg)
+    scaleX(1.06);
+}
+
+.sticky-note-countdown-unit {
+  font-size:
+    calc(1.65rem * var(--ui-scale));
+
+  line-height: 0.75;
+
+  letter-spacing:
+    0.015em;
+
+  text-transform:
+    uppercase;
+
+  transform:
+    rotate(0.7deg)
+    scaleX(1.04);
+}
+
+@media (max-width: 640px) {
+  .sticky-note-countdown-label {
+    font-size:
+      calc(1.15rem * var(--ui-scale));
+  }
+
+  .sticky-note-countdown-number {
+    margin-bottom:
+      calc(-0.25rem * var(--ui-scale));
+
+    font-size:
+      calc(4.8rem * var(--ui-scale));
+  }
+
+  .sticky-note-countdown-unit {
+    font-size:
+      calc(1.3rem * var(--ui-scale));
+  }
+}

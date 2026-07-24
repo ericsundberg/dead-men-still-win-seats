@@ -1,0 +1,19 @@
+/*
+  Bundled application fonts
+  -------------------------
+  Font files live under public/assets/fonts and are served from
+  the public root at /assets/fonts.
+*/
+
+@font-face {
+  font-family: "Permanent Marker";
+  src:
+    url(
+      "/assets/fonts/nanum-pen-script/nanum-pen-script-regular.ttf"
+    )
+    format("truetype");
+
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}

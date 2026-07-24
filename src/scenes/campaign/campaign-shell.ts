@@ -10,6 +10,9 @@ import {
 import {
   makeCampaignNewsTicker,
 } from './campaign-news-ticker';
+import {
+  makeCampaignElectionCountdown,
+} from './campaign-election-countdown';
 
 export interface CampaignShell {
   readonly element: HTMLElement;
@@ -64,10 +67,21 @@ export function makeCampaignShell(
         },
     );
 
-  hud.append(
+    const electionCountdown =
+    makeCampaignElectionCountdown({
+        turnNumber:
+        gameState?.year
+        ?? 1,
+
+        difficultyId:
+        context.game.getDifficultyId(),
+    });
+
+    hud.append(
     musicHud.element,
+    electionCountdown,
     newsTicker.element,
-  );
+    );
 
   shell.append(
     campaignContent,

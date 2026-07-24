@@ -10,8 +10,12 @@
 @import './layout.css';
 @import './scenes.css';
 
+@import './fonts.css';
+
 @import './music-hud.css';
 @import './news-chyron.css';
+@import './sticky-note-hud.css';
+
 @import './lined-paper.css';
 @import './canary-legal-pad.css';
 @import './printed-report-paper.css';
