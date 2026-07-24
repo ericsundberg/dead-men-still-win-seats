@@ -11,6 +11,181 @@
   border: calc(0.22rem * var(--ui-scale)) solid var(--color-white);
   box-shadow: var(--shadow-hard);
 }
+.title-scene {
+  --title-stripe-speed-1x: 12s;
+  --title-stripe-width: 3.5rem;
+  --title-stripe-period: 7rem;
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--color-blue-dark);
+}
+
+.title-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/*
+  The container is rotated but does not move.
+
+  The large overscan keeps all corners covered after rotation.
+*/
+.title-background-stripes {
+  position: absolute;
+  inset: -40vmax;
+  z-index: 0;
+  overflow: hidden;
+
+  transform: rotate(15deg) translateZ(0);
+  transform-origin: center;
+  backface-visibility: hidden;
+}
+
+/*
+  The gradient itself is orthogonal rather than diagonal.
+
+  This gives it an exact horizontal repeat period of 7rem. The animated
+  texture travels four complete periods, or 28rem, before resetting.
+*/
+.title-background-stripes::before {
+  position: absolute;
+  inset: 0;
+
+  content: "";
+
+  /*
+    One exact 7rem tile:
+    3.5rem red + 3.5rem white.
+  */
+  background-image:
+    linear-gradient(
+      90deg,
+      var(--color-red) 0,
+      var(--color-red) 50%,
+      var(--color-white) 50%,
+      var(--color-white) 100%
+    );
+
+  background-repeat: repeat;
+  background-position: 0 0;
+  background-size: var(--title-stripe-period) 100%;
+
+  opacity: 0.82;
+
+  /*
+    280rem is exactly forty 7rem tiles.
+
+    This preserves the current movement speed:
+    28rem / 12s = 280rem / 120s.
+  */
+  animation:
+    title-stripes-travel
+    120s
+    linear
+    infinite;
+}
+
+@keyframes title-stripes-travel {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: -280rem 0;
+  }
+}
+
+/*
+  Layer 2: individually moving gold stars.
+
+  The subtle blue wash keeps the stripes from overpowering the title panel
+  while leaving the stars clearly visible.
+*/
+.title-background-stars {
+  z-index: 1;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgb(0 31 91 / 0.08),
+      rgb(0 31 91 / 0.38)
+    );
+}
+
+.title-background-star {
+  position: absolute;
+  top: var(--star-top);
+  left: var(--star-left);
+
+  width: var(--star-size);
+  aspect-ratio: 1;
+
+  background: var(--color-gold);
+
+  /*
+    Five-point star shape without requiring an image asset or font glyph.
+  */
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+
+  opacity: var(--star-opacity);
+
+  filter:
+    drop-shadow(0 0.12rem 0 rgb(117 67 0 / 0.78))
+    drop-shadow(0 0 0.35rem rgb(255 209 102 / 0.35));
+
+  animation:
+    title-star-fall
+    var(--star-duration)
+    linear
+    var(--star-delay)
+    infinite;
+
+  will-change: transform;
+}
+
+.title-panel {
+  z-index: 2;
+}
+
+@keyframes title-stripes-travel {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: -10rem 0;
+  }
+}
+
+@keyframes title-star-fall {
+  from {
+    transform:
+      translate3d(var(--star-origin-x), -115vh, 0)
+      rotate(0deg);
+  }
+
+  to {
+    transform:
+      translate3d(var(--star-destination-x), 115vh, 0)
+      rotate(var(--star-spin));
+  }
+}
 
 .title-panel {
   position: relative;
@@ -310,6 +485,17 @@ input[type="file"]:focus {
   font-size: calc(0.95rem * var(--ui-scale));
   font-weight: 700;
   line-height: 1.35;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title-background-stripes,
+  .title-background-star {
+    animation: none;
+  }
+
+  .title-background-star {
+    opacity: 0.5;
+  }
 }
 
 @media (max-width: 640px) {
