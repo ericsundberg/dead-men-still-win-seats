@@ -15,7 +15,9 @@ import { renderGameSetupScene } from '../scenes/game-setup-scene';
 import { renderLoadGameScene } from '../scenes/load-game-scene';
 import { renderSettingsScene } from '../scenes/settings-scene';
 import { renderTitleScene } from '../scenes/title-scene';
-import { renderYearlyTurnScene } from '../scenes/yearly-turn-scene';
+import {
+  renderCampaignScene,
+} from '../scenes/campaign-scene';
 import { bindButtonBrushSfx } from '../ui/button-sfx';
 import { SceneRouter } from './scene-router';
 
@@ -71,8 +73,16 @@ export class AppController {
       renderGameSetupScene,
     );
     this.router.register(
+      'campaign',
+      renderCampaignScene,
+    );
+
+    /*
+    * Transitional alias for older navigation calls.
+    */
+    this.router.register(
       'yearly-turn',
-      renderYearlyTurnScene,
+      renderCampaignScene,
     );
     this.router.register(
       'load-game',

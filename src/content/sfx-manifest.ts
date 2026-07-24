@@ -1,10 +1,22 @@
 import type { SfxManifest } from '../audio/types';
 
+function getSfxPath(filename: string): string {
+  return `${import.meta.env.BASE_URL}assets/audio/sfx/${filename}`;
+}
+
 export const sfxManifest = {
+  'button-brush': {
+    id: 'button-brush',
+    label: 'Button Brush',
+    path: getSfxPath('button-brush.ogg'),
+    volume: 0.8,
+    allowOverlap: true,
+  },
+
   'button-click': {
     id: 'button-click',
     label: 'Button Click',
-    path: '/assets/audio/sfx/button-click.ogg',
+    path: getSfxPath('button-click.ogg'),
     volume: 0.8,
     allowOverlap: true,
   },
@@ -12,7 +24,7 @@ export const sfxManifest = {
   'button-cancel': {
     id: 'button-cancel',
     label: 'Button Cancel',
-    path: '/assets/audio/sfx/button-cancel.ogg',
+    path: getSfxPath('button-cancel.ogg'),
     volume: 0.8,
     allowOverlap: true,
   },
@@ -20,7 +32,7 @@ export const sfxManifest = {
   disaster: {
     id: 'disaster',
     label: 'Disaster',
-    path: '/assets/audio/sfx/disaster.ogg',
+    path: getSfxPath('disaster.ogg'),
     volume: 0.9,
     allowOverlap: true,
   },
@@ -28,7 +40,7 @@ export const sfxManifest = {
   harvest: {
     id: 'harvest',
     label: 'Harvest',
-    path: '/assets/audio/sfx/harvest.ogg',
+    path: getSfxPath('harvest.ogg'),
     volume: 0.75,
     allowOverlap: true,
   },
@@ -36,7 +48,7 @@ export const sfxManifest = {
   error: {
     id: 'error',
     label: 'Error',
-    path: '/assets/audio/sfx/error.ogg',
+    path: getSfxPath('error.ogg'),
     volume: 0.7,
     allowOverlap: false,
   },

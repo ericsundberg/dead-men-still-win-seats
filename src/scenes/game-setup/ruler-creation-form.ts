@@ -41,7 +41,7 @@ export function makeRulerCreationForm(context: SceneContext): HTMLFormElement {
       `[ui] new game started for ruler: ${rulerProfile?.givenName} ${rulerProfile?.familyName}`,
     );
 
-    context.navigate('yearly-turn');
+    context.navigate('campaign');
   });
 
   return form;

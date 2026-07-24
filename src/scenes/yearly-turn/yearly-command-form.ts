@@ -63,14 +63,14 @@ export function makeYearlyCommandForm(context: SceneContext): HTMLFormElement {
     });
 
     if (!outcome) {
-      console.warn('[game] tried to submit a yearly turn without an active game');
+      console.warn('[game] tried to submit a week turn without an active game');
       context.navigate('game-setup');
       return;
     }
 
-    console.log(`[game] processed turn for year ${outcome.previousState.year}`);
+    console.log(`[game] processed turn for week ${outcome.previousState.year}`);
 
-    context.navigate('yearly-turn');
+    context.navigate('campaign');
   });
 
   return form;

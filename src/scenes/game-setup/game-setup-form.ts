@@ -46,7 +46,7 @@ export function makeGameSetupForm(
       `[ui] new game started with difficulty: ${difficulty}; total turns: ${settings.turnCount}`,
     );
 
-    context.navigate('yearly-turn');
+    context.navigate('campaign');
   });
 
   return form;
