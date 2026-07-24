@@ -37,6 +37,10 @@
   --color-text-dark: #06122f;
   --color-muted: rgb(255 255 255 / 0.78);
 
+  --color-subscene-bg: #171410;
+  --color-subscene-grain: rgb(150 150 150 / 0.14);
+  --color-subscene-shadow: rgb(0 0 0 / 0.72);
+
   --shadow-hard:
     0 0 0 0.18rem rgb(255 255 255 / 0.95),
     0 0 0 0.48rem rgb(224 0 42 / 0.92),

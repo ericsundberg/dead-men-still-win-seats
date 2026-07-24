@@ -1,6 +1,7 @@
 import type { SceneContext } from '../app/scene-router';
 import { makeButton, makeElement } from '../ui/dom-helpers';
 import { game_version } from '../version';
+import { makeTitleBackground } from './title/title-background';
 
 export function renderTitleScene(context: SceneContext): HTMLElement {
   const scene = makeElement('section', {
@@ -67,7 +68,7 @@ export function renderTitleScene(context: SceneContext): HTMLElement {
   );
 
   panel.append(title, version, subtitle, menu);
-  scene.append(panel);
+  scene.append(makeTitleBackground(), panel);
 
   return scene;
 }

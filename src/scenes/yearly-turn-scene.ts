@@ -6,7 +6,7 @@ import { makeYearlyTurnPanel } from './yearly-turn/yearly-turn-panel';
 
 export function renderYearlyTurnScene(context: SceneContext): HTMLElement {
   const scene = makeElement('section', {
-    className: 'scene',
+    className: 'scene gameplay-scene',
   });
 
   const state = context.game.getState();
