@@ -2,9 +2,16 @@ import type { SceneContext } from '../../app/scene-router';
 import { gameDifficultySettings } from '../../game/difficulty';
 import { text } from '../../localization/localized-text';
 import { makeElement } from '../../ui/dom-helpers';
-import { createDifficultySelectionFields } from './difficulty-selection-fields';
+import {
+  createDifficultySelectionFields,
+} from './difficulty-selection-fields';
+import {
+  selectGameplayMusicTrackId,
+} from '../../content/music-manifest';
 
-export function makeGameSetupForm(context: SceneContext): HTMLFormElement {
+export function makeGameSetupForm(
+  context: SceneContext,
+): HTMLFormElement {
   const form = makeElement('form', {
     className: 'menu-form game-setup-form',
   });
@@ -16,19 +23,30 @@ export function makeGameSetupForm(context: SceneContext): HTMLFormElement {
   startButton.className = 'menu-button';
   startButton.textContent = text('gameSetup.startGameButton');
 
-  form.append(difficultyFields.element, startButton);
+  form.append(
+    difficultyFields.element,
+    startButton,
+  );
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
 
     context.audio.sfx.play('button-click');
 
-    const difficulty = difficultyFields.getSelectedDifficulty();
-    const settings = gameDifficultySettings[difficulty];
+    const difficulty =
+      difficultyFields.getSelectedDifficulty();
+
+    const settings =
+      gameDifficultySettings[difficulty];
 
     context.game.startNewGame({
       difficulty,
     });
+
+    const gameplayTrackId =
+      selectGameplayMusicTrackId();
+
+    context.audio.music.playGameplayPlaylist();
 
     console.log(
       `[ui] new game started with difficulty: ${difficulty}; total turns: ${settings.turnCount}`,

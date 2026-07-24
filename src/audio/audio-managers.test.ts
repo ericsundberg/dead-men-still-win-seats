@@ -14,9 +14,12 @@ describe('audio managers', () => {
   it('finds known sfx IDs', () => {
     const sfxManager = new SfxManager();
 
+    expect(sfxManager.has('button-brush')).toBe(true);
     expect(sfxManager.has('button-click')).toBe(true);
     expect(sfxManager.has('button-cancel')).toBe(true);
     expect(sfxManager.has('missing-sfx')).toBe(false);
+
+    expect(sfxManager.getIds()).toContain('button-brush');
     expect(sfxManager.getIds()).toContain('button-click');
     expect(sfxManager.getIds()).toContain('button-cancel');
   });

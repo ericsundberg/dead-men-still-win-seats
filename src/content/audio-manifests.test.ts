@@ -1,7 +1,11 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { musicManifest } from './music-manifest';
+import {
+  gameplayMusicTrackIds,
+  musicManifest,
+  selectGameplayMusicTrackId,
+} from './music-manifest';
 import { sfxManifest } from './sfx-manifest';
 
 function toPublicFilePath(assetPath: string): string {
@@ -48,6 +52,7 @@ describe('audio manifests', () => {
 
   it('points implemented interface sfx entries to existing public assets', () => {
     const implementedSfxEntries = [
+      sfxManifest['button-brush'],
       sfxManifest['button-click'],
       sfxManifest['button-cancel'],
     ];
@@ -70,5 +75,39 @@ describe('audio manifests', () => {
       expect(entry.volume).toBeGreaterThanOrEqual(0);
       expect(entry.volume).toBeLessThanOrEqual(1);
     }
+  });
+
+  it('keeps the title theme out of the gameplay pool', () => {
+    expect(gameplayMusicTrackIds).toHaveLength(12);
+    expect(gameplayMusicTrackIds).not.toContain(
+      'main-menu-theme',
+    );
+  });
+
+  it('selects gameplay tracks from the bounded random value', () => {
+    expect(
+      selectGameplayMusicTrackId([], () => 0),
+    ).toBe('backroads-to-your-door');
+
+    expect(
+      selectGameplayMusicTrackId([], () => 0.999999),
+    ).toBe('moonshine-town');
+  });
+
+  it('excludes the five most recently played gameplay tracks', () => {
+    const recentTrackIds = [
+      'backroads-to-your-door',
+      'calgary-hill',
+      'campfire-smoke',
+      'country-all-the-way',
+      'country-back-road',
+    ] as const;
+
+    expect(
+      selectGameplayMusicTrackId(
+        recentTrackIds,
+        () => 0,
+      ),
+    ).toBe('country-jam');
   });
 });

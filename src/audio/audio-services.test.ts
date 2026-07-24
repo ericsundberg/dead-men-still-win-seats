@@ -6,6 +6,7 @@ describe('audio services', () => {
     const audio = createAudioServices();
 
     expect(audio.music.has('main-menu-theme')).toBe(true);
+    expect(audio.sfx.has('button-brush')).toBe(true);
     expect(audio.sfx.has('button-click')).toBe(true);
     expect(audio.sfx.has('button-cancel')).toBe(true);
     expect(audio.unlocker.getIsUnlocked()).toBe(false);
