@@ -4,9 +4,13 @@
   "version": "0.0.1-prealpha",
   "type": "module",
   "scripts": {
+    "events:manifest": "node tools/build_event_manifest.mjs",
+    "predev": "npm run events:manifest",
     "dev": "vite",
+    "prebuild": "npm run events:manifest",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "pretest": "npm run events:manifest",
     "test": "vitest run",
     "headless": "tsx src/headless/node-console-runner.ts"
   },
