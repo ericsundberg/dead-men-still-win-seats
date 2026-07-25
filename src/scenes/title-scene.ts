@@ -25,10 +25,6 @@ export function renderTitleScene(
     );
   }
 
-  context.audio.unlocker.bindToFirstGesture(scene, () => {
-    context.audio.music.play('main-menu-theme');
-  });
-
   const panel = makeElement('div', {
     className: 'scene-panel title-panel',
   });
@@ -68,6 +64,17 @@ export function renderTitleScene(
     makeButton('Settings', () => context.navigate('settings'), 'menu-button', {
       onBeforeClick: playButtonClick,
     }),
+    makeButton(
+      'Watch Intro',
+      () => {
+        context.audio.music.stop();
+        context.navigate('intro');
+      },
+      'menu-button',
+      {
+        onBeforeClick: playButtonClick,
+      },
+    ),
     makeButton('Credits', () => context.navigate('credits'), 'menu-button', {
       onBeforeClick: playButtonClick,
     }),

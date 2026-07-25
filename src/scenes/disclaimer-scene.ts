@@ -7,8 +7,6 @@ import {
   bindStartupSceneAdvance,
 } from './startup-scene-navigation';
 
-const disclaimerSceneDurationMs = 10_000;
-
 export function renderDisclaimerScene(
   context: SceneContext,
 ): HTMLElement {
@@ -22,24 +20,37 @@ export function renderDisclaimerScene(
     'Disclaimer',
   );
 
-  scene.style.setProperty(
-    '--startup-scene-duration',
-    `${disclaimerSceneDurationMs}ms`,
-  );
-
   const disclaimer = makeElement('p', {
     className:
-      'startup-scene-content disclaimer-copy',
+      'disclaimer-copy',
     textContent: text('startup.disclaimer'),
   });
 
-  scene.append(disclaimer);
+  const continuePrompt = makeElement('p', {
+    className:
+      'disclaimer-continue-prompt',
+    textContent: text(
+      'startup.continuePrompt',
+    ),
+  });
+
+  const content = makeElement('div', {
+    className:
+      'startup-scene-content disclaimer-content',
+  });
+
+  content.append(
+    disclaimer,
+    continuePrompt,
+  );
+
+  scene.append(content);
 
   bindStartupSceneAdvance({
     scene,
     context,
     nextScene: 'intro',
-    durationMs: disclaimerSceneDurationMs,
+    fadeOnAdvance: false,
   });
 
   return scene;

@@ -11,6 +11,7 @@ export interface BindStartupSceneAdvanceOptions {
   readonly nextScene: SceneName;
   readonly durationMs?: number;
   readonly beforeAdvance?: () => void;
+  readonly fadeOnAdvance?: boolean;
 }
 
 /**
@@ -25,7 +26,10 @@ export function bindStartupSceneAdvance(
   let hasAdvanced = false;
   let advanceTimer: number | null = null;
 
-  const transitionDurationMs = prefersReducedMotion()
+  const transitionDurationMs = (
+    options.fadeOnAdvance === false
+    || prefersReducedMotion()
+    )
     ? 0
     : startupSceneFadeDurationMs;
 
@@ -76,19 +80,16 @@ export function bindStartupSceneAdvance(
     advance();
   }
 
-  function handleKeyDown(
+    function handleKeyDown(
     event: KeyboardEvent,
-  ): void {
-    if (
-      event.key !== 'Enter'
-      || event.repeat
-    ) {
-      return;
+    ): void {
+    if (event.repeat) {
+        return;
     }
 
     event.preventDefault();
     advance();
-  }
+    }
 
   options.scene.addEventListener(
     'click',
