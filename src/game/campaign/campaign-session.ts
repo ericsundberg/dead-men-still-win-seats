@@ -20,6 +20,14 @@ import {
   defaultCampaignStartingValues,
   type CampaignState,
 } from './campaign-state';
+import {
+  createEventRegistry,
+  type EventRegistry,
+} from '../../events/event-registry';
+import type {
+  EventId,
+  GameEventDefinition,
+} from '../../events/event-types';
 
 export type CampaignStateListener = (
   state: CampaignState | null,
@@ -34,6 +42,12 @@ export type CampaignStateListener = (
  * directly inside scene components.
  */
 export class CampaignSession {
+  public constructor(
+    private readonly eventRegistry:
+      EventRegistry =
+        createEventRegistry(),
+  ) {}
+
   private state:
     CampaignState | null = null;
 
@@ -78,6 +92,32 @@ export class CampaignSession {
   public getState():
     CampaignState | null {
     return this.state;
+  }
+
+    /**
+   * Returns the event IDs loaded from public event packs.
+   *
+   * Event activation will use this registry in a later
+   * checkpoint.
+   */
+  public getRegisteredEventIds():
+    readonly EventId[] {
+    return this.eventRegistry
+      .getEventIds();
+  }
+
+  /**
+   * Retrieves one loaded event definition without exposing the
+   * registry itself for mutation.
+   */
+  public getEventDefinition(
+    eventId:
+      EventId,
+  ): GameEventDefinition | null {
+    return this.eventRegistry
+      .getEvent(
+        eventId,
+      );
   }
 
   public getDifficultyId():
@@ -378,7 +418,12 @@ export class CampaignSession {
   }
 }
 
-export function createCampaignSession():
-  CampaignSession {
-  return new CampaignSession();
+export function createCampaignSession(
+  eventRegistry:
+    EventRegistry =
+      createEventRegistry(),
+): CampaignSession {
+  return new CampaignSession(
+    eventRegistry,
+  );
 }

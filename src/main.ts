@@ -1,10 +1,20 @@
 import './styles/index.css';
 
-import { AppController } from './app/app-controller';
-import { loadLocalizedText } from './localization/localized-text';
-import { applyUiScale } from './ui/ui-scale';
+import {
+  AppController,
+} from './app/app-controller';
+import {
+  loadPublicEventRegistry,
+} from './events/event-pack-loader';
+import {
+  loadLocalizedText,
+} from './localization/localized-text';
+import {
+  applyUiScale,
+} from './ui/ui-scale';
 
-async function startApp(): Promise<void> {
+async function startApp():
+  Promise<void> {
   const app =
     document.querySelector<HTMLDivElement>(
       '#app',
@@ -18,10 +28,19 @@ async function startApp(): Promise<void> {
 
   await loadLocalizedText();
 
+  const eventRegistry =
+    await loadPublicEventRegistry({
+      baseUrl:
+        import.meta.env.BASE_URL,
+    });
+
   applyUiScale();
 
   const controller =
-    new AppController(app);
+    new AppController(
+      app,
+      eventRegistry,
+    );
 
   controller.start();
 }

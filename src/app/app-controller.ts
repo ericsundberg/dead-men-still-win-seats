@@ -2,6 +2,9 @@ import {
   createAudioServices,
   type AudioServices,
 } from '../audio/audio-services';
+import type {
+  EventRegistry,
+} from '../events/event-registry';
 import {
   createCampaignSession,
   type CampaignSession,
@@ -59,10 +62,10 @@ export class AppController {
     GameSession;
 
   /*
-   * New political-campaign runtime.
+   * Political campaign runtime.
    *
-   * It is passed through SceneContext now, but scenes will be
-   * migrated to it in later, isolated checkpoints.
+   * Public event packs are loaded before this controller is
+   * constructed and passed into CampaignSession here.
    */
   private readonly campaignSession:
     CampaignSession;
@@ -73,6 +76,9 @@ export class AppController {
   public constructor(
     private readonly rootElement:
       HTMLElement,
+
+    eventRegistry:
+      EventRegistry,
   ) {
     this.audioServices =
       createAudioServices();
@@ -81,7 +87,9 @@ export class AppController {
       createGameSession();
 
     this.campaignSession =
-      createCampaignSession();
+      createCampaignSession(
+        eventRegistry,
+      );
 
     this.router =
       new SceneRouter(
