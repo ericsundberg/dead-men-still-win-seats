@@ -12,6 +12,9 @@ import {
   makeElement,
 } from '../ui/dom-helpers';
 import {
+  makeCampaignActionPanel,
+} from './campaign/campaign-action-panel';
+import {
   makeCampaignShell,
 } from './campaign/campaign-shell';
 import {
@@ -134,7 +137,7 @@ export function renderCampaignScene(
    * The temporary Hamurabi panel still requires legacy state.
    *
    * Including campaignState in this guard also narrows its type
-   * before it is passed to the new campaign-only status view.
+   * before it is passed to campaign-only interface components.
    */
   if (
     !campaignState
@@ -167,12 +170,6 @@ export function renderCampaignScene(
       },
     );
 
-  /*
-   * First vertical-slice campaign component.
-   *
-   * This summary reads exclusively from CampaignState and is
-   * independent of the temporary Hamurabi panel below it.
-   */
   campaignContent.append(
     makeCampaignStatusSummary(
       campaignState,
@@ -182,6 +179,23 @@ export function renderCampaignScene(
   const legacyGameOverState =
     context.game
       .getGameOverState();
+
+  /*
+   * Do not offer campaign actions after either temporary runtime
+   * has reached a game-over state.
+   */
+  if (
+    campaignState.phase
+      !== 'game-over'
+    && !legacyGameOverState
+  ) {
+    campaignContent.append(
+      makeCampaignActionPanel(
+        context,
+        campaignState,
+      ),
+    );
+  }
 
   if (legacyGameOverState) {
     campaignContent.append(
@@ -195,8 +209,8 @@ export function renderCampaignScene(
      * Temporary migration layer:
      *
      * CampaignSession owns campaign existence, turn number,
-     * difficulty, news, resources, metrics, and campaign
-     * end-game state.
+     * difficulty, news, resources, metrics, campaign actions,
+     * and campaign end-game state.
      *
      * The legacy yearly-turn panel remains the central content
      * only until the vertical-slice campaign interface replaces
