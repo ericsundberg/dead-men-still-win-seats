@@ -3,6 +3,12 @@ import {
   type GameDifficultyId,
 } from '../difficulty';
 import {
+  getCampaignActionDefinition,
+  performCampaignAction,
+  type CampaignActionId,
+  type CampaignActionResult,
+} from './campaign-actions';
+import {
   applyCampaignEffects,
   type CampaignEffects,
 } from './campaign-effects';
@@ -22,7 +28,7 @@ export type CampaignStateListener = (
 /**
  * Owns the active political campaign state.
  *
- * The campaign runtime now runs alongside the temporary legacy
+ * The campaign runtime runs alongside the temporary legacy
  * GameSession. New campaign systems should change campaign state
  * through this session rather than modifying CampaignState
  * directly inside scene components.
@@ -107,6 +113,60 @@ export class CampaignSession {
   }
 
   /**
+   * Performs one registered campaign action.
+   *
+   * The pure campaign-action module resolves requirements and
+   * effects. This session owns committing the resulting state,
+   * evaluating immediate end-game conditions, and notifying
+   * subscribers.
+   *
+   * A rejected action returns its failure result without changing
+   * session state or notifying subscribers.
+   */
+  public performAction(
+    actionId:
+      CampaignActionId,
+  ): CampaignActionResult | null {
+    const currentState =
+      this.state;
+
+    if (
+      !currentState
+      || currentState.phase
+        === 'game-over'
+    ) {
+      return null;
+    }
+
+    const action =
+      getCampaignActionDefinition(
+        actionId,
+      );
+
+    const actionResult =
+      performCampaignAction(
+        currentState,
+        action,
+      );
+
+    if (
+      !actionResult.performed
+    ) {
+      return actionResult;
+    }
+
+    const nextState =
+      this.commitAffectedState(
+        actionResult.nextState,
+      );
+
+    return {
+      ...actionResult,
+      nextState,
+    };
+  }
+
+  /**
    * Applies resource and metric changes to the active campaign.
    *
    * CampaignEffects performs the numerical bounds checking:
@@ -140,34 +200,9 @@ export class CampaignSession {
         effects,
       );
 
-    const endGameState =
-      evaluateCampaignEndGame(
-        affectedState,
-      );
-
-    if (endGameState) {
-      const completedState:
-        CampaignState = {
-          ...affectedState,
-
-          phase:
-            'game-over',
-
-          endGameState,
-        };
-
-      this.setState(
-        completedState,
-      );
-
-      return completedState;
-    }
-
-    this.setState(
+    return this.commitAffectedState(
       affectedState,
     );
-
-    return affectedState;
   }
 
   /**
@@ -280,6 +315,46 @@ export class CampaignSession {
         listener,
       );
     };
+  }
+
+  /**
+   * Commits a state produced by campaign effects.
+   *
+   * This shared path ensures direct effects and registered actions
+   * receive identical immediate end-game handling.
+   */
+  private commitAffectedState(
+    affectedState:
+      CampaignState,
+  ): CampaignState {
+    const endGameState =
+      evaluateCampaignEndGame(
+        affectedState,
+      );
+
+    if (endGameState) {
+      const completedState:
+        CampaignState = {
+          ...affectedState,
+
+          phase:
+            'game-over',
+
+          endGameState,
+        };
+
+      this.setState(
+        completedState,
+      );
+
+      return completedState;
+    }
+
+    this.setState(
+      affectedState,
+    );
+
+    return affectedState;
   }
 
   private setState(
