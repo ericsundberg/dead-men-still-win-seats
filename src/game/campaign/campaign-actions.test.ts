@@ -15,6 +15,9 @@ import {
   type CampaignActionDefinition,
 } from './campaign-actions';
 
+const fundraiserHeadline =
+  'Buster Campaign Holds Closed-Door Fundraiser; Senator Not Seen';
+
 function createPlayerActionState():
   CampaignState {
   return {
@@ -62,6 +65,10 @@ describe(
             voterEnergy:
               -4,
           },
+
+          newsItems: [
+            fundraiserHeadline,
+          ],
         });
 
         expect(
@@ -183,7 +190,7 @@ describe(
     );
 
     it(
-      'applies the fundraiser effects without mutating the original state',
+      'applies fundraiser effects and news without mutating the original state',
       () => {
         const campaignState =
           createPlayerActionState();
@@ -247,6 +254,13 @@ describe(
             96,
         });
 
+        expect(
+          result.nextState
+            .newsFeed,
+        ).toEqual([
+          fundraiserHeadline,
+        ]);
+
         /*
          * Confirm that the original state remains unchanged.
          */
@@ -275,6 +289,78 @@ describe(
           voterEnergy:
             100,
         });
+
+        expect(
+          campaignState.newsFeed,
+        ).toEqual([]);
+      },
+    );
+
+    it(
+      'places newly generated action news before older headlines',
+      () => {
+        const campaignState = {
+          ...createPlayerActionState(),
+
+          newsFeed: [
+            'Statesyltucky County Fair Opens Friday',
+          ],
+        };
+
+        const action =
+          getCampaignActionDefinition(
+            'closed-door-fundraiser',
+          );
+
+        const result =
+          performCampaignAction(
+            campaignState,
+            action,
+          );
+
+        expect(
+          result.nextState
+            .newsFeed,
+        ).toEqual([
+          fundraiserHeadline,
+          'Statesyltucky County Fair Opens Friday',
+        ]);
+      },
+    );
+
+    it(
+      'does not duplicate a headline when an action is repeated',
+      () => {
+        const campaignState =
+          createPlayerActionState();
+
+        const action =
+          getCampaignActionDefinition(
+            'closed-door-fundraiser',
+          );
+
+        const firstResult =
+          performCampaignAction(
+            campaignState,
+            action,
+          );
+
+        const secondResult =
+          performCampaignAction(
+            firstResult.nextState,
+            action,
+          );
+
+        expect(
+          secondResult.performed,
+        ).toBe(true);
+
+        expect(
+          secondResult.nextState
+            .newsFeed,
+        ).toEqual([
+          fundraiserHeadline,
+        ]);
       },
     );
 

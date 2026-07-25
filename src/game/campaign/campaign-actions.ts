@@ -29,6 +29,13 @@ export interface CampaignActionDefinition {
 
   readonly effects:
     CampaignEffects;
+
+  /*
+   * Headlines added to the persistent campaign news feed after
+   * the action succeeds.
+   */
+  readonly newsItems?:
+    readonly string[];
 }
 
 export type CampaignActionFailureReason =
@@ -89,6 +96,10 @@ const campaignActionDefinitions = {
       voterEnergy:
         -4,
     },
+
+    newsItems: [
+      'Buster Campaign Holds Closed-Door Fundraiser; Senator Not Seen',
+    ],
   },
 } as const satisfies Record<
   CampaignActionId,
@@ -118,8 +129,8 @@ export function getCampaignActionDefinitions():
  * Determines whether an action may be performed in the supplied
  * campaign state.
  *
- * All unmet requirements are returned so the eventual interface
- * can explain every reason an action is unavailable.
+ * All unmet requirements are returned so the interface can
+ * explain every reason an action is unavailable.
  */
 export function evaluateCampaignActionAvailability(
   campaignState:
@@ -197,9 +208,12 @@ export function evaluateCampaignActionAvailability(
  * Resolves one campaign action without mutating the supplied
  * state.
  *
- * This function performs no session work and sends no
- * notifications. CampaignSession will own those responsibilities
- * when actions are connected to the runtime.
+ * Successful actions apply their numerical effects and place
+ * their headlines at the front of the persistent campaign news
+ * feed.
+ *
+ * Duplicate headlines are removed so repeating one action does
+ * not fill the ticker with identical stories.
  */
 export function performCampaignAction(
   campaignState:
@@ -235,11 +249,25 @@ export function performCampaignAction(
     };
   }
 
-  const nextState =
+  const affectedState =
     applyCampaignEffects(
       campaignState,
       action.effects,
     );
+
+  const nextState:
+    CampaignState = {
+      ...affectedState,
+
+      newsFeed:
+        mergeCampaignNewsItems(
+          campaignState
+            .newsFeed,
+
+          action.newsItems
+          ?? [],
+        ),
+  };
 
   return {
     action,
@@ -255,4 +283,71 @@ export function performCampaignAction(
     failureReasons:
       [],
   };
+}
+
+/**
+ * Places newly generated headlines before older stories while
+ * retaining only one copy of each usable headline.
+ */
+function mergeCampaignNewsItems(
+  currentNewsItems:
+    readonly string[],
+
+  newNewsItems:
+    readonly string[],
+): readonly string[] {
+  const normalizedNewItems =
+    newNewsItems
+      .map(
+        (newsItem) =>
+          newsItem.trim(),
+      )
+      .filter(
+        (newsItem) =>
+          newsItem.length > 0,
+      );
+
+  if (
+    normalizedNewItems.length
+    === 0
+  ) {
+    return currentNewsItems;
+  }
+
+  const mergedNewsItems:
+    string[] = [];
+
+  const seenNewsItems =
+    new Set<string>();
+
+  for (
+    const newsItem
+    of [
+      ...normalizedNewItems,
+      ...currentNewsItems,
+    ]
+  ) {
+    const normalizedNewsItem =
+      newsItem.trim();
+
+    if (
+      normalizedNewsItem.length
+        === 0
+      || seenNewsItems.has(
+        normalizedNewsItem,
+      )
+    ) {
+      continue;
+    }
+
+    seenNewsItems.add(
+      normalizedNewsItem,
+    );
+
+    mergedNewsItems.push(
+      normalizedNewsItem,
+    );
+  }
+
+  return mergedNewsItems;
 }
