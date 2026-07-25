@@ -15,6 +15,9 @@ import {
   makeCampaignActionPanel,
 } from './campaign/campaign-action-panel';
 import {
+  makeCampaignGameOverPanel,
+} from './campaign/campaign-game-over-panel';
+import {
   makeCampaignShell,
 } from './campaign/campaign-shell';
 import {
@@ -52,13 +55,6 @@ export interface CampaignSceneRuntimeSnapshot {
     readonly string[];
 }
 
-/**
- * Resolves the runtime state needed by the campaign scene.
- *
- * CampaignSession determines whether a political campaign is
- * active. The legacy GameSession is still required temporarily
- * because the current central panel renders Hamurabi state.
- */
 export function resolveCampaignSceneRuntime(
   options:
     ResolveCampaignSceneRuntimeOptions,
@@ -75,10 +71,6 @@ export function resolveCampaignSceneRuntime(
     hasActiveCampaign,
     hasLegacyState,
 
-    /*
-     * This state should not occur through normal game setup,
-     * because the setup form starts both runtimes together.
-     */
     hasRuntimeMismatch:
       hasActiveCampaign
       && !hasLegacyState,
@@ -91,7 +83,8 @@ export function resolveCampaignSceneRuntime(
 }
 
 export function renderCampaignScene(
-  context: SceneContext,
+  context:
+    SceneContext,
 ): HTMLElement {
   const scene =
     makeElement(
@@ -116,10 +109,6 @@ export function renderCampaignScene(
       legacyState,
     });
 
-  /*
-   * CampaignSession is authoritative for deciding whether the
-   * player has an active campaign.
-   */
   if (
     !runtimeSnapshot
       .hasActiveCampaign
@@ -136,8 +125,8 @@ export function renderCampaignScene(
   /*
    * The temporary Hamurabi panel still requires legacy state.
    *
-   * Including campaignState in this guard also narrows its type
-   * before it is passed to campaign-only interface components.
+   * This restriction can be removed after the legacy central
+   * panel and synchronized turn bridge have been replaced.
    */
   if (
     !campaignState
@@ -181,23 +170,40 @@ export function renderCampaignScene(
       .getGameOverState();
 
   /*
-   * Do not offer campaign actions after either temporary runtime
-   * has reached a game-over state.
+   * CampaignSession is authoritative for political campaign
+   * results. This branch must take priority over the temporary
+   * legacy game-over state and yearly-turn panel.
    */
   if (
     campaignState.phase
-      !== 'game-over'
-    && !legacyGameOverState
+    === 'game-over'
   ) {
+    if (
+      !campaignState
+        .endGameState
+    ) {
+      console.warn(
+        [
+          '[campaign] campaign reached game over',
+          'without a recorded end-game result',
+        ].join('; '),
+      );
+    }
+
     campaignContent.append(
-      makeCampaignActionPanel(
+      makeCampaignGameOverPanel(
         context,
-        campaignState,
+        campaignState
+          .endGameState,
       ),
     );
-  }
-
-  if (legacyGameOverState) {
+  } else if (
+    legacyGameOverState
+  ) {
+    /*
+     * Temporary fallback for a legacy game that reaches its own
+     * terminal state before that system is removed.
+     */
     campaignContent.append(
       makeGameOverPanel(
         context,
@@ -205,6 +211,13 @@ export function renderCampaignScene(
       ),
     );
   } else {
+    campaignContent.append(
+      makeCampaignActionPanel(
+        context,
+        campaignState,
+      ),
+    );
+
     /*
      * Temporary migration layer:
      *
@@ -212,9 +225,8 @@ export function renderCampaignScene(
      * difficulty, news, resources, metrics, campaign actions,
      * and campaign end-game state.
      *
-     * The legacy yearly-turn panel remains the central content
-     * only until the vertical-slice campaign interface replaces
-     * it in a later checkpoint.
+     * The legacy yearly-turn panel remains only until the real
+     * event-and-decision panel replaces it.
      */
     campaignContent.append(
       makeYearlyTurnPanel(

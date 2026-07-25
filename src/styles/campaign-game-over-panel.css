@@ -1,0 +1,202 @@
+/*
+  Campaign game-over panel
+  ------------------------
+  Displays campaign-specific victories and defeats on the final
+  printed campaign report.
+*/
+
+.campaign-game-over-panel {
+  position: relative;
+
+  width: 100%;
+
+  padding:
+    calc(2.2rem * var(--ui-scale))
+    calc(1.8rem * var(--ui-scale));
+
+  overflow: hidden;
+
+  border:
+    calc(0.14rem * var(--ui-scale))
+    double
+    var(--report-paper-heading, #17375e);
+
+  text-align: center;
+
+  background:
+    radial-gradient(
+      circle at top,
+      rgb(255 255 255 / 0.65),
+      transparent 58%
+    ),
+    linear-gradient(
+      180deg,
+      rgb(23 55 94 / 0.07),
+      rgb(255 255 255 / 0.18)
+    );
+
+  box-shadow:
+    inset
+    0
+    0
+    0
+    calc(0.28rem * var(--ui-scale))
+    rgb(255 255 255 / 0.35);
+}
+
+.campaign-game-over-panel::before {
+  position: absolute;
+  top:
+    calc(0.7rem * var(--ui-scale));
+  right:
+    calc(0.7rem * var(--ui-scale));
+  bottom:
+    calc(0.7rem * var(--ui-scale));
+  left:
+    calc(0.7rem * var(--ui-scale));
+
+  pointer-events: none;
+
+  content: "";
+
+  border:
+    calc(0.05rem * var(--ui-scale))
+    solid
+    rgb(32 34 38 / 0.25);
+}
+
+.campaign-game-over-panel--victory {
+  border-color:
+    #8a691e;
+
+  background:
+    radial-gradient(
+      circle at top,
+      rgb(255 209 102 / 0.28),
+      transparent 62%
+    ),
+    linear-gradient(
+      180deg,
+      rgb(255 209 102 / 0.1),
+      rgb(255 255 255 / 0.2)
+    );
+}
+
+.campaign-game-over-panel--defeat {
+  border-color:
+    var(--report-paper-accent, #8d2833);
+
+  background:
+    radial-gradient(
+      circle at top,
+      rgb(141 40 51 / 0.16),
+      transparent 62%
+    ),
+    linear-gradient(
+      180deg,
+      rgb(141 40 51 / 0.07),
+      rgb(255 255 255 / 0.18)
+    );
+}
+
+.campaign-game-over-label {
+  margin:
+    0
+    0
+    calc(0.65rem * var(--ui-scale));
+
+  color:
+    var(--report-paper-accent, #8d2833);
+
+  font-family:
+    Arial,
+    Helvetica,
+    system-ui,
+    sans-serif;
+
+  font-size:
+    calc(0.72rem * var(--ui-scale));
+
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.campaign-game-over-panel--victory
+.campaign-game-over-label {
+  color:
+    #745817;
+}
+
+.campaign-game-over-title {
+  margin: 0;
+
+  color:
+    var(--report-paper-heading, #17375e);
+
+  font-size:
+    clamp(
+      calc(2rem * var(--ui-scale)),
+      5vw,
+      calc(3.5rem * var(--ui-scale))
+    );
+
+  line-height: 0.95;
+}
+
+.campaign-game-over-message {
+  max-width: 56ch;
+
+  margin:
+    calc(1.2rem * var(--ui-scale))
+    auto
+    0;
+
+  color:
+    var(--report-paper-ink, #202226);
+
+  font-size:
+    calc(1.05rem * var(--ui-scale));
+
+  line-height: 1.55;
+}
+
+.campaign-game-over-turn {
+  margin:
+    calc(1rem * var(--ui-scale))
+    0
+    0;
+
+  color:
+    var(--report-paper-muted-ink, #50545b);
+
+  font-family:
+    "Courier New",
+    Courier,
+    monospace;
+
+  font-size:
+    calc(0.82rem * var(--ui-scale));
+
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.campaign-game-over-actions {
+  width:
+    min(
+      calc(25rem * var(--ui-scale)),
+      100%
+    );
+
+  margin:
+    calc(1.8rem * var(--ui-scale))
+    auto
+    0;
+}
+
+.campaign-game-over-actions
+.secondary-button {
+  margin-top: 0;
+}
