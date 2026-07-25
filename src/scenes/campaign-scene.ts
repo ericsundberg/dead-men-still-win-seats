@@ -15,6 +15,9 @@ import {
   makeCampaignShell,
 } from './campaign/campaign-shell';
 import {
+  makeCampaignStatusSummary,
+} from './campaign/campaign-status-summary';
+import {
   makeGameOverPanel,
 } from './yearly-turn/game-over-panel';
 import {
@@ -111,11 +114,8 @@ export function renderCampaignScene(
     });
 
   /*
-   * CampaignSession is now authoritative for deciding whether
-   * the player has an active campaign.
-   *
-   * A leftover legacy GameSession by itself is no longer enough
-   * to enter the campaign scene.
+   * CampaignSession is authoritative for deciding whether the
+   * player has an active campaign.
    */
   if (
     !runtimeSnapshot
@@ -131,15 +131,14 @@ export function renderCampaignScene(
   }
 
   /*
-   * The campaign runtime is active, but the temporary Hamurabi
-   * panel still requires the corresponding legacy state.
+   * The temporary Hamurabi panel still requires legacy state.
    *
-   * Game setup currently starts both runtimes together, so this
-   * branch indicates a migration error rather than a normal
-   * player-facing state.
+   * Including campaignState in this guard also narrows its type
+   * before it is passed to the new campaign-only status view.
    */
   if (
-    runtimeSnapshot
+    !campaignState
+    || runtimeSnapshot
       .hasRuntimeMismatch
     || !legacyState
   ) {
@@ -168,6 +167,18 @@ export function renderCampaignScene(
       },
     );
 
+  /*
+   * First vertical-slice campaign component.
+   *
+   * This summary reads exclusively from CampaignState and is
+   * independent of the temporary Hamurabi panel below it.
+   */
+  campaignContent.append(
+    makeCampaignStatusSummary(
+      campaignState,
+    ),
+  );
+
   const legacyGameOverState =
     context.game
       .getGameOverState();
@@ -184,7 +195,8 @@ export function renderCampaignScene(
      * Temporary migration layer:
      *
      * CampaignSession owns campaign existence, turn number,
-     * difficulty, news, and campaign end-game state.
+     * difficulty, news, resources, metrics, and campaign
+     * end-game state.
      *
      * The legacy yearly-turn panel remains the central content
      * only until the vertical-slice campaign interface replaces

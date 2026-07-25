@@ -1,0 +1,273 @@
+/*
+  Campaign status summary
+  -----------------------
+  Displays the campaign's resources and public-facing metrics
+  across the top of the printed campaign report.
+*/
+
+.campaign-status-summary {
+  width: 100%;
+
+  margin:
+    0
+    0
+    calc(2rem * var(--ui-scale));
+
+  padding:
+    calc(0.8rem * var(--ui-scale))
+    0
+    calc(0.9rem * var(--ui-scale));
+
+  border-top:
+    calc(0.12rem * var(--ui-scale))
+    solid
+    var(--report-paper-heading, #17375e);
+
+  border-bottom:
+    calc(0.08rem * var(--ui-scale))
+    solid
+    rgb(32 34 38 / 0.42);
+
+  color:
+    var(--report-paper-ink, #202226);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgb(23 55 94 / 0.075),
+      rgb(23 55 94 / 0.018)
+    );
+}
+
+.campaign-status-summary-title {
+  margin:
+    0
+    0
+    calc(0.65rem * var(--ui-scale));
+
+  font-family:
+    Arial,
+    Helvetica,
+    system-ui,
+    sans-serif;
+
+  font-size:
+    calc(0.72rem * var(--ui-scale));
+
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  color:
+    var(--report-paper-heading, #17375e);
+}
+
+.campaign-status-summary-list {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      6,
+      minmax(0, 1fr)
+    );
+
+  margin: 0;
+}
+
+.campaign-status-summary-item {
+  min-width: 0;
+
+  padding:
+    0
+    calc(0.8rem * var(--ui-scale));
+
+  border-left:
+    calc(0.05rem * var(--ui-scale))
+    solid
+    rgb(32 34 38 / 0.22);
+}
+
+.campaign-status-summary-item:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.campaign-status-summary-item:last-child {
+  padding-right: 0;
+}
+
+.campaign-status-summary-item--metric {
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgb(255 255 255 / 0.18),
+      transparent
+    );
+}
+
+.campaign-status-summary-label {
+  overflow: hidden;
+
+  margin:
+    0
+    0
+    calc(0.24rem * var(--ui-scale));
+
+  font-family:
+    Arial,
+    Helvetica,
+    system-ui,
+    sans-serif;
+
+  font-size:
+    calc(0.58rem * var(--ui-scale));
+
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: 0.07em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  color:
+    var(--report-paper-muted-ink, #50545b);
+}
+
+.campaign-status-summary-detail {
+  display: grid;
+  gap:
+    calc(0.32rem * var(--ui-scale));
+
+  margin: 0;
+}
+
+.campaign-status-summary-value {
+  overflow: hidden;
+
+  font-family:
+    "Courier New",
+    Courier,
+    monospace;
+
+  font-size:
+    calc(1rem * var(--ui-scale));
+
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color:
+    var(--report-paper-ink, #202226);
+}
+
+.campaign-status-summary-progress {
+  appearance: none;
+
+  display: block;
+
+  width: 100%;
+  height:
+    calc(0.34rem * var(--ui-scale));
+
+  overflow: hidden;
+
+  border: 0;
+  border-radius: 0;
+
+  color:
+    var(--report-paper-heading, #17375e);
+
+  background:
+    rgb(32 34 38 / 0.16);
+
+  accent-color:
+    currentcolor;
+}
+
+.campaign-status-summary-progress::-webkit-progress-bar {
+  background:
+    rgb(32 34 38 / 0.16);
+}
+
+.campaign-status-summary-progress::-webkit-progress-value {
+  background:
+    currentcolor;
+}
+
+.campaign-status-summary-progress::-moz-progress-bar {
+  background:
+    currentcolor;
+}
+
+.campaign-status-summary-progress--public-suspicion {
+  color:
+    var(--report-paper-accent, #8d2833);
+}
+
+.campaign-status-summary-progress--party-confidence {
+  color:
+    var(--report-paper-heading, #17375e);
+}
+
+.campaign-status-summary-progress--voter-energy {
+  color:
+    #8a691e;
+}
+
+@media (max-width: 900px) {
+  .campaign-status-summary-list {
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+
+    row-gap:
+      calc(0.9rem * var(--ui-scale));
+  }
+
+  .campaign-status-summary-item:nth-child(4) {
+    border-left: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .campaign-status-summary {
+    margin-bottom:
+      calc(1.4rem * var(--ui-scale));
+  }
+
+  .campaign-status-summary-list {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+  .campaign-status-summary-item {
+    padding:
+      0
+      calc(0.55rem * var(--ui-scale));
+  }
+
+  .campaign-status-summary-item:nth-child(odd) {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .campaign-status-summary-item:nth-child(even) {
+    padding-right: 0;
+  }
+
+  .campaign-status-summary-item:nth-child(4) {
+    border-left:
+      calc(0.05rem * var(--ui-scale))
+      solid
+      rgb(32 34 38 / 0.22);
+  }
+}
