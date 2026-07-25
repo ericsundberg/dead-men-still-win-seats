@@ -2,6 +2,9 @@ import type {
   AudioServices,
 } from '../audio/audio-services';
 import type {
+  CampaignSession,
+} from '../game/campaign/campaign-session';
+import type {
   GameSession,
 } from '../game/game-session';
 import {
@@ -28,9 +31,27 @@ export type NavigateToScene = (
 ) => void;
 
 export interface SceneContext {
-  readonly navigate: NavigateToScene;
-  readonly audio: AudioServices;
-  readonly game: GameSession;
+  readonly navigate:
+    NavigateToScene;
+
+  readonly audio:
+    AudioServices;
+
+  /*
+   * Temporary legacy runtime used by the current Hamurabi
+   * placeholder scenes and components.
+   */
+  readonly game:
+    GameSession;
+
+  /*
+   * New political-campaign runtime.
+   *
+   * This will gradually replace `game` as the vertical slice
+   * and campaign interface are implemented.
+   */
+  readonly campaign:
+    CampaignSession;
 }
 
 export type SceneRenderer = (
@@ -39,7 +60,10 @@ export type SceneRenderer = (
 
 export class SceneRouter {
   private readonly scenes =
-    new Map<SceneName, SceneRenderer>();
+    new Map<
+      SceneName,
+      SceneRenderer
+    >();
 
   public constructor(
     private readonly rootElement:
@@ -50,6 +74,9 @@ export class SceneRouter {
 
     private readonly gameSession:
       GameSession,
+
+    private readonly campaignSession:
+      CampaignSession,
   ) {}
 
   public register(
@@ -66,7 +93,9 @@ export class SceneRouter {
     sceneName: SceneName,
   ): void {
     const renderer =
-      this.scenes.get(sceneName);
+      this.scenes.get(
+        sceneName,
+      );
 
     if (!renderer) {
       throw new Error(
@@ -74,21 +103,25 @@ export class SceneRouter {
       );
     }
 
-    const sceneElement = renderer({
-      navigate: (
-        nextSceneName,
-      ) => {
-        this.navigate(
+    const sceneElement =
+      renderer({
+        navigate: (
           nextSceneName,
-        );
-      },
+        ) => {
+          this.navigate(
+            nextSceneName,
+          );
+        },
 
-      audio:
-        this.audioServices,
+        audio:
+          this.audioServices,
 
-      game:
-        this.gameSession,
-    });
+        game:
+          this.gameSession,
+
+        campaign:
+          this.campaignSession,
+      });
 
     /*
      * Allow a routed scene to clean up subscriptions, timers,
