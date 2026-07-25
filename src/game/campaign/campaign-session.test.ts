@@ -83,6 +83,187 @@ describe(
     );
 
     it(
+      'applies campaign resource and metric effects',
+      () => {
+        const session =
+          createCampaignSession();
+
+        session.startCampaign(
+          'easy',
+        );
+
+        const nextState =
+          session.applyEffects({
+            cash:
+              -2_500,
+
+            actionPoints:
+              -1,
+
+            publicSuspicion:
+              12,
+
+            partyConfidence:
+              -7,
+
+            voterEnergy:
+              -9,
+          });
+
+        expect(
+          nextState?.resources,
+        ).toEqual({
+          cash:
+            97_500,
+
+          favors:
+            3,
+
+          actionPoints:
+            2,
+        });
+
+        expect(
+          nextState?.metrics,
+        ).toEqual({
+          publicSuspicion:
+            12,
+
+          partyConfidence:
+            93,
+
+          voterEnergy:
+            91,
+        });
+
+        expect(
+          nextState?.phase,
+        ).toBe(
+          'player-actions',
+        );
+
+        expect(
+          nextState?.endGameState,
+        ).toBeNull();
+
+        expect(
+          session.getState(),
+        ).toBe(
+          nextState,
+        );
+      },
+    );
+
+    it(
+      'does not apply effects before a campaign starts',
+      () => {
+        const session =
+          createCampaignSession();
+
+        expect(
+          session.applyEffects({
+            cash:
+              -1_000,
+
+            publicSuspicion:
+              10,
+          }),
+        ).toBeNull();
+
+        expect(
+          session.getState(),
+        ).toBeNull();
+      },
+    );
+
+    it(
+      'ends the campaign immediately when effects trigger a loss condition',
+      () => {
+        const session =
+          createCampaignSession();
+
+        session.startCampaign(
+          'easy',
+        );
+
+        const completedState =
+          session.applyEffects({
+            publicSuspicion:
+              100,
+          });
+
+        expect(
+          completedState?.metrics
+            .publicSuspicion,
+        ).toBe(100);
+
+        expect(
+          completedState?.phase,
+        ).toBe(
+          'game-over',
+        );
+
+        expect(
+          completedState?.endGameState,
+        ).toEqual({
+          type:
+            'public-discovers-death',
+
+          triggeredOnTurn:
+            1,
+        });
+
+        expect(
+          session.isGameOver(),
+        ).toBe(true);
+      },
+    );
+
+    it(
+      'does not apply additional effects after game over',
+      () => {
+        const session =
+          createCampaignSession();
+
+        session.startCampaign(
+          'easy',
+        );
+
+        session.applyEffects({
+          publicSuspicion:
+            100,
+        });
+
+        const completedState =
+          session.getState();
+
+        expect(
+          session.applyEffects({
+            cash:
+              -50_000,
+
+            voterEnergy:
+              -50,
+          }),
+        ).toBeNull();
+
+        expect(
+          session.getState(),
+        ).toBe(
+          completedState,
+        );
+
+        expect(
+          session.getState()
+            ?.resources
+            .cash,
+        ).toBe(
+          100_000,
+        );
+      },
+    );
+
+    it(
       'advances to the next campaign turn',
       () => {
         const session =
@@ -113,6 +294,53 @@ describe(
         expect(
           nextState?.endGameState,
         ).toBeNull();
+      },
+    );
+
+    it(
+      'replenishes action points while preserving other effects at turn end',
+      () => {
+        const session =
+          createCampaignSession();
+
+        session.startCampaign(
+          'easy',
+        );
+
+        session.applyEffects({
+          cash:
+            -5_000,
+
+          favors:
+            2,
+
+          actionPoints:
+            -2,
+
+          publicSuspicion:
+            15,
+        });
+
+        const nextState =
+          session.endTurn();
+
+        expect(
+          nextState?.resources,
+        ).toEqual({
+          cash:
+            95_000,
+
+          favors:
+            5,
+
+          actionPoints:
+            3,
+        });
+
+        expect(
+          nextState?.metrics
+            .publicSuspicion,
+        ).toBe(15);
       },
     );
 
@@ -260,6 +488,24 @@ describe(
           startedState,
         );
 
+        const affectedState =
+          session.applyEffects({
+            actionPoints:
+              -1,
+          });
+
+        expect(
+          listener,
+        ).toHaveBeenCalledTimes(
+          3,
+        );
+
+        expect(
+          listener,
+        ).toHaveBeenLastCalledWith(
+          affectedState,
+        );
+
         unsubscribe();
 
         session.endTurn();
@@ -267,7 +513,7 @@ describe(
         expect(
           listener,
         ).toHaveBeenCalledTimes(
-          2,
+          3,
         );
       },
     );

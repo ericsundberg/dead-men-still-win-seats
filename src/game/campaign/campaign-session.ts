@@ -3,6 +3,10 @@ import {
   type GameDifficultyId,
 } from '../difficulty';
 import {
+  applyCampaignEffects,
+  type CampaignEffects,
+} from './campaign-effects';
+import {
   evaluateCampaignEndGame,
 } from './campaign-end-game';
 import {
@@ -18,10 +22,10 @@ export type CampaignStateListener = (
 /**
  * Owns the active political campaign state.
  *
- * This runtime is intentionally isolated from the legacy
- * Hamurabi GameSession during the first migration checkpoint.
- * It will be connected to SceneContext only after its behavior
- * has been tested independently.
+ * The campaign runtime now runs alongside the temporary legacy
+ * GameSession. New campaign systems should change campaign state
+ * through this session rather than modifying CampaignState
+ * directly inside scene components.
  */
 export class CampaignSession {
   private state:
@@ -103,9 +107,73 @@ export class CampaignSession {
   }
 
   /**
+   * Applies resource and metric changes to the active campaign.
+   *
+   * CampaignEffects performs the numerical bounds checking:
+   *
+   * - Resources cannot fall below zero.
+   * - Public metrics remain between zero and one hundred.
+   * - Non-finite changes are ignored.
+   *
+   * Immediate campaign-ending conditions are evaluated after the
+   * effects are applied. For example, reaching one hundred public
+   * suspicion ends the campaign without waiting for turn end.
+   */
+  public applyEffects(
+    effects:
+      CampaignEffects,
+  ): CampaignState | null {
+    const currentState =
+      this.state;
+
+    if (
+      !currentState
+      || currentState.phase
+        === 'game-over'
+    ) {
+      return null;
+    }
+
+    const affectedState =
+      applyCampaignEffects(
+        currentState,
+        effects,
+      );
+
+    const endGameState =
+      evaluateCampaignEndGame(
+        affectedState,
+      );
+
+    if (endGameState) {
+      const completedState:
+        CampaignState = {
+          ...affectedState,
+
+          phase:
+            'game-over',
+
+          endGameState,
+        };
+
+      this.setState(
+        completedState,
+      );
+
+      return completedState;
+    }
+
+    this.setState(
+      affectedState,
+    );
+
+    return affectedState;
+  }
+
+  /**
    * Completes the current campaign turn.
    *
-   * During this initial runtime checkpoint:
+   * During the current migration stage:
    *
    * 1. The campaign enters "turn-end".
    * 2. End-game conditions are evaluated.
