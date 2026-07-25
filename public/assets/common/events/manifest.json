@@ -1,3 +1,5 @@
 {
-  "eventPacks": []
+  "eventPacks": [
+    "media/media-events.json"
+  ]
 }

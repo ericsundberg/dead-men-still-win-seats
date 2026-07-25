@@ -1,0 +1,103 @@
+{
+  "eventPackId": "events_media",
+  "events": [
+    {
+      "id": "event_media_01",
+      "title": "The Camera Is Already Rolling",
+      "description": "A local reporter corners the campaign outside a fundraiser and asks when Senator Phil A. Buster will release his annual medical report.",
+      "trigger": {
+        "type": "turn",
+        "turn": 1
+      },
+      "repeatable": false,
+      "decisions": [
+        {
+          "id": "decision_release_old_records",
+          "label": "Release last year’s records with the date cropped out.",
+          "requirements": {
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "actionPoints": -1,
+            "publicSuspicion": 8,
+            "partyConfidence": -2
+          },
+          "addFlags": [
+            "flag_medical_records_recycled"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Campaign Releases Medical Records; Date Not Included",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_bribe_doctor",
+          "label": "Bribe a doctor to say the Senator is “strong as an ox.”",
+          "requirements": {
+            "minimumCash": 15000,
+            "minimumFavors": 1,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "cash": -15000,
+            "favors": -1,
+            "actionPoints": -1,
+            "publicSuspicion": 4,
+            "partyConfidence": 4
+          },
+          "addFlags": [
+            "flag_doctor_bribed"
+          ],
+          "newsItems": [
+            {
+              "headline": "Local Doctor Says Senator Buster Is “Strong as an Ox”",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_declare_records_unconstitutional",
+          "label": "Declare that medical records are an unconstitutional invasion of privacy.",
+          "requirements": {
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "actionPoints": -1,
+            "publicSuspicion": 6,
+            "partyConfidence": 3,
+            "voterEnergy": 2
+          },
+          "addFlags": [
+            "flag_medical_privacy_attack"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Campaign Calls Medical Records Request “Unconstitutional”",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_no_comment",
+          "label": "No comment.",
+          "effects": {
+            "publicSuspicion": 12,
+            "partyConfidence": -6,
+            "voterEnergy": -3
+          },
+          "addFlags": [
+            "flag_reporter_stonewalled"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Campaign Refuses to Discuss Senator’s Health",
+              "category": "campaign"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
