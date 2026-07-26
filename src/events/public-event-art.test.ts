@@ -91,7 +91,7 @@ describe(
           imagePaths,
         ).toEqual([
           'media/newscast.webp',
-          'media/newscast.webp',
+          'media/podcast.webp',
           'medical/hospital.webp',
           'media/newscast.webp',
           'locations/rotunda.webp',
