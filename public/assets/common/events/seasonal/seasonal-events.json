@@ -1,0 +1,354 @@
+{
+  "eventPackId": "events_seasonal",
+  "events": [
+    {
+      "id": "event_seasonal_01",
+      "title": "The Statesyltucky State Fair",
+      "description": "The Statesyltucky State Fair opens during the first two weeks of September, and Senator Buster is expected to lead the parade through the midway. The fair board has helpfully reserved him a seat in direct sunlight.",
+      "trigger": {
+        "type": "turn-window",
+        "startTurn": 4,
+        "endTurn": 5
+      },
+      "repeatable": false,
+      "decisions": [
+        {
+          "id": "decision_state_fair_glass_float",
+          "label": "Wheel the Senator through the midway inside a climate-controlled glass parade float.",
+          "requirements": {
+            "minimumCash": 15000,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "cash": -15000,
+            "actionPoints": -1,
+            "publicSuspicion": 5,
+            "partyConfidence": 3,
+            "voterEnergy": 5
+          },
+          "addFlags": [
+            "flag_state_fair_glass_float"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Greets State Fair Crowds from Climate-Controlled Parade Float",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_state_fair_surrogate",
+          "label": "Send a surrogate as the Senator’s official representative.",
+          "requirements": {
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "actionPoints": -1,
+            "publicSuspicion": 3,
+            "partyConfidence": 1,
+            "voterEnergy": 3
+          },
+          "addFlags": [
+            "flag_state_fair_surrogate"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Surrogate Leads State Fair Parade on Senator’s Behalf",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_state_fair_fried_butter",
+          "label": "Sponsor the fried-butter booth and loop a prerecorded greeting over its loudspeakers.",
+          "requirements": {
+            "minimumCash": 10000,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "cash": -10000,
+            "actionPoints": -1,
+            "publicSuspicion": 2,
+            "partyConfidence": 2,
+            "voterEnergy": 4
+          },
+          "addFlags": [
+            "flag_state_fair_fried_butter"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Campaign Sponsors State Fair Fried-Butter Exhibition",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_state_fair_skip",
+          "label": "Skip the fair and claim the Senator is allergic to livestock.",
+          "effects": {
+            "publicSuspicion": 8,
+            "partyConfidence": -4,
+            "voterEnergy": -4
+          },
+          "addFlags": [
+            "flag_state_fair_skipped"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Misses State Fair, Citing Previously Undisclosed Livestock Allergy",
+              "category": "campaign"
+            }
+          ]
+        }
+      ],
+      "imagePath": "locations/statefair.webp"
+    },
+    {
+      "id": "event_seasonal_02",
+      "title": "The County Chair Is on Line Two",
+      "description": "A county party chair refuses to hang up until Senator Buster personally confirms attendance at next week’s rubber-chicken dinner.",
+      "trigger": {
+        "type": "fallback"
+      },
+      "repeatable": true,
+      "decisions": [
+        {
+          "id": "decision_county_chair_prerecorded_call",
+          "label": "Patch in a prerecorded answer assembled from old constituent calls.",
+          "requirements": {
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "actionPoints": -1,
+            "publicSuspicion": 3,
+            "partyConfidence": 2
+          },
+          "newsItems": [
+            {
+              "headline": "County Chair Confirms Productive Call with Senator Buster",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_county_chair_envelope",
+          "label": "Send a staffer with an envelope and no written instructions.",
+          "requirements": {
+            "minimumCash": 5000,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "cash": -5000,
+            "actionPoints": -1,
+            "publicSuspicion": 1,
+            "partyConfidence": 2
+          },
+          "newsItems": [
+            {
+              "headline": "County Committee Reaffirms Support for Buster Campaign",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_county_chair_promise",
+          "label": "Promise the Senator will return the call personally.",
+          "effects": {
+            "publicSuspicion": 4,
+            "partyConfidence": -1
+          },
+          "newsItems": [
+            {
+              "headline": "County Chair Awaits Personal Call from Senator Buster",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_county_chair_secure_briefing",
+          "label": "Say the Senator is inside a secure briefing and cannot use a telephone.",
+          "effects": {
+            "publicSuspicion": 5,
+            "partyConfidence": 0,
+            "voterEnergy": 1
+          },
+          "newsItems": [
+            {
+              "headline": "Campaign Says Buster Is Occupied by Confidential Briefing",
+              "category": "campaign"
+            }
+          ]
+        }
+      ],
+      "imagePath": "characters/staffer.webp"
+    },
+    {
+      "id": "event_seasonal_03",
+      "title": "Another Surrogate Books the Senator",
+      "description": "A surrogate announces that Senator Buster will answer questions at a town hall tomorrow night. Tickets have already sold out.",
+      "trigger": {
+        "type": "fallback"
+      },
+      "repeatable": true,
+      "decisions": [
+        {
+          "id": "decision_town_hall_audio_only",
+          "label": "Convert the town hall into an audio-only event using prerecorded answers.",
+          "requirements": {
+            "minimumCash": 5000,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "cash": -5000,
+            "actionPoints": -1,
+            "publicSuspicion": 5,
+            "partyConfidence": 2,
+            "voterEnergy": 3
+          },
+          "newsItems": [
+            {
+              "headline": "Buster Participates in Unusual Audio-Only Town Hall",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_town_hall_surrogate",
+          "label": "Have the surrogate answer every question on the Senator’s behalf.",
+          "requirements": {
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "actionPoints": -1,
+            "publicSuspicion": 2,
+            "partyConfidence": 1,
+            "voterEnergy": 2
+          },
+          "newsItems": [
+            {
+              "headline": "Buster Surrogate Fields Questions at Packed Town Hall",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_town_hall_cancel",
+          "label": "Cancel the event and blame an electrical inspection.",
+          "effects": {
+            "publicSuspicion": 5,
+            "partyConfidence": -2,
+            "voterEnergy": -2
+          },
+          "newsItems": [
+            {
+              "headline": "Electrical Inspection Cancels Buster Town Hall",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_town_hall_calendar_error",
+          "label": "Call the announcement a calendar error and leave the surrogate to explain it.",
+          "effects": {
+            "publicSuspicion": 4,
+            "partyConfidence": -1,
+            "voterEnergy": -1
+          },
+          "newsItems": [
+            {
+              "headline": "Buster Campaign Blames Calendar Error for Town Hall Confusion",
+              "category": "campaign"
+            }
+          ]
+        }
+      ],
+      "imagePath": "characters/surrogate.webp"
+    },
+    {
+      "id": "event_seasonal_04",
+      "title": "The Podium Must Go Somewhere",
+      "description": "A rented campaign podium has arrived at the wrong county. A crowd gathers around it, expecting the Senator to appear at any moment.",
+      "trigger": {
+        "type": "fallback"
+      },
+      "repeatable": true,
+      "decisions": [
+        {
+          "id": "decision_podium_live_ticker",
+          "label": "Leave the podium empty and add a live campaign news ticker beneath it.",
+          "requirements": {
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "actionPoints": -1,
+            "publicSuspicion": 4,
+            "partyConfidence": 0,
+            "voterEnergy": 2
+          },
+          "newsItems": [
+            {
+              "headline": "Buster Campaign Unveils Interactive Podium Experience",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_podium_manikin",
+          "label": "Place a well-dressed mannequin behind it and keep the crowd at a respectful distance.",
+          "requirements": {
+            "minimumCash": 10000,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "cash": -10000,
+            "actionPoints": -1,
+            "publicSuspicion": 8,
+            "partyConfidence": 2,
+            "voterEnergy": 4
+          },
+          "newsItems": [
+            {
+              "headline": "Distant Buster Appearance Energizes County Rally",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_podium_recording",
+          "label": "Play an old speech and describe the appearance as a multimedia address.",
+          "requirements": {
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "actionPoints": -1,
+            "publicSuspicion": 5,
+            "partyConfidence": 1,
+            "voterEnergy": 1
+          },
+          "newsItems": [
+            {
+              "headline": "Buster Delivers Multimedia Address to County Supporters",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_podium_cancel",
+          "label": "Take the podium away and deny that an event was ever scheduled.",
+          "effects": {
+            "publicSuspicion": 3,
+            "partyConfidence": -2,
+            "voterEnergy": -2
+          },
+          "newsItems": [
+            {
+              "headline": "Campaign Denies Scheduling Mysterious County Podium Event",
+              "category": "campaign"
+            }
+          ]
+        }
+      ],
+      "imagePath": "characters/buster-at-the-podium.webp"
+    }
+  ]
+}

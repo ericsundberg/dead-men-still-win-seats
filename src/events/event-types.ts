@@ -40,8 +40,16 @@ export type EventTriggerDefinition =
       readonly turn: number;
     }
   | {
+      readonly type: 'turn-window';
+      readonly startTurn: number;
+      readonly endTurn: number;
+    }
+  | {
       readonly type: 'chance';
       readonly chancePercent: number;
+    }
+  | {
+      readonly type: 'fallback';
     };
 
 export interface EventRequirements {

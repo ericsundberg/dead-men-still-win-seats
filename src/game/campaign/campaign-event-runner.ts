@@ -20,7 +20,9 @@ export type CampaignEventEligibilityFailureReason =
 export type CampaignEventActivationSource =
   | 'queued'
   | 'turn'
-  | 'chance';
+  | 'turn-window'
+  | 'chance'
+  | 'fallback';
 
 export interface CampaignEventEligibility {
   readonly isEligible:
@@ -190,10 +192,13 @@ export function evaluateCampaignEventEligibility(
  * Selection priority:
  *
  * 1. Queued events.
- * 2. Events scheduled for the current turn.
- * 3. Chance events.
+ * 2. Events scheduled for the exact current turn.
+ * 3. Events whose turn window contains the current turn.
+ * 4. Chance events whose roll succeeds.
+ * 5. Eligible fallback events.
  *
  * Manual events activate only when they have been queued.
+ * Fallback events activate only when no higher-priority event does.
  */
 export function activateNextCampaignEvent(
   campaignState:
@@ -256,6 +261,35 @@ export function activateNextCampaignEvent(
     );
   }
 
+  const turnWindowEvent =
+    eventRegistry
+      .getEvents()
+      .find(
+        (event) =>
+          event.trigger.type
+            === 'turn-window'
+          && campaignState
+            .currentTurn
+            >= event.trigger
+              .startTurn
+          && campaignState
+            .currentTurn
+            <= event.trigger
+              .endTurn
+          && evaluateCampaignEventEligibility(
+            campaignState,
+            event,
+          ).isEligible,
+      );
+
+  if (turnWindowEvent) {
+    return activateEvent(
+      campaignState,
+      turnWindowEvent,
+      'turn-window',
+    );
+  }
+
   for (
     const event
     of eventRegistry.getEvents()
@@ -296,6 +330,21 @@ export function activateNextCampaignEvent(
         'chance',
       );
     }
+  }
+
+  const fallbackEvent =
+    selectRandomEligibleFallbackEvent(
+      campaignState,
+      eventRegistry,
+      random,
+    );
+
+  if (fallbackEvent) {
+    return activateEvent(
+      campaignState,
+      fallbackEvent,
+      'fallback',
+    );
   }
 
   const playerActionsState:
@@ -358,6 +407,53 @@ function findEligibleQueuedEvent(
   }
 
   return null;
+}
+
+function selectRandomEligibleFallbackEvent(
+  campaignState:
+    CampaignState,
+
+  eventRegistry:
+    EventRegistry,
+
+  random:
+    () => number,
+): GameEventDefinition | null {
+  const eligibleFallbackEvents =
+    eventRegistry
+      .getEvents()
+      .filter(
+        (event) =>
+          event.trigger.type
+            === 'fallback'
+          && evaluateCampaignEventEligibility(
+            campaignState,
+            event,
+          ).isEligible,
+      );
+
+  if (
+    eligibleFallbackEvents.length
+    === 0
+  ) {
+    return null;
+  }
+
+  const eventIndex =
+    Math.floor(
+      normalizeRandomValue(
+        random(),
+      )
+      * eligibleFallbackEvents
+        .length,
+    );
+
+  return (
+    eligibleFallbackEvents[
+      eventIndex
+    ]
+    ?? null
+  );
 }
 
 function activateEvent(

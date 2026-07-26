@@ -101,6 +101,10 @@ describe(
           'medical/hospital.webp',
           'media/newscast.webp',
           'locations/rotunda.webp',
+          'locations/statefair.webp',
+          'characters/staffer.webp',
+          'characters/surrogate.webp',
+          'characters/buster-at-the-podium.webp',
         ]);
 
         for (

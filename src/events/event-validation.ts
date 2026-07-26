@@ -229,6 +229,55 @@ function validateTrigger(
     return;
   }
 
+  if (
+    input.type
+    === 'turn-window'
+  ) {
+    const validStartTurn =
+      typeof input.startTurn
+        === 'number'
+      && Number.isInteger(
+        input.startTurn,
+      )
+      && input.startTurn >= 1;
+
+    const validEndTurn =
+      typeof input.endTurn
+        === 'number'
+      && Number.isInteger(
+        input.endTurn,
+      )
+      && input.endTurn >= 1;
+
+    if (!validStartTurn) {
+      errors.push(
+        `${path}.startTurn must be a positive integer`,
+      );
+    }
+
+    if (!validEndTurn) {
+      errors.push(
+        `${path}.endTurn must be a positive integer`,
+      );
+    }
+
+    if (
+      validStartTurn
+      && validEndTurn
+      && (
+        input.endTurn as number
+      ) < (
+        input.startTurn as number
+      )
+    ) {
+      errors.push(
+        `${path}.endTurn must be greater than or equal to startTurn`,
+      );
+    }
+
+    return;
+  }
+
   if (input.type === 'chance') {
     if (
       typeof input.chancePercent !== 'number'
@@ -244,8 +293,15 @@ function validateTrigger(
     return;
   }
 
+  if (input.type === 'fallback') {
+    return;
+  }
+
   errors.push(
-    `${path}.type must be manual, turn, or chance`,
+    [
+      `${path}.type must be`,
+      'manual, turn, turn-window, chance, or fallback',
+    ].join(' '),
   );
 }
 

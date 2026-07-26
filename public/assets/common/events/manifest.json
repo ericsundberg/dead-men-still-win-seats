@@ -1,6 +1,7 @@
 {
   "eventPacks": [
     "characters/character-events.json",
-    "media/media-events.json"
+    "media/media-events.json",
+    "seasonal/seasonal-events.json"
   ]
 }

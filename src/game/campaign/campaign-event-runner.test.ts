@@ -142,6 +142,69 @@ const repeatableChanceEvent:
     ],
   };
 
+const turnWindowEvent:
+  GameEventDefinition = {
+    id:
+      'event_runner_05',
+
+    title:
+      'Turn Window Event',
+
+    description:
+      'An event available during turns four and five.',
+
+    trigger: {
+      type:
+        'turn-window',
+
+      startTurn:
+        4,
+
+      endTurn:
+        5,
+    },
+
+    decisions: [
+      {
+        id:
+          'decision_continue',
+
+        label:
+          'Continue.',
+      },
+    ],
+  };
+
+const fallbackEvent:
+  GameEventDefinition = {
+    id:
+      'event_runner_06',
+
+    title:
+      'Fallback Event',
+
+    description:
+      'A repeatable fallback event.',
+
+    trigger: {
+      type:
+        'fallback',
+    },
+
+    repeatable:
+      true,
+
+    decisions: [
+      {
+        id:
+          'decision_continue',
+
+        label:
+          'Continue.',
+      },
+    ],
+  };
+
 function createRegistry(
   events:
     readonly GameEventDefinition[],
@@ -372,6 +435,143 @@ describe(
         expect(
           result.source,
         ).toBe('chance');
+      },
+    );
+
+    it(
+      'activates a turn-window event throughout its window',
+      () => {
+        for (
+          const currentTurn
+          of [
+            4,
+            5,
+          ]
+        ) {
+          const result =
+            activateNextCampaignEvent(
+              createTurnStartState({
+                currentTurn,
+              }),
+              createRegistry([
+                turnWindowEvent,
+              ]),
+            );
+
+          expect(
+            result.event,
+          ).toBe(
+            turnWindowEvent,
+          );
+
+          expect(
+            result.source,
+          ).toBe(
+            'turn-window',
+          );
+        }
+      },
+    );
+
+    it(
+      'prefers a successful chance event over a fallback event',
+      () => {
+        const result =
+          activateNextCampaignEvent(
+            createTurnStartState({
+              currentTurn:
+                2,
+            }),
+            createRegistry([
+              chanceEvent,
+              fallbackEvent,
+            ]),
+            () => 0.1,
+          );
+
+        expect(
+          result.event,
+        ).toBe(
+          chanceEvent,
+        );
+
+        expect(
+          result.source,
+        ).toBe(
+          'chance',
+        );
+      },
+    );
+
+    it(
+      'uses a fallback event when chance rolls fail',
+      () => {
+        const result =
+          activateNextCampaignEvent(
+            createTurnStartState({
+              currentTurn:
+                2,
+            }),
+            createRegistry([
+              chanceEvent,
+              fallbackEvent,
+            ]),
+            () => 0.75,
+          );
+
+        expect(
+          result.event,
+        ).toBe(
+          fallbackEvent,
+        );
+
+        expect(
+          result.source,
+        ).toBe(
+          'fallback',
+        );
+      },
+    );
+
+    it(
+      'keeps a repeatable fallback available on every campaign turn',
+      () => {
+        for (
+          let currentTurn = 1;
+          currentTurn <= 13;
+          currentTurn += 1
+        ) {
+          const result =
+            activateNextCampaignEvent(
+              createTurnStartState({
+                currentTurn,
+
+                completedEventIds: [
+                  fallbackEvent.id,
+                ],
+              }),
+              createRegistry([
+                fallbackEvent,
+              ]),
+              () => 0.5,
+            );
+
+          expect(
+            result.activated,
+          ).toBe(true);
+
+          expect(
+            result.event,
+          ).toBe(
+            fallbackEvent,
+          );
+
+          expect(
+            result.source,
+          ).toBe(
+            'fallback',
+          );
+        }
       },
     );
 

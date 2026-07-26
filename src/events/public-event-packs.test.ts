@@ -119,7 +119,7 @@ describe(
   'public event packs',
   () => {
     it(
-      'lists the media event pack in the generated manifest',
+      'lists every public event pack in the generated manifest',
       () => {
         const manifest =
           parseEventPackManifest(
@@ -136,6 +136,7 @@ describe(
         ).toEqual([
           'characters/character-events.json',
           'media/media-events.json',
+          'seasonal/seasonal-events.json',
         ]);
       },
     );
@@ -167,6 +168,7 @@ describe(
         ).toEqual([
           'events_characters',
           'events_media',
+          'events_seasonal',
         ]);
 
         expect(
@@ -183,6 +185,10 @@ describe(
           'event_media_03',
           'event_media_04',
           'event_media_05',
+          'event_seasonal_01',
+          'event_seasonal_02',
+          'event_seasonal_03',
+          'event_seasonal_04',
         ]);
       },
     );

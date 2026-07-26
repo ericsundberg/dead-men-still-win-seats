@@ -149,6 +149,26 @@ describe('event validation', () => {
     );
   });
 
+  it('rejects an inverted turn-window trigger', () => {
+    const invalidWindowEvent = {
+      ...createValidEvent(),
+      trigger: {
+        type: 'turn-window',
+        startTurn: 5,
+        endTurn: 4,
+      },
+    };
+
+    expect(() => parseEventPackDefinition({
+      ...createValidPack(),
+      events: [
+        invalidWindowEvent,
+      ],
+    })).toThrow(
+      /endTurn must be greater than or equal to startTurn/,
+    );
+  });
+
   it('requires every event to have a decision', () => {
     const event = {
       ...createValidEvent(),
