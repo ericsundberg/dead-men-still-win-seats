@@ -1,7 +1,7 @@
 {
   "name": "dead-men-still-win-seats",
   "private": true,
-  "version": "0.0.1-prealpha",
+  "version": "0.1.1-beta",
   "type": "module",
   "scripts": {
     "events:manifest": "node tools/build_event_manifest.mjs",
