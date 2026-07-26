@@ -26,6 +26,10 @@ import {
   renderDisclaimerScene,
 } from '../scenes/disclaimer-scene';
 import {
+  renderFmvMenuScene,
+  renderIntroPreviewScene,
+} from '../scenes/fmv-menu-scene';
+import {
   renderGameSetupScene,
 } from '../scenes/game-setup-scene';
 import {
@@ -133,8 +137,18 @@ export class AppController {
     );
 
     this.router.register(
+      'intro-preview',
+      renderIntroPreviewScene,
+    );
+
+    this.router.register(
       'title',
       renderTitleScene,
+    );
+
+    this.router.register(
+      'fmv-menu',
+      renderFmvMenuScene,
     );
 
     this.router.register(

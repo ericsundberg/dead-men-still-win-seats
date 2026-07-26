@@ -5,6 +5,7 @@ import {
 } from 'vitest';
 import {
   isCampaignEndingFmvSelection,
+  resolveIntroPreviewDestination,
   titleFmvMenuItems,
 } from './title-fmv-menu';
 
@@ -78,6 +79,27 @@ describe(
               ),
           ),
         ).toBe(true);
+      },
+    );
+
+    it(
+      'returns an intro preview to the FMV menu',
+      () => {
+        expect(
+          resolveIntroPreviewDestination(
+            'title',
+          ),
+        ).toBe(
+          'fmv-menu',
+        );
+
+        expect(
+          resolveIntroPreviewDestination(
+            'settings',
+          ),
+        ).toBe(
+          'settings',
+        );
       },
     );
   },

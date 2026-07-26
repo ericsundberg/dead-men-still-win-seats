@@ -1,4 +1,7 @@
 import type {
+  SceneName,
+} from '../../app/scene-router';
+import type {
   CampaignEndingFmvId,
 } from '../campaign/campaign-ending-fmv';
 
@@ -57,4 +60,18 @@ export function isCampaignEndingFmvSelection(
     selectionId
     !== 'intro'
   );
+}
+
+export function resolveIntroPreviewDestination(
+  nextScene:
+    SceneName,
+): SceneName {
+  if (
+    nextScene
+    === 'title'
+  ) {
+    return 'fmv-menu';
+  }
+
+  return nextScene;
 }

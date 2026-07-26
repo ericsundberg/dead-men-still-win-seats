@@ -10,18 +10,8 @@ import {
   game_version,
 } from '../version';
 import {
-  makeCampaignEndingFmvPlayer,
-  resolveCampaignEndingFmvById,
-  type CampaignEndingFmvPlayer,
-} from './campaign/campaign-ending-fmv';
-import {
   makeTitleBackground,
 } from './title/title-background';
-import {
-  isCampaignEndingFmvSelection,
-  titleFmvMenuItems,
-  type TitleFmvSelectionId,
-} from './title/title-fmv-menu';
 import {
   createInitialTitleIdleIntroState,
   recordTitleIdleMusicLoop,
@@ -46,35 +36,12 @@ export function renderTitleScene(
   let hasRequestedIdleIntro =
     false;
 
-  let isFmvMenuOpen =
-    false;
-
-  let previewPlayer:
-    CampaignEndingFmvPlayer | null =
-      null;
-
-  const resetIdleIntro =
-    (): void => {
-      idleIntroState =
-        createInitialTitleIdleIntroState();
-
-      hasRequestedIdleIntro =
-        false;
-    };
-
   const unsubscribeTrackLoops =
     context.audio.music
       .subscribeTrackLoops(
         (
           trackId,
         ) => {
-          if (
-            isFmvMenuOpen
-            || previewPlayer
-          ) {
-            return;
-          }
-
           idleIntroState =
             recordTitleIdleMusicLoop(
               idleIntroState,
@@ -102,15 +69,7 @@ export function renderTitleScene(
 
   scene.addEventListener(
     sceneDisposeEventName,
-    () => {
-      unsubscribeTrackLoops();
-
-      previewPlayer
-        ?.dispose();
-
-      previewPlayer =
-        null;
-    },
+    unsubscribeTrackLoops,
     {
       once:
         true,
@@ -185,7 +144,7 @@ export function renderTitleScene(
       },
     );
 
-  const mainMenu =
+  const menu =
     makeElement(
       'nav',
       {
@@ -194,26 +153,9 @@ export function renderTitleScene(
       },
     );
 
-  const fmvMenu =
-    makeElement(
-      'nav',
-      {
-        className:
-          'title-menu title-fmv-menu',
-      },
-    );
-
-  fmvMenu.hidden =
-    true;
-
-  mainMenu.setAttribute(
+  menu.setAttribute(
     'aria-label',
     'Main menu',
-  );
-
-  fmvMenu.setAttribute(
-    'aria-label',
-    'FMV player menu',
   );
 
   const playButtonClick =
@@ -223,161 +165,14 @@ export function renderTitleScene(
       );
     };
 
-  const fmvMenuHeading =
-    makeElement(
-      'p',
-      {
-        className:
-          'game-version',
-
-        textContent:
-          'FMV Player',
-      },
-    );
-
-  let watchFmvsButton:
-    HTMLButtonElement;
-
-  const openFmvMenu =
-    (): void => {
-      resetIdleIntro();
-
-      isFmvMenuOpen =
-        true;
-
-      mainMenu.hidden =
-        true;
-
-      fmvMenu.hidden =
-        false;
-
-      const firstFmvButton =
-        fmvMenu.querySelector<
-          HTMLButtonElement
-        >(
-          'button',
-        );
-
-      firstFmvButton
-        ?.focus();
-    };
-
-  const closeFmvMenu =
-    (): void => {
-      resetIdleIntro();
-
-      isFmvMenuOpen =
-        false;
-
-      fmvMenu.hidden =
-        true;
-
-      mainMenu.hidden =
-        false;
-
-      watchFmvsButton.focus();
-    };
-
-  const playFmv =
-    (
-      selectionId:
-        TitleFmvSelectionId,
-
-      triggerButton:
-        HTMLButtonElement,
-    ): void => {
-      if (
-        previewPlayer
-      ) {
-        return;
-      }
-
-      context.audio.music.stop();
-
-      if (
-        !isCampaignEndingFmvSelection(
-          selectionId,
-        )
-      ) {
-        context.navigate(
-          'intro',
-        );
-
-        return;
-      }
-
-      const definition =
-        resolveCampaignEndingFmvById(
-          selectionId,
-        );
-
-      let player:
-        CampaignEndingFmvPlayer;
-
-      player =
-        makeCampaignEndingFmvPlayer({
-          definition,
-
-          onFinished:
-            () => {
-              if (
-                previewPlayer
-                !== player
-              ) {
-                return;
-              }
-
-              player.dispose();
-
-              previewPlayer =
-                null;
-
-              if (
-                !scene.isConnected
-              ) {
-                return;
-              }
-
-              context.audio.music.play(
-                'main-menu-theme',
-                {
-                  restart:
-                    true,
-                },
-              );
-
-              triggerButton.focus();
-            },
-        });
-
-      previewPlayer =
-        player;
-
-      scene.append(
-        player.element,
-      );
-
-      void player.start();
-    };
-
-  watchFmvsButton =
-    makeButton(
-      'Watch FMVs',
-      openFmvMenu,
-      'menu-button',
-      {
-        onBeforeClick:
-          playButtonClick,
-      },
-    );
-
-  mainMenu.append(
+  menu.append(
     makeButton(
       'New Game',
-      () =>
+      () => {
         context.navigate(
           'game-setup',
-        ),
+        );
+      },
       'menu-button',
       {
         onBeforeClick:
@@ -387,10 +182,11 @@ export function renderTitleScene(
 
     makeButton(
       'Load Game',
-      () =>
+      () => {
         context.navigate(
           'load-game',
-        ),
+        );
+      },
       'menu-button',
       {
         onBeforeClick:
@@ -400,10 +196,11 @@ export function renderTitleScene(
 
     makeButton(
       'Settings',
-      () =>
+      () => {
         context.navigate(
           'settings',
-        ),
+        );
+      },
       'menu-button',
       {
         onBeforeClick:
@@ -411,14 +208,27 @@ export function renderTitleScene(
       },
     ),
 
-    watchFmvsButton,
+    makeButton(
+      'Watch FMVs',
+      () => {
+        context.navigate(
+          'fmv-menu',
+        );
+      },
+      'menu-button',
+      {
+        onBeforeClick:
+          playButtonClick,
+      },
+    ),
 
     makeButton(
       'Credits',
-      () =>
+      () => {
         context.navigate(
           'credits',
-        ),
+        );
+      },
       'menu-button',
       {
         onBeforeClick:
@@ -445,55 +255,10 @@ export function renderTitleScene(
     version,
   );
 
-  fmvMenu.append(
-    fmvMenuHeading,
-  );
-
-  for (
-    const menuItem
-    of titleFmvMenuItems
-  ) {
-    let fmvButton:
-      HTMLButtonElement;
-
-    fmvButton =
-      makeButton(
-        menuItem.label,
-        () => {
-          playFmv(
-            menuItem.id,
-            fmvButton,
-          );
-        },
-        'menu-button',
-        {
-          onBeforeClick:
-            playButtonClick,
-        },
-      );
-
-    fmvMenu.append(
-      fmvButton,
-    );
-  }
-
-  fmvMenu.append(
-    makeButton(
-      'Back',
-      closeFmvMenu,
-      'secondary-button',
-      {
-        onBeforeClick:
-          playButtonClick,
-      },
-    ),
-  );
-
   panel.append(
     title,
     subtitle,
-    mainMenu,
-    fmvMenu,
+    menu,
   );
 
   scene.append(
