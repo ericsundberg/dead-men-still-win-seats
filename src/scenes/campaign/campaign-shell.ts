@@ -125,6 +125,37 @@ export function resolveCampaignHudSnapshot(
   };
 }
 
+/**
+ * The campaign may advance only during the player-actions phase.
+ *
+ * Before CampaignSession exists, the temporary legacy runtime may
+ * still advance unless it has already reached game over.
+ */
+export function canCampaignEndTurn(
+  campaignState:
+    CampaignState | null,
+
+  legacyIsGameOver:
+    boolean,
+): boolean {
+  if (
+    legacyIsGameOver
+  ) {
+    return false;
+  }
+
+  if (
+    !campaignState
+  ) {
+    return true;
+  }
+
+  return (
+    campaignState.phase
+    === 'player-actions'
+  );
+}
+
 export function makeCampaignShell(
   context: SceneContext,
   campaignContent:
@@ -169,6 +200,10 @@ export function makeCampaignShell(
     context.game
       .getState();
 
+  const legacyIsGameOver =
+    context.game
+      .isGameOver();
+
   const hudSnapshot =
     resolveCampaignHudSnapshot({
       campaignState,
@@ -181,9 +216,7 @@ export function makeCampaignShell(
         context.game
           .getDifficultyId(),
 
-      legacyIsGameOver:
-        context.game
-          .isGameOver(),
+      legacyIsGameOver,
 
       fallbackNewsItems:
         newsItems,
@@ -246,8 +279,10 @@ export function makeCampaignShell(
         requestEndTurn,
 
       disabled:
-        hudSnapshot
-          .isGameOver,
+        !canCampaignEndTurn(
+          campaignState,
+          legacyIsGameOver,
+        ),
     });
 
   hud.append(

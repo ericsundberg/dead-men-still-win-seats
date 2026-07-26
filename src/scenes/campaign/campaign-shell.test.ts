@@ -7,6 +7,7 @@ import {
   createInitialCampaignState,
 } from '../../game/campaign/campaign-state';
 import {
+  canCampaignEndTurn,
   resolveCampaignHudSnapshot,
 } from './campaign-shell';
 
@@ -245,6 +246,77 @@ describe(
         expect(
           snapshot.isGameOver,
         ).toBe(true);
+      },
+    );
+  },
+);
+
+describe(
+  'campaign end-turn availability',
+  () => {
+    it(
+      'allows turn advancement during player actions',
+      () => {
+        const campaignState = {
+          ...createInitialCampaignState(
+            'easy',
+          ),
+
+          phase:
+            'player-actions' as const,
+        };
+
+        expect(
+          canCampaignEndTurn(
+            campaignState,
+            false,
+          ),
+        ).toBe(true);
+      },
+    );
+
+    it(
+      'blocks turn advancement while an event is unresolved',
+      () => {
+        const campaignState = {
+          ...createInitialCampaignState(
+            'easy',
+          ),
+
+          phase:
+            'resolving-events' as const,
+
+          activeEventInstanceId:
+            'event_test_01' as const,
+        };
+
+        expect(
+          canCampaignEndTurn(
+            campaignState,
+            false,
+          ),
+        ).toBe(false);
+      },
+    );
+
+    it(
+      'blocks turn advancement when the legacy runtime is game over',
+      () => {
+        const campaignState = {
+          ...createInitialCampaignState(
+            'easy',
+          ),
+
+          phase:
+            'player-actions' as const,
+        };
+
+        expect(
+          canCampaignEndTurn(
+            campaignState,
+            true,
+          ),
+        ).toBe(false);
       },
     );
   },
