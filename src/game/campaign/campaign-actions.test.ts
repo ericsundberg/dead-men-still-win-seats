@@ -75,7 +75,179 @@ describe(
           getCampaignActionDefinitions(),
         ).toEqual([
           action,
+          getCampaignActionDefinition(
+            'hire-staffer',
+          ),
+          getCampaignActionDefinition(
+            'recruit-surrogate',
+          ),
         ]);
+      },
+    );
+
+    it(
+      'purchases staffers and surrogates with cash and action points',
+      () => {
+        const campaignState =
+          createPlayerActionState();
+
+        const stafferAction =
+          getCampaignActionDefinition(
+            'hire-staffer',
+          );
+
+        expect(
+          stafferAction,
+        ).toEqual({
+          id:
+            'hire-staffer',
+
+          requirements: {
+            minimumCash:
+              20_000,
+
+            minimumActionPoints:
+              1,
+          },
+
+          effects: {
+            cash:
+              -20_000,
+
+            actionPoints:
+              -1,
+
+            staffers:
+              1,
+          },
+
+          newsItems: [
+            'Buster Campaign Expands Staff as Senator Remains Out of Sight',
+          ],
+        });
+
+        const hiredStaffer =
+          performCampaignAction(
+            campaignState,
+            stafferAction,
+          );
+
+        expect(
+          hiredStaffer.performed,
+        ).toBe(true);
+
+        expect(
+          hiredStaffer.nextState
+            .resources,
+        ).toEqual({
+          cash:
+            80_000,
+
+          favors:
+            3,
+
+          actionPoints:
+            2,
+        });
+
+        expect(
+          hiredStaffer.nextState
+            .personnel,
+        ).toEqual({
+          staffers:
+            1,
+
+          surrogates:
+            0,
+        });
+
+        const surrogateAction =
+          getCampaignActionDefinition(
+            'recruit-surrogate',
+          );
+
+        expect(
+          surrogateAction,
+        ).toEqual({
+          id:
+            'recruit-surrogate',
+
+          requirements: {
+            minimumCash:
+              15_000,
+
+            minimumActionPoints:
+              1,
+          },
+
+          effects: {
+            cash:
+              -15_000,
+
+            actionPoints:
+              -1,
+
+            surrogates:
+              1,
+          },
+
+          newsItems: [
+            'Prominent Ally Campaigns in Senator Buster’s Place',
+          ],
+        });
+
+        const recruitedSurrogate =
+          performCampaignAction(
+            hiredStaffer.nextState,
+            surrogateAction,
+          );
+
+        expect(
+          recruitedSurrogate.performed,
+        ).toBe(true);
+
+        expect(
+          recruitedSurrogate.nextState
+            .resources,
+        ).toEqual({
+          cash:
+            65_000,
+
+          favors:
+            3,
+
+          actionPoints:
+            1,
+        });
+
+        expect(
+          recruitedSurrogate.nextState
+            .personnel,
+        ).toEqual({
+          staffers:
+            1,
+
+          surrogates:
+            1,
+        });
+
+        expect(
+          recruitedSurrogate.nextState
+            .newsFeed,
+        ).toEqual([
+          'Prominent Ally Campaigns in Senator Buster’s Place',
+          'Buster Campaign Expands Staff as Senator Remains Out of Sight',
+        ]);
+
+        expect(
+          campaignState.personnel,
+        ).toEqual({
+          staffers:
+            0,
+
+          surrogates:
+            0,
+        });
       },
     );
 

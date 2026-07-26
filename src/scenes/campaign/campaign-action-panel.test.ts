@@ -28,7 +28,10 @@ describe(
           });
 
         expect(
-          models,
+          models.slice(
+            0,
+            1,
+          ),
         ).toEqual([
           {
             id:
@@ -57,6 +60,97 @@ describe(
 
             buttonLabel:
               'Hold Fundraiser',
+
+            disabled:
+              false,
+
+            unavailableMessage:
+              null,
+          },
+        ]);
+      },
+    );
+
+    it(
+      'creates personnel purchase action models',
+      () => {
+        const models =
+          createCampaignActionPanelModels({
+            ...createInitialCampaignState(
+              'easy',
+            ),
+
+            phase:
+              'player-actions',
+          });
+
+        expect(
+          models.slice(
+            1,
+          ),
+        ).toEqual([
+          {
+            id:
+              'hire-staffer',
+
+            title:
+              'Hire Campaign Staffer',
+
+            description:
+              [
+                'Bring in another operative to manage calls,',
+                'schedules, and the increasingly difficult task',
+                'of keeping the Senator off the calendar.',
+              ].join(' '),
+
+            requirementItems: [
+              'Requires $20,000 Cash',
+              'Requires 1 Action Point',
+            ],
+
+            effectItems: [
+              '-$20,000 Cash',
+              '-1 Action Point',
+              '+1 Staffer',
+            ],
+
+            buttonLabel:
+              'Hire Staffer',
+
+            disabled:
+              false,
+
+            unavailableMessage:
+              null,
+          },
+
+          {
+            id:
+              'recruit-surrogate',
+
+            title:
+              'Recruit Campaign Surrogate',
+
+            description:
+              [
+                'Put a trusted ally on the campaign trail',
+                'to speak for the Senator and answer questions',
+                'he is no longer available to hear.',
+              ].join(' '),
+
+            requirementItems: [
+              'Requires $15,000 Cash',
+              'Requires 1 Action Point',
+            ],
+
+            effectItems: [
+              '-$15,000 Cash',
+              '-1 Action Point',
+              '+1 Surrogate',
+            ],
+
+            buttonLabel:
+              'Recruit Surrogate',
 
             disabled:
               false,

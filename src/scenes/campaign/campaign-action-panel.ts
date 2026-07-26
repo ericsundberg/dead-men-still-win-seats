@@ -92,6 +92,36 @@ const campaignActionPresentations = {
     buttonLabel:
       'Hold Fundraiser',
   },
+
+  'hire-staffer': {
+    title:
+      'Hire Campaign Staffer',
+
+    description:
+      [
+        'Bring in another operative to manage calls,',
+        'schedules, and the increasingly difficult task',
+        'of keeping the Senator off the calendar.',
+      ].join(' '),
+
+    buttonLabel:
+      'Hire Staffer',
+  },
+
+  'recruit-surrogate': {
+    title:
+      'Recruit Campaign Surrogate',
+
+    description:
+      [
+        'Put a trusted ally on the campaign trail',
+        'to speak for the Senator and answer questions',
+        'he is no longer available to hear.',
+      ].join(' '),
+
+    buttonLabel:
+      'Recruit Surrogate',
+  },
 } as const satisfies Record<
   CampaignActionId,
   CampaignActionPresentation
@@ -685,6 +715,22 @@ function createEffectItems(
       .actionPoints,
     'Action Point',
     'Action Points',
+  );
+
+  appendNumberEffect(
+    items,
+    action.effects
+      .staffers,
+    'Staffer',
+    'Staffers',
+  );
+
+  appendNumberEffect(
+    items,
+    action.effects
+      .surrogates,
+    'Surrogate',
+    'Surrogates',
   );
 
   appendNumberEffect(

@@ -7,7 +7,9 @@ import type {
 } from './campaign-state';
 
 export type CampaignActionId =
-  | 'closed-door-fundraiser';
+  | 'closed-door-fundraiser'
+  | 'hire-staffer'
+  | 'recruit-surrogate';
 
 export interface CampaignActionRequirements {
   readonly minimumCash?:
@@ -71,6 +73,8 @@ export interface CampaignActionResult {
 
 export const campaignActionIds = [
   'closed-door-fundraiser',
+  'hire-staffer',
+  'recruit-surrogate',
 ] as const satisfies readonly CampaignActionId[];
 
 const campaignActionDefinitions = {
@@ -99,6 +103,62 @@ const campaignActionDefinitions = {
 
     newsItems: [
       'Buster Campaign Holds Closed-Door Fundraiser; Senator Not Seen',
+    ],
+  },
+
+  'hire-staffer': {
+    id:
+      'hire-staffer',
+
+    requirements: {
+      minimumCash:
+        20_000,
+
+      minimumActionPoints:
+        1,
+    },
+
+    effects: {
+      cash:
+        -20_000,
+
+      actionPoints:
+        -1,
+
+      staffers:
+        1,
+    },
+
+    newsItems: [
+      'Buster Campaign Expands Staff as Senator Remains Out of Sight',
+    ],
+  },
+
+  'recruit-surrogate': {
+    id:
+      'recruit-surrogate',
+
+    requirements: {
+      minimumCash:
+        15_000,
+
+      minimumActionPoints:
+        1,
+    },
+
+    effects: {
+      cash:
+        -15_000,
+
+      actionPoints:
+        -1,
+
+      surrogates:
+        1,
+    },
+
+    newsItems: [
+      'Prominent Ally Campaigns in Senator Buster’s Place',
     ],
   },
 } as const satisfies Record<
