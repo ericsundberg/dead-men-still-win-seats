@@ -18,6 +18,9 @@ import {
   makeCampaignGameOverPanel,
 } from './campaign/campaign-game-over-panel';
 import {
+  makeCampaignPauseMenu,
+} from './campaign/campaign-pause-menu';
+import {
   makeCampaignShell,
 } from './campaign/campaign-shell';
 import {
@@ -192,13 +195,20 @@ export function renderCampaignScene(
         .newsItems,
     );
 
+  const pauseMenu =
+    makeCampaignPauseMenu(
+      context,
+    );
+
   scene.append(
     campaignShell.element,
+    pauseMenu.element,
   );
 
   scene.addEventListener(
     sceneDisposeEventName,
     () => {
+      pauseMenu.dispose();
       campaignShell.dispose();
     },
     {

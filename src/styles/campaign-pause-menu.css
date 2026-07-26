@@ -1,0 +1,206 @@
+.campaign-pause-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.campaign-pause-debug-button {
+  position: fixed;
+  top: calc(1rem * var(--ui-scale, 1));
+  right: calc(1rem * var(--ui-scale, 1));
+  z-index: 3;
+
+  min-height: calc(2.25rem * var(--ui-scale, 1));
+  padding:
+    calc(0.45rem * var(--ui-scale, 1))
+    calc(0.75rem * var(--ui-scale, 1));
+
+  border: 2px dashed #fff;
+  border-radius: 0.2rem;
+
+  background: #a40000;
+  color: #fff;
+
+  font: inherit;
+  font-size: calc(0.72rem * var(--ui-scale, 1));
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.campaign-pause-debug-button:hover,
+.campaign-pause-debug-button:focus-visible {
+  background: #d00000;
+}
+
+.campaign-pause-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+
+  display: grid;
+  place-items: center;
+
+  padding: calc(1.5rem * var(--ui-scale, 1));
+
+  pointer-events: auto;
+}
+
+.campaign-pause-overlay[hidden] {
+  display: none;
+}
+
+.campaign-pause-backdrop {
+  position: absolute;
+  inset: 0;
+
+  background:
+    rgba(0, 0, 0, 0.78);
+}
+
+.campaign-pause-dialog {
+  position: relative;
+  z-index: 1;
+
+  width: min(
+    calc(31rem * var(--ui-scale, 1)),
+    calc(100vw - 3rem)
+  );
+
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+
+  border:
+    calc(0.25rem * var(--ui-scale, 1))
+    solid
+    #17120c;
+
+  border-radius:
+    calc(0.25rem * var(--ui-scale, 1));
+
+  background:
+    linear-gradient(
+      rgba(255, 255, 255, 0.04),
+      rgba(0, 0, 0, 0.08)
+    ),
+    #e3d3ad;
+
+  box-shadow:
+    0 0 0
+      calc(0.2rem * var(--ui-scale, 1))
+      #7a5b35,
+    0
+      calc(1rem * var(--ui-scale, 1))
+      calc(3rem * var(--ui-scale, 1))
+      rgba(0, 0, 0, 0.75);
+
+  color: #17120c;
+}
+
+.campaign-pause-content {
+  display: grid;
+  gap: calc(1rem * var(--ui-scale, 1));
+
+  padding:
+    calc(1.6rem * var(--ui-scale, 1));
+}
+
+.campaign-pause-title {
+  margin: 0;
+
+  font-size:
+    calc(2rem * var(--ui-scale, 1));
+
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.campaign-pause-description {
+  margin: 0;
+
+  text-align: center;
+}
+
+.campaign-pause-menu {
+  display: grid;
+  gap: calc(0.7rem * var(--ui-scale, 1));
+}
+
+.campaign-pause-menu-button {
+  width: 100%;
+}
+
+.campaign-pause-scale-control {
+  display: grid;
+  gap: calc(0.7rem * var(--ui-scale, 1));
+
+  padding:
+    calc(1rem * var(--ui-scale, 1));
+
+  border: 2px solid rgba(23, 18, 12, 0.7);
+
+  background:
+    rgba(255, 255, 255, 0.28);
+}
+
+.campaign-pause-scale-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(1rem * var(--ui-scale, 1));
+}
+
+.campaign-pause-scale-label {
+  font-weight: 800;
+}
+
+.campaign-pause-scale-value {
+  font-weight: 800;
+}
+
+.campaign-pause-scale-slider {
+  width: 100%;
+  cursor: pointer;
+}
+
+.campaign-pause-back-button {
+  justify-self: center;
+  min-width: calc(9rem * var(--ui-scale, 1));
+}
+
+.campaign-pause-dialog button:focus-visible,
+.campaign-pause-dialog input:focus-visible,
+.campaign-pause-debug-button:focus-visible {
+  outline:
+    calc(0.2rem * var(--ui-scale, 1))
+    solid
+    #ffd54a;
+
+  outline-offset:
+    calc(0.15rem * var(--ui-scale, 1));
+}
+
+@media (max-width: 40rem) {
+  .campaign-pause-debug-button {
+    top: calc(0.5rem * var(--ui-scale, 1));
+    right: calc(0.5rem * var(--ui-scale, 1));
+  }
+
+  .campaign-pause-overlay {
+    padding: calc(0.75rem * var(--ui-scale, 1));
+  }
+
+  .campaign-pause-dialog {
+    width: calc(100vw - 1.5rem);
+    max-height: calc(100vh - 1.5rem);
+  }
+
+  .campaign-pause-content {
+    padding:
+      calc(1rem * var(--ui-scale, 1));
+  }
+}
