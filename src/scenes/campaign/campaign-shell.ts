@@ -47,16 +47,7 @@ export interface CampaignHudSnapshot {
 
 export interface ResolveCampaignHudSnapshotOptions {
   readonly campaignState:
-    CampaignState | null;
-
-  readonly legacyTurnNumber:
-    number | null;
-
-  readonly legacyDifficultyId:
-    GameDifficultyId;
-
-  readonly legacyIsGameOver:
-    boolean;
+    CampaignState;
 
   readonly fallbackNewsItems?:
     readonly string[];
@@ -74,37 +65,12 @@ export interface CampaignEndTurnRequestContext {
 }
 
 /**
- * Resolves the state displayed by the campaign HUD.
- *
- * CampaignSession is now the preferred source. The legacy
- * GameSession remains a fallback while the old Hamurabi
- * interface is still being removed incrementally.
+ * Resolves all campaign HUD values from CampaignSession state.
  */
 export function resolveCampaignHudSnapshot(
   options:
     ResolveCampaignHudSnapshotOptions,
 ): CampaignHudSnapshot {
-  const fallbackNewsItems =
-    options.fallbackNewsItems
-    ?? [];
-
-  if (!options.campaignState) {
-    return {
-      turnNumber:
-        options.legacyTurnNumber
-        ?? 1,
-
-      difficultyId:
-        options.legacyDifficultyId,
-
-      newsItems:
-        fallbackNewsItems,
-
-      isGameOver:
-        options.legacyIsGameOver,
-    };
-  }
-
   const campaignNewsItems =
     options.campaignState
       .newsFeed;
@@ -118,52 +84,26 @@ export function resolveCampaignHudSnapshot(
       options.campaignState
         .difficultyId,
 
-    /*
-     * Until real campaign news is generated, retain any news
-     * supplied by the scene as a display fallback.
-     */
     newsItems:
       campaignNewsItems.length > 0
         ? campaignNewsItems
-        : fallbackNewsItems,
+        : options.fallbackNewsItems
+          ?? [],
 
-    /*
-     * Respect either runtime's game-over state during the
-     * migration so the end-turn control cannot be left active.
-     */
     isGameOver:
       options.campaignState
         .phase
-        === 'game-over'
-      || options.legacyIsGameOver,
+        === 'game-over',
   };
 }
 
 /**
  * The campaign may advance only during the player-actions phase.
- *
- * Before CampaignSession exists, the temporary legacy runtime may
- * still advance unless it has already reached game over.
  */
 export function canCampaignEndTurn(
   campaignState:
-    CampaignState | null,
-
-  legacyIsGameOver:
-    boolean,
+    CampaignState,
 ): boolean {
-  if (
-    legacyIsGameOver
-  ) {
-    return false;
-  }
-
-  if (
-    !campaignState
-  ) {
-    return true;
-  }
-
   return (
     campaignState.phase
     === 'player-actions'
@@ -215,6 +155,9 @@ export function makeCampaignShell(
   context:
     SceneContext,
 
+  campaignState:
+    CampaignState,
+
   campaignContent:
     HTMLElement,
 
@@ -249,31 +192,9 @@ export function makeCampaignShell(
       context,
     );
 
-  const campaignState =
-    context.campaign
-      .getState();
-
-  const legacyGameState =
-    context.game
-      .getState();
-
-  const legacyIsGameOver =
-    context.game
-      .isGameOver();
-
   const hudSnapshot =
     resolveCampaignHudSnapshot({
       campaignState,
-
-      legacyTurnNumber:
-        legacyGameState?.year
-        ?? null,
-
-      legacyDifficultyId:
-        context.game
-          .getDifficultyId(),
-
-      legacyIsGameOver,
 
       fallbackNewsItems:
         newsItems,
@@ -318,7 +239,6 @@ export function makeCampaignShell(
       disabled:
         !canCampaignEndTurn(
           campaignState,
-          legacyIsGameOver,
         ),
     });
 

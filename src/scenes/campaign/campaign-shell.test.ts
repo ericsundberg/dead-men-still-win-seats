@@ -17,7 +17,7 @@ describe(
   'campaign HUD state resolution',
   () => {
     it(
-      'prefers active campaign state over legacy state',
+      'reads turn, difficulty, and news from campaign state',
       () => {
         const campaignState = {
           ...createInitialCampaignState(
@@ -38,15 +38,6 @@ describe(
         const snapshot =
           resolveCampaignHudSnapshot({
             campaignState,
-
-            legacyTurnNumber:
-              99,
-
-            legacyDifficultyId:
-              'easy',
-
-            legacyIsGameOver:
-              false,
 
             fallbackNewsItems: [
               'Fallback headline',
@@ -88,15 +79,6 @@ describe(
           resolveCampaignHudSnapshot({
             campaignState,
 
-            legacyTurnNumber:
-              1,
-
-            legacyDifficultyId:
-              'easy',
-
-            legacyIsGameOver:
-              false,
-
             fallbackNewsItems: [
               'Temporary campaign headline',
             ],
@@ -111,76 +93,7 @@ describe(
     );
 
     it(
-      'falls back to legacy state before a campaign is active',
-      () => {
-        const snapshot =
-          resolveCampaignHudSnapshot({
-            campaignState:
-              null,
-
-            legacyTurnNumber:
-              4,
-
-            legacyDifficultyId:
-              'hardliner',
-
-            legacyIsGameOver:
-              false,
-
-            fallbackNewsItems: [
-              'Legacy headline',
-            ],
-          });
-
-        expect(
-          snapshot,
-        ).toEqual({
-          turnNumber:
-            4,
-
-          difficultyId:
-            'hardliner',
-
-          newsItems: [
-            'Legacy headline',
-          ],
-
-          isGameOver:
-            false,
-        });
-      },
-    );
-
-    it(
-      'uses turn one when neither runtime supplies a turn',
-      () => {
-        const snapshot =
-          resolveCampaignHudSnapshot({
-            campaignState:
-              null,
-
-            legacyTurnNumber:
-              null,
-
-            legacyDifficultyId:
-              'easy',
-
-            legacyIsGameOver:
-              false,
-          });
-
-        expect(
-          snapshot.turnNumber,
-        ).toBe(1);
-
-        expect(
-          snapshot.newsItems,
-        ).toEqual([]);
-      },
-    );
-
-    it(
-      'disables turn advancement when campaign state is game over',
+      'recognizes campaign game-over state',
       () => {
         const campaignState = {
           ...createInitialCampaignState(
@@ -202,47 +115,6 @@ describe(
         const snapshot =
           resolveCampaignHudSnapshot({
             campaignState,
-
-            legacyTurnNumber:
-              13,
-
-            legacyDifficultyId:
-              'easy',
-
-            legacyIsGameOver:
-              false,
-          });
-
-        expect(
-          snapshot.isGameOver,
-        ).toBe(true);
-      },
-    );
-
-    it(
-      'also respects the temporary legacy game-over state',
-      () => {
-        const campaignState = {
-          ...createInitialCampaignState(
-            'easy',
-          ),
-
-          phase:
-            'player-actions' as const,
-        };
-
-        const snapshot =
-          resolveCampaignHudSnapshot({
-            campaignState,
-
-            legacyTurnNumber:
-              1,
-
-            legacyDifficultyId:
-              'easy',
-
-            legacyIsGameOver:
-              true,
           });
 
         expect(
@@ -271,7 +143,6 @@ describe(
         expect(
           canCampaignEndTurn(
             campaignState,
-            false,
           ),
         ).toBe(true);
       },
@@ -295,14 +166,13 @@ describe(
         expect(
           canCampaignEndTurn(
             campaignState,
-            false,
           ),
         ).toBe(false);
       },
     );
 
     it(
-      'blocks turn advancement when the legacy runtime is game over',
+      'blocks turn advancement after campaign game over',
       () => {
         const campaignState = {
           ...createInitialCampaignState(
@@ -310,13 +180,20 @@ describe(
           ),
 
           phase:
-            'player-actions' as const,
+            'game-over' as const,
+
+          endGameState: {
+            type:
+              'win-reelection' as const,
+
+            triggeredOnTurn:
+              13,
+          },
         };
 
         expect(
           canCampaignEndTurn(
             campaignState,
-            true,
           ),
         ).toBe(false);
       },
