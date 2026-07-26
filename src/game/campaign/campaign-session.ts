@@ -337,13 +337,11 @@ export class CampaignSession {
    * During the current migration stage:
    *
    * 1. The campaign enters "turn-end".
-   * 2. End-game conditions are evaluated.
-   * 3. If the campaign continues, the turn increments.
-   * 4. Action points replenish for the next turn.
-   * 5. The campaign returns to "player-actions".
-   *
-   * Mandatory-event validation and turn-start event processing
-   * will be added in later migration checkpoints.
+   * 2. Active surrogates affect public metrics.
+   * 3. End-game conditions are evaluated.
+   * 4. If the campaign continues, the turn increments.
+   * 5. Action points replenish for the next turn.
+   * 6. Turn-start event activation runs for the new turn.
    */
   public endTurn():
     CampaignState | null {
@@ -358,11 +356,37 @@ export class CampaignSession {
       return null;
     }
 
+    const surrogateCount =
+      currentState
+        .personnel
+        .surrogates;
+
+    /*
+     * Each active surrogate improves voter energy and party
+     * confidence, but creates another opportunity for the public
+     * to notice that Senator Buster is nowhere to be found.
+     */
     const turnEndState:
-      CampaignState = {
-        ...currentState,
-        phase: 'turn-end',
-      };
+      CampaignState =
+        applyCampaignEffects(
+          {
+            ...currentState,
+
+            phase:
+              'turn-end',
+          },
+          {
+            publicSuspicion:
+              surrogateCount,
+
+            partyConfidence:
+              surrogateCount,
+
+            voterEnergy:
+              surrogateCount
+              * 2,
+          },
+        );
 
     const endGameState =
       evaluateCampaignEndGame(

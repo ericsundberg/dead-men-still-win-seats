@@ -378,6 +378,97 @@ describe(
     );
 
     it(
+      'applies weekly surrogate benefits and suspicion',
+      () => {
+        const session =
+          createCampaignSession();
+
+        session.startCampaign(
+          'easy',
+        );
+
+        session.applyEffects({
+          surrogates:
+            2,
+
+          publicSuspicion:
+            10,
+
+          partyConfidence:
+            -20,
+
+          voterEnergy:
+            -30,
+        });
+
+        const nextState =
+          session.endTurn();
+
+        expect(
+          nextState?.personnel
+            .surrogates,
+        ).toBe(2);
+
+        expect(
+          nextState?.metrics,
+        ).toEqual({
+          publicSuspicion:
+            12,
+
+          partyConfidence:
+            82,
+
+          voterEnergy:
+            74,
+        });
+      },
+    );
+
+    it(
+      'can end the campaign from surrogate suspicion',
+      () => {
+        const session =
+          createCampaignSession();
+
+        session.startCampaign(
+          'easy',
+        );
+
+        session.applyEffects({
+          surrogates:
+            1,
+
+          publicSuspicion:
+            99,
+        });
+
+        const completedState =
+          session.endTurn();
+
+        expect(
+          completedState?.metrics
+            .publicSuspicion,
+        ).toBe(100);
+
+        expect(
+          completedState?.phase,
+        ).toBe(
+          'game-over',
+        );
+
+        expect(
+          completedState?.endGameState,
+        ).toEqual({
+          type:
+            'public-discovers-death',
+
+          triggeredOnTurn:
+            1,
+        });
+      },
+    );
+
+    it(
       'resolves the election after the final turn',
       () => {
         const session =
