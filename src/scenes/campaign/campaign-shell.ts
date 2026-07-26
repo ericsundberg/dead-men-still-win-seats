@@ -22,6 +22,9 @@ import {
 import {
   makeCampaignNewsTicker,
 } from './campaign-news-ticker';
+import {
+  makeCampaignStatusSummary,
+} from './campaign-status-summary';
 
 export interface CampaignShell {
   readonly element:
@@ -163,6 +166,9 @@ export function makeCampaignShell(
 
   newsItems:
     readonly string[] = [],
+
+  menuButton:
+    HTMLButtonElement | null = null,
 ): CampaignShell {
   const shell =
     makeElement(
@@ -191,6 +197,34 @@ export function makeCampaignShell(
     makeCampaignMusicHud(
       context,
     );
+
+  const statusHud =
+    makeElement(
+      'aside',
+      {
+        className:
+          'campaign-status-hud',
+      },
+    );
+
+  statusHud.setAttribute(
+    'aria-label',
+    'Campaign status and menu',
+  );
+
+  if (
+    menuButton
+  ) {
+    statusHud.append(
+      menuButton,
+    );
+  }
+
+  statusHud.append(
+    makeCampaignStatusSummary(
+      campaignState,
+    ),
+  );
 
   const hudSnapshot =
     resolveCampaignHudSnapshot({
@@ -250,6 +284,7 @@ export function makeCampaignShell(
 
   shell.append(
     campaignContent,
+    statusHud,
     hud,
   );
 

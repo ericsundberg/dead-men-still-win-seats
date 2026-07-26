@@ -29,9 +29,6 @@ import {
   makeCampaignShell,
 } from './campaign/campaign-shell';
 import {
-  makeCampaignStatusSummary,
-} from './campaign/campaign-status-summary';
-import {
   makeCampaignWeekPanel,
 } from './campaign/campaign-week-panel';
 import {
@@ -118,12 +115,6 @@ export function renderCampaignScene(
           'campaign-content printed-report-paper',
       },
     );
-
-  campaignContent.append(
-    makeCampaignStatusSummary(
-      campaignState,
-    ),
-  );
 
   let endingFmvPlayer:
     CampaignEndingFmvPlayer | null =
@@ -243,15 +234,6 @@ export function renderCampaignScene(
     );
   }
 
-  const campaignShell =
-    makeCampaignShell(
-      context,
-      campaignState,
-      campaignContent,
-      runtimeSnapshot
-        .newsItems,
-    );
-
   const pauseMenu =
     campaignState.phase
     === 'game-over'
@@ -259,6 +241,18 @@ export function renderCampaignScene(
       : makeCampaignPauseMenu(
           context,
         );
+
+  const campaignShell =
+    makeCampaignShell(
+      context,
+      campaignState,
+      campaignContent,
+      runtimeSnapshot
+        .newsItems,
+      pauseMenu
+        ?.menuButton
+      ?? null,
+    );
 
   scene.append(
     campaignShell.element,

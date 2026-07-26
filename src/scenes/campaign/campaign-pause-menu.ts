@@ -36,7 +36,7 @@ export interface CampaignPauseMenu {
   readonly element:
     HTMLElement;
 
-  readonly debugButton:
+  readonly menuButton:
     HTMLButtonElement;
 
   readonly open:
@@ -146,8 +146,8 @@ export function reduceCampaignPauseState(
 }
 
 /**
- * Creates the campaign pause overlay and the temporary debug
- * button used to open it.
+ * Creates the campaign pause overlay and the permanent campaign
+ * menu button used to open it.
  *
  * The caller owns appending the returned element to the active
  * campaign scene and calling dispose when that scene is removed.
@@ -174,13 +174,13 @@ export function makeCampaignPauseMenu(
       },
     );
 
-  const debugButton =
+  const menuButton =
     makeButton(
-      'DEBUG: PAUSE',
+      'Menu',
       () => {
         open();
       },
-      'campaign-pause-debug-button',
+      'campaign-pause-hud-button',
       {
         onBeforeClick:
           () => {
@@ -191,12 +191,12 @@ export function makeCampaignPauseMenu(
       },
     );
 
-  debugButton.setAttribute(
+  menuButton.setAttribute(
     'aria-haspopup',
     'dialog',
   );
 
-  debugButton.setAttribute(
+  menuButton.setAttribute(
     'aria-controls',
     'campaign-pause-overlay',
   );
@@ -265,7 +265,6 @@ export function makeCampaignPauseMenu(
   );
 
   layer.append(
-    debugButton,
     overlay,
   );
 
@@ -362,7 +361,7 @@ export function makeCampaignPauseMenu(
       ),
     );
 
-    debugButton.setAttribute(
+    menuButton.setAttribute(
       'aria-expanded',
       String(
         state.isOpen,
@@ -796,7 +795,7 @@ export function makeCampaignPauseMenu(
     element:
       layer,
 
-    debugButton,
+    menuButton,
 
     open,
     close,
@@ -823,7 +822,7 @@ export function makeCampaignPauseMenu(
         );
 
         overlay.remove();
-        debugButton.remove();
+        menuButton.remove();
 
         previousFocus =
           null;

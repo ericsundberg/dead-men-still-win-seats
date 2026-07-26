@@ -5,36 +5,62 @@
   pointer-events: none;
 }
 
-.campaign-pause-debug-button {
-  position: fixed;
-  top: calc(1rem * var(--ui-scale, 1));
-  right: calc(1rem * var(--ui-scale, 1));
-  z-index: 3;
+.campaign-pause-hud-button {
+  flex: 0 0 auto;
+  align-self: stretch;
 
-  min-height: calc(2.25rem * var(--ui-scale, 1));
+  min-width:
+    calc(4.6rem * var(--ui-scale, 1));
+
   padding:
-    calc(0.45rem * var(--ui-scale, 1))
-    calc(0.75rem * var(--ui-scale, 1));
+    calc(0.55rem * var(--ui-scale, 1))
+    calc(0.8rem * var(--ui-scale, 1));
 
-  border: 2px dashed #fff;
-  border-radius: 0.2rem;
+  border:
+    calc(0.06rem * var(--ui-scale, 1))
+    solid
+    rgb(255 255 255 / 0.16);
 
-  background: #a40000;
+  border-radius:
+    calc(0.72rem * var(--ui-scale, 1));
+
   color: #fff;
 
+  background:
+    linear-gradient(
+      180deg,
+      #bd1731,
+      #790b1d
+    );
+
   font: inherit;
-  font-size: calc(0.72rem * var(--ui-scale, 1));
-  font-weight: 800;
-  letter-spacing: 0.06em;
+
+  font-size:
+    calc(0.72rem * var(--ui-scale, 1));
+
+  font-weight: 900;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 
   cursor: pointer;
   pointer-events: auto;
+
+  box-shadow:
+    inset
+    0
+    calc(0.06rem * var(--ui-scale, 1))
+    0
+    rgb(255 255 255 / 0.15),
+
+    0
+    calc(0.55rem * var(--ui-scale, 1))
+    calc(1.15rem * var(--ui-scale, 1))
+    rgb(0 0 0 / 0.48);
 }
 
-.campaign-pause-debug-button:hover,
-.campaign-pause-debug-button:focus-visible {
-  background: #d00000;
+.campaign-pause-hud-button:hover,
+.campaign-pause-hud-button:focus-visible {
+  filter: brightness(1.14);
 }
 
 .campaign-pause-overlay {
@@ -174,7 +200,7 @@
 
 .campaign-pause-dialog button:focus-visible,
 .campaign-pause-dialog input:focus-visible,
-.campaign-pause-debug-button:focus-visible {
+.campaign-pause-hud-button:focus-visible {
   outline:
     calc(0.2rem * var(--ui-scale, 1))
     solid
@@ -185,11 +211,6 @@
 }
 
 @media (max-width: 40rem) {
-  .campaign-pause-debug-button {
-    top: calc(0.5rem * var(--ui-scale, 1));
-    right: calc(0.5rem * var(--ui-scale, 1));
-  }
-
   .campaign-pause-overlay {
     padding: calc(0.75rem * var(--ui-scale, 1));
   }
