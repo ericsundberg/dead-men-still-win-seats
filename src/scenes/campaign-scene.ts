@@ -15,11 +15,11 @@ import {
   makeCampaignActionPanel,
 } from './campaign/campaign-action-panel';
 import {
-  makeCampaignGameOverPanel,
-} from './campaign/campaign-game-over-panel';
-import {
   makeCampaignEventPanel,
 } from './campaign/campaign-event-panel';
+import {
+  makeCampaignGameOverPanel,
+} from './campaign/campaign-game-over-panel';
 import {
   makeCampaignShell,
 } from './campaign/campaign-shell';
@@ -27,14 +27,14 @@ import {
   makeCampaignStatusSummary,
 } from './campaign/campaign-status-summary';
 import {
+  makeCampaignWeekPanel,
+} from './campaign/campaign-week-panel';
+import {
   makeGameOverPanel,
 } from './yearly-turn/game-over-panel';
 import {
   makeNoActiveGamePanel,
 } from './yearly-turn/no-active-game-panel';
-import {
-  makeYearlyTurnPanel,
-} from './yearly-turn/yearly-turn-panel';
 
 export interface ResolveCampaignSceneRuntimeOptions {
   readonly campaignState:
@@ -126,10 +126,12 @@ export function renderCampaignScene(
   }
 
   /*
-   * The temporary Hamurabi panel still requires legacy state.
+   * The visible Hamurabi panel has now been replaced by a
+   * campaign-native weekly briefing.
    *
-   * This restriction can be removed after the legacy central
-   * panel and synchronized turn bridge have been replaced.
+   * The temporary runtime mismatch guard remains until the
+   * campaign scene and shell stop consulting GameSession
+   * entirely in the next migration checkpoint.
    */
   if (
     !campaignState
@@ -174,8 +176,8 @@ export function renderCampaignScene(
 
   /*
    * CampaignSession is authoritative for political campaign
-   * results. This branch must take priority over the temporary
-   * legacy game-over state and yearly-turn panel.
+   * results. This branch takes priority over the temporary
+   * legacy game-over fallback.
    */
   if (
     campaignState.phase
@@ -205,7 +207,8 @@ export function renderCampaignScene(
   ) {
     /*
      * Temporary fallback for a legacy game that reaches its own
-     * terminal state before that system is removed.
+     * terminal state before GameSession is removed from this
+     * scene completely.
      */
     campaignContent.append(
       makeGameOverPanel(
@@ -249,22 +252,9 @@ export function renderCampaignScene(
         context,
         campaignState,
       ),
-    );
 
-    /*
-     * Temporary migration layer:
-     *
-     * CampaignSession owns campaign existence, turn number,
-     * difficulty, news, resources, metrics, campaign actions,
-     * events, and campaign end-game state.
-     *
-     * The legacy yearly-turn panel remains only until its end-turn
-     * bridge and remaining placeholder content are replaced.
-     */
-    campaignContent.append(
-      makeYearlyTurnPanel(
-        context,
-        legacyState,
+      makeCampaignWeekPanel(
+        campaignState,
       ),
     );
   }
@@ -287,7 +277,8 @@ export function renderCampaignScene(
       campaignShell.dispose();
     },
     {
-      once: true,
+      once:
+        true,
     },
   );
 
