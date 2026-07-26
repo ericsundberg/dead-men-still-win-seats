@@ -16,6 +16,9 @@ import {
   makeTitleBackground,
 } from './title/title-background';
 import {
+  makeTitleFloatingBuster,
+} from './title/title-floating-buster';
+import {
   createInitialTitleIdleIntroState,
   recordTitleIdleMusicLoop,
 } from './title/title-idle-intro';
@@ -318,6 +321,13 @@ export function renderTitleScene(
   scene.append(
     makeTitleBackground(),
     panel,
+    makeTitleFloatingBuster(
+      () => {
+        context.audio.sfx.play(
+          'hi-im-buster',
+        );
+      },
+    ),
   );
 
   return scene;

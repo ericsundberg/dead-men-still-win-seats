@@ -1,0 +1,166 @@
+/*
+  Floating title-screen Buster
+  ----------------------------
+  The Senator remains partly below the viewport edge while gently
+  rocking in place. The outer button handles press feedback while
+  the inner element owns the continuous idle animation.
+*/
+
+.title-floating-buster {
+  position: absolute;
+  bottom:
+    clamp(-7rem, -6vw, -3.5rem);
+  left:
+    clamp(-6rem, -4vw, -2rem);
+  z-index: 3;
+
+  display: block;
+  width:
+    clamp(13rem, 23vw, 25rem);
+  margin: 0;
+  padding: 0;
+
+  color: inherit;
+  background: transparent;
+  border: 0;
+  outline: none;
+
+  cursor: pointer;
+  appearance: none;
+
+  transform:
+    translateZ(0);
+
+  transform-origin:
+    50% 100%;
+
+  filter:
+    drop-shadow(
+      0
+      calc(0.7rem * var(--ui-scale))
+      calc(0.7rem * var(--ui-scale))
+      rgb(0 0 0 / 55%)
+    );
+
+  transition:
+    transform 90ms ease,
+    filter 90ms ease;
+
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+.title-floating-buster-motion {
+  display: block;
+  width: 100%;
+
+  transform-origin:
+    50% 100%;
+
+  animation:
+    title-floating-buster-idle
+    3.2s
+    ease-in-out
+    infinite;
+
+  will-change:
+    transform;
+}
+
+.title-floating-buster-image {
+  display: block;
+  width: 100%;
+  height: auto;
+
+  pointer-events: none;
+  user-select: none;
+}
+
+.title-floating-buster:hover,
+.title-floating-buster:focus-visible {
+  filter:
+    brightness(1.08)
+    drop-shadow(
+      0
+      calc(0.8rem * var(--ui-scale))
+      calc(0.8rem * var(--ui-scale))
+      rgb(0 0 0 / 62%)
+    );
+}
+
+.title-floating-buster:focus-visible {
+  outline:
+    calc(0.2rem * var(--ui-scale))
+    solid
+    var(--color-gold);
+
+  outline-offset:
+    calc(0.18rem * var(--ui-scale));
+}
+
+.title-floating-buster:active {
+  transform:
+    translateY(
+      calc(0.45rem * var(--ui-scale))
+    )
+    scale(0.86);
+
+  filter:
+    brightness(0.55)
+    saturate(0.72)
+    drop-shadow(
+      0
+      calc(0.25rem * var(--ui-scale))
+      calc(0.3rem * var(--ui-scale))
+      rgb(0 0 0 / 60%)
+    );
+}
+
+.title-floating-buster:active
+.title-floating-buster-motion {
+  animation-play-state:
+    paused;
+}
+
+@keyframes title-floating-buster-idle {
+  0%,
+  100% {
+    transform:
+      translateY(0)
+      rotate(-3deg)
+      scale(0.98);
+  }
+
+  50% {
+    transform:
+      translateY(
+        calc(-0.65rem * var(--ui-scale))
+      )
+      rotate(3deg)
+      scale(1.04);
+  }
+}
+
+@media (width <= 52rem) {
+  .title-floating-buster {
+    bottom:
+      clamp(-5.5rem, -8vw, -3rem);
+
+    left:
+      clamp(-4rem, -5vw, -1.5rem);
+
+    width:
+      clamp(11rem, 27vw, 15rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title-floating-buster-motion {
+    animation:
+      none;
+
+    transform:
+      rotate(-2deg)
+      scale(1);
+  }
+}

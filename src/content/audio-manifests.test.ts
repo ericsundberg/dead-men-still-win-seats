@@ -55,6 +55,7 @@ describe('audio manifests', () => {
       sfxManifest['button-brush'],
       sfxManifest['button-click'],
       sfxManifest['button-cancel'],
+      sfxManifest['hi-im-buster'],
     ];
 
     for (const entry of implementedSfxEntries) {

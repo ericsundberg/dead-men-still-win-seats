@@ -29,6 +29,14 @@ export const sfxManifest = {
     allowOverlap: true,
   },
 
+  'hi-im-buster': {
+    id: 'hi-im-buster',
+    label: 'Hi, I’m Buster',
+    path: getSfxPath('hi-im-buster.ogg'),
+    volume: 0.9,
+    allowOverlap: false,
+  },
+
   disaster: {
     id: 'disaster',
     label: 'Disaster',
