@@ -147,6 +147,55 @@ const endingFmvPresentations = {
   CampaignEndingFmvPresentation
 >;
 
+const endingFmvPreviewPresentations = {
+  win: {
+    id:
+      'win',
+
+    fileName:
+      'win.mp4',
+
+    ariaLabel:
+      'Win campaign ending video.',
+  },
+
+  draw: {
+    id:
+      'draw',
+
+    fileName:
+      'draw.mp4',
+
+    ariaLabel:
+      'Draw campaign ending video.',
+  },
+
+  lose: {
+    id:
+      'lose',
+
+    fileName:
+      'lose.mp4',
+
+    ariaLabel:
+      'Lose campaign ending video.',
+  },
+} as const satisfies Record<
+  CampaignEndingFmvId,
+  CampaignEndingFmvPresentation
+>;
+
+export function resolveCampaignEndingFmvById(
+  id:
+    CampaignEndingFmvId,
+): CampaignEndingFmvDefinition {
+  return makeCampaignEndingFmvDefinition(
+    endingFmvPreviewPresentations[
+      id
+    ],
+  );
+}
+
 export function resolveCampaignEndingFmv(
   endGameState:
     CampaignEndGameState | null,
@@ -162,6 +211,15 @@ export function resolveCampaignEndingFmv(
       endGameState.type
     ];
 
+  return makeCampaignEndingFmvDefinition(
+    presentation,
+  );
+}
+
+function makeCampaignEndingFmvDefinition(
+  presentation:
+    CampaignEndingFmvPresentation,
+): CampaignEndingFmvDefinition {
   return {
     ...presentation,
 

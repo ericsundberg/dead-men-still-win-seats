@@ -8,6 +8,7 @@ import {
   isCampaignEndingFmvSkipKey,
   reduceCampaignEndingFmvPlaybackState,
   resolveCampaignEndingFmv,
+  resolveCampaignEndingFmvById,
 } from './campaign-ending-fmv';
 
 describe(
@@ -142,6 +143,68 @@ describe(
         ).toMatch(
           /assets\/video\/lose\.mp4$/,
         );
+      },
+    );
+
+    it(
+      'resolves generic ending previews by FMV ID',
+      () => {
+        expect(
+          [
+            'win',
+            'draw',
+            'lose',
+          ].map(
+            (
+              id,
+            ) =>
+              resolveCampaignEndingFmvById(
+                id as
+                  | 'win'
+                  | 'draw'
+                  | 'lose',
+              ),
+          ),
+        ).toEqual([
+          expect.objectContaining({
+            id:
+              'win',
+
+            fileName:
+              'win.mp4',
+
+            source:
+              expect.stringMatching(
+                /assets\/video\/win\.mp4$/,
+              ),
+          }),
+
+          expect.objectContaining({
+            id:
+              'draw',
+
+            fileName:
+              'draw.mp4',
+
+            source:
+              expect.stringMatching(
+                /assets\/video\/draw\.mp4$/,
+              ),
+          }),
+
+          expect.objectContaining({
+            id:
+              'lose',
+
+            fileName:
+              'lose.mp4',
+
+            source:
+              expect.stringMatching(
+                /assets\/video\/lose\.mp4$/,
+              ),
+          }),
+        ]);
       },
     );
 
