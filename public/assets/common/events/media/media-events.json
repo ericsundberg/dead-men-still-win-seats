@@ -109,7 +109,8 @@
             }
           ]
         }
-      ]
+      ],
+      "imagePath": "media/newscast.webp"
     },
     {
       "id": "event_media_02",
@@ -213,7 +214,8 @@
             }
           ]
         }
-      ]
+      ],
+      "imagePath": "media/newscast.webp"
     },
     {
       "id": "event_media_03",
@@ -321,7 +323,8 @@
             }
           ]
         }
-      ]
+      ],
+      "imagePath": "medical/hospital.webp"
     },
     {
       "id": "event_media_04",
@@ -427,7 +430,8 @@
             }
           ]
         }
-      ]
+      ],
+      "imagePath": "media/newscast.webp"
     },
     {
       "id": "event_media_05",
@@ -527,7 +531,8 @@
             }
           ]
         }
-      ]
+      ],
+      "imagePath": "locations/rotunda.webp"
     }
   ]
 }

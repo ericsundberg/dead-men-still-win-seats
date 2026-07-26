@@ -31,7 +31,7 @@
 .campaign-event-image-frame {
   position: relative;
   width: 100%;
-  max-height: 24rem;
+  height: clamp(14rem, 36vw, 24rem);
   margin: 0;
   overflow: hidden;
 
@@ -51,8 +51,8 @@
 .campaign-event-image {
   display: block;
   width: 100%;
-  max-height: 24rem;
-  object-fit: contain;
+  height: 100%;
+  object-fit: cover;
   object-position: center;
 }
 
@@ -148,8 +148,7 @@
       1.5rem;
   }
 
-  .campaign-event-image-frame,
-  .campaign-event-image {
-    max-height: 17rem;
+  .campaign-event-image-frame {
+    height: 17rem;
   }
 }
