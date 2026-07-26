@@ -9,6 +9,8 @@
 @import './base.css';
 @import './layout.css';
 @import './scenes.css';
+@import './settings.css';
+@import './difficulty-selector.css';
 
 @import './fonts.css';
 
