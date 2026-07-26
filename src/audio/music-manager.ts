@@ -37,6 +37,10 @@ export type MusicPlaybackListener = (
   state: MusicPlaybackState,
 ) => void;
 
+export type MusicTrackLoopListener = (
+  trackId: string,
+) => void;
+
 const defaultCrossfadeDurationMs = 2_000;
 const crossfadeUpdateIntervalMs = 50;
 
@@ -61,6 +65,15 @@ export class MusicManager {
 
   private readonly playbackListeners =
     new Set<MusicPlaybackListener>();
+
+  private readonly trackLoopListeners =
+    new Set<MusicTrackLoopListener>();
+
+  private readonly loopingAudioCleanup =
+    new WeakMap<
+      HTMLAudioElement,
+      () => void
+    >();
 
   public constructor(
     private readonly manifest:
@@ -369,6 +382,27 @@ export class MusicManager {
     };
   }
 
+  /**
+   * Subscribes to completed loops of standalone looping tracks.
+   *
+   * The callback receives the ID of the track that completed a
+   * full playback cycle.
+   */
+  public subscribeTrackLoops(
+    listener:
+      MusicTrackLoopListener,
+  ): () => void {
+    this.trackLoopListeners.add(
+      listener,
+    );
+
+    return () => {
+      this.trackLoopListeners.delete(
+        listener,
+      );
+    };
+  }
+
   public has(
     trackId: MusicTrackId | string,
   ): boolean {
@@ -493,7 +527,20 @@ export class MusicManager {
         ?? defaultCrossfadeDurationMs,
       );
 
-    audio.loop = entry.loop;
+    /*
+     * Looping tracks are restarted from their ended event rather
+     * than using the native loop flag. This gives the game an exact
+     * notification for every completed playback cycle.
+     */
+    audio.loop =
+      false;
+
+    if (entry.loop) {
+      this.bindLoopingTrack(
+        audio,
+        trackId,
+      );
+    }
 
     /*
      * The first song starts at its target volume. Replacement
@@ -610,6 +657,108 @@ export class MusicManager {
           this.notifyPlaybackStateChanged();
         },
       );
+  }
+
+  /**
+   * Restarts a looping track after each complete playback cycle
+   * and informs any loop subscribers.
+   */
+  private bindLoopingTrack(
+    audio:
+      HTMLAudioElement,
+
+    trackId:
+      string,
+  ): void {
+    const handleEnded =
+      (): void => {
+        if (
+          this.currentAudio
+            !== audio
+          || this.currentTrackId
+            !== trackId
+        ) {
+          return;
+        }
+
+        this.notifyTrackLoopCompleted(
+          trackId,
+        );
+
+        /*
+         * A loop listener may stop the track or navigate away.
+         * Do not restart audio after that state change.
+         */
+        if (
+          this.currentAudio
+            !== audio
+          || this.currentTrackId
+            !== trackId
+        ) {
+          return;
+        }
+
+        try {
+          audio.currentTime =
+            0;
+        } catch {
+          /*
+           * Some browsers reject currentTime changes while media
+           * state is changing. Calling play remains a safe fallback.
+           */
+        }
+
+        audio.play()
+          .then(
+            () => {
+              if (
+                this.currentAudio
+                  === audio
+              ) {
+                this.notifyPlaybackStateChanged();
+              }
+            },
+          )
+          .catch(
+            (
+              error:
+                unknown,
+            ) => {
+              if (
+                this.currentAudio
+                  !== audio
+              ) {
+                return;
+              }
+
+              console.warn(
+                [
+                  '[audio:music]',
+                  'failed to restart looping asset:',
+                  trackId,
+                ].join(' '),
+                error,
+              );
+
+              this.notifyPlaybackStateChanged();
+            },
+          );
+      };
+
+    audio.addEventListener(
+      'ended',
+      handleEnded,
+    );
+
+    this.loopingAudioCleanup.set(
+      audio,
+      () => {
+        audio.removeEventListener(
+          'ended',
+          handleEnded,
+        );
+      },
+    );
   }
 
   /**
@@ -830,6 +979,16 @@ export class MusicManager {
   private disposeAudio(
     audio: HTMLAudioElement,
   ): void {
+    this.loopingAudioCleanup
+      .get(
+        audio,
+      )
+      ?.();
+
+    this.loopingAudioCleanup.delete(
+      audio,
+    );
+
     audio.pause();
 
     try {
@@ -862,6 +1021,20 @@ export class MusicManager {
     return this.manifest[
       trackId
     ];
+  }
+
+  private notifyTrackLoopCompleted(
+    trackId:
+      string,
+  ): void {
+    for (
+      const listener
+      of this.trackLoopListeners
+    ) {
+      listener(
+        trackId,
+      );
+    }
   }
 
   private notifyPlaybackStateChanged():

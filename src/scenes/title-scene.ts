@@ -1,7 +1,17 @@
-import type { SceneContext } from '../app/scene-router';
-import { makeButton, makeElement } from '../ui/dom-helpers';
+import {
+  sceneDisposeEventName,
+  type SceneContext,
+} from '../app/scene-router';
+import {
+  makeButton,
+  makeElement,
+} from '../ui/dom-helpers';
 import { game_version } from '../version';
 import { makeTitleBackground } from './title/title-background';
+import {
+  createInitialTitleIdleIntroState,
+  recordTitleIdleMusicLoop,
+} from './title/title-idle-intro';
 
 export function renderTitleScene(
   context: SceneContext,
@@ -9,6 +19,51 @@ export function renderTitleScene(
   const scene = makeElement('section', {
     className: 'scene title-scene',
   });
+
+  let idleIntroState =
+    createInitialTitleIdleIntroState();
+
+  let hasRequestedIdleIntro =
+    false;
+
+  const unsubscribeTrackLoops =
+    context.audio.music
+      .subscribeTrackLoops(
+        (
+          trackId,
+        ) => {
+          idleIntroState =
+            recordTitleIdleMusicLoop(
+              idleIntroState,
+              trackId,
+            );
+
+          if (
+            !idleIntroState
+              .shouldStartIntro
+            || hasRequestedIdleIntro
+          ) {
+            return;
+          }
+
+          hasRequestedIdleIntro =
+            true;
+
+          context.audio.music.stop();
+          context.navigate(
+            'intro',
+          );
+        },
+      );
+
+  scene.addEventListener(
+    sceneDisposeEventName,
+    unsubscribeTrackLoops,
+    {
+      once:
+        true,
+    },
+  );
 
   if (context.audio.unlocker.getIsUnlocked()) {
     context.audio.music.play(
