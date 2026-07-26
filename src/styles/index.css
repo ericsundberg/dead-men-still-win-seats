@@ -23,4 +23,5 @@
 
 @import './campaign-status-summary.css';
 @import './campaign-action-panel.css';
+@import './campaign-event-panel.css';
 @import './campaign-game-over-panel.css';

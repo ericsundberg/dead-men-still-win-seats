@@ -16,6 +16,13 @@ import {
   evaluateCampaignEndGame,
 } from './campaign-end-game';
 import {
+  resolveCampaignEventDecision,
+  type CampaignEventDecisionResult,
+} from './campaign-event-decisions';
+import {
+  activateNextCampaignEvent,
+} from './campaign-event-runner';
+import {
   createInitialCampaignState,
   defaultCampaignStartingValues,
   type CampaignState,
@@ -25,6 +32,7 @@ import {
   type EventRegistry,
 } from '../../events/event-registry';
 import type {
+  EventDecisionId,
   EventId,
   GameEventDefinition,
 } from '../../events/event-types';
@@ -46,6 +54,10 @@ export class CampaignSession {
     private readonly eventRegistry:
       EventRegistry =
         createEventRegistry(),
+
+    private readonly random:
+      () => number =
+        Math.random,
   ) {}
 
   private state:
@@ -55,11 +67,11 @@ export class CampaignSession {
     new Set<CampaignStateListener>();
 
   /**
-   * Starts a new campaign using the selected difficulty.
+   * Starts a new campaign and processes its first turn-start
+   * event selection.
    *
-   * The raw initial campaign state begins in "turn-start".
-   * Until the event-resolution pipeline is implemented, the
-   * session advances immediately to "player-actions".
+   * When an eligible event activates, the campaign enters
+   * "resolving-events". Otherwise it enters "player-actions".
    */
   public startCampaign(
     difficultyId:
@@ -71,17 +83,18 @@ export class CampaignSession {
         difficultyId,
       );
 
-    const activeState:
-      CampaignState = {
-        ...initialState,
-        phase: 'player-actions',
-      };
+    const activationResult =
+      activateNextCampaignEvent(
+        initialState,
+        this.eventRegistry,
+        this.random,
+      );
 
     this.setState(
-      activeState,
+      activationResult.nextState,
     );
 
-    return activeState;
+    return activationResult.nextState;
   }
 
   public hasActiveCampaign():
@@ -94,11 +107,8 @@ export class CampaignSession {
     return this.state;
   }
 
-    /**
+  /**
    * Returns the event IDs loaded from public event packs.
-   *
-   * Event activation will use this registry in a later
-   * checkpoint.
    */
   public getRegisteredEventIds():
     readonly EventId[] {
@@ -117,6 +127,31 @@ export class CampaignSession {
     return this.eventRegistry
       .getEvent(
         eventId,
+      );
+  }
+
+  /**
+   * Returns the definition for the event currently awaiting a
+   * player decision.
+   *
+   * Optional event metadata such as imagePath remains available
+   * to the eventual event panel through this definition.
+   */
+  public getActiveEventDefinition():
+    GameEventDefinition | null {
+    const activeEventInstanceId =
+      this.state
+        ?.activeEventInstanceId;
+
+    if (
+      !activeEventInstanceId
+    ) {
+      return null;
+    }
+
+    return this.eventRegistry
+      .getEvent(
+        activeEventInstanceId as EventId,
       );
   }
 
@@ -206,6 +241,57 @@ export class CampaignSession {
     };
   }
 
+    /**
+   * Resolves a decision for the currently active campaign event.
+   *
+   * The pure event-decision resolver applies effects, flags,
+   * queued events, news, and event completion. This session then
+   * commits the resulting state and evaluates immediate game-over
+   * conditions.
+   */
+  public chooseEventDecision(
+    decisionId:
+      EventDecisionId,
+  ): CampaignEventDecisionResult | null {
+    const currentState =
+      this.state;
+
+    const activeEvent =
+      this.getActiveEventDefinition();
+
+    if (
+      !currentState
+      || !activeEvent
+      || currentState.phase
+        === 'game-over'
+    ) {
+      return null;
+    }
+
+    const decisionResult =
+      resolveCampaignEventDecision(
+        currentState,
+        activeEvent,
+        decisionId,
+      );
+
+    if (
+      !decisionResult.performed
+    ) {
+      return decisionResult;
+    }
+
+    const nextState =
+      this.commitAffectedState(
+        decisionResult.nextState,
+      );
+
+    return {
+      ...decisionResult,
+      nextState,
+    };
+  }
+
   /**
    * Applies resource and metric changes to the active campaign.
    *
@@ -267,7 +353,7 @@ export class CampaignSession {
     if (
       !currentState
       || currentState.phase
-        === 'game-over'
+        !== 'player-actions'
     ) {
       return null;
     }
@@ -307,7 +393,7 @@ export class CampaignSession {
           + 1,
 
         phase:
-          'player-actions',
+          'turn-start',
 
         resources: {
           ...turnEndState.resources,
@@ -325,11 +411,18 @@ export class CampaignSession {
           null,
       };
 
+    const activationResult =
+      activateNextCampaignEvent(
+        nextTurnState,
+        this.eventRegistry,
+        this.random,
+      );
+
     this.setState(
-      nextTurnState,
+      activationResult.nextState,
     );
 
-    return nextTurnState;
+    return activationResult.nextState;
   }
 
   /**
@@ -422,8 +515,13 @@ export function createCampaignSession(
   eventRegistry:
     EventRegistry =
       createEventRegistry(),
+
+  random:
+    () => number =
+      Math.random,
 ): CampaignSession {
   return new CampaignSession(
     eventRegistry,
+    random,
   );
 }

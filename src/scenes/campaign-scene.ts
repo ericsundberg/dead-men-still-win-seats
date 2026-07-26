@@ -18,6 +18,9 @@ import {
   makeCampaignGameOverPanel,
 } from './campaign/campaign-game-over-panel';
 import {
+  makeCampaignEventPanel,
+} from './campaign/campaign-event-panel';
+import {
   makeCampaignShell,
 } from './campaign/campaign-shell';
 import {
@@ -210,6 +213,36 @@ export function renderCampaignScene(
         legacyGameOverState,
       ),
     );
+  } else if (
+    campaignState.phase
+    === 'resolving-events'
+  ) {
+    const activeEvent =
+      context.campaign
+        .getActiveEventDefinition();
+
+    if (
+      !activeEvent
+    ) {
+      console.warn(
+        [
+          '[campaign] resolving-events phase has no active event',
+          `turn: ${campaignState.currentTurn}`,
+        ].join('; '),
+      );
+
+      campaignContent.append(
+        makeCampaignEventRuntimeErrorPanel(),
+      );
+    } else {
+      campaignContent.append(
+        makeCampaignEventPanel(
+          context,
+          campaignState,
+          activeEvent,
+        ),
+      );
+    }
   } else {
     campaignContent.append(
       makeCampaignActionPanel(
@@ -223,10 +256,10 @@ export function renderCampaignScene(
      *
      * CampaignSession owns campaign existence, turn number,
      * difficulty, news, resources, metrics, campaign actions,
-     * and campaign end-game state.
+     * events, and campaign end-game state.
      *
-     * The legacy yearly-turn panel remains only until the real
-     * event-and-decision panel replaces it.
+     * The legacy yearly-turn panel remains only until its end-turn
+     * bridge and remaining placeholder content are replaced.
      */
     campaignContent.append(
       makeYearlyTurnPanel(
@@ -259,4 +292,48 @@ export function renderCampaignScene(
   );
 
   return scene;
+}
+
+function makeCampaignEventRuntimeErrorPanel():
+  HTMLElement {
+  const panel =
+    makeElement(
+      'section',
+      {
+        className:
+          [
+            'campaign-event-panel',
+            'campaign-event-runtime-error',
+          ].join(' '),
+      },
+    );
+
+  panel.append(
+    makeElement(
+      'h2',
+      {
+        className:
+          'campaign-event-title',
+
+        textContent:
+          'Campaign Event Unavailable',
+      },
+    ),
+
+    makeElement(
+      'p',
+      {
+        className:
+          'campaign-event-description',
+
+        textContent:
+          [
+            'The campaign entered its event phase,',
+            'but the event definition could not be found.',
+          ].join(' '),
+      },
+    ),
+  );
+
+  return panel;
 }
