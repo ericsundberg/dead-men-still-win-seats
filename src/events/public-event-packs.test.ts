@@ -11,6 +11,7 @@ import {
 } from 'vitest';
 import {
   createEventRegistry,
+  type EventRegistry,
 } from './event-registry';
 import {
   parseEventPackManifest,
@@ -76,6 +77,13 @@ function loadPublicEventPacks():
   );
 }
 
+function loadPublicEventRegistry():
+  EventRegistry {
+  return createEventRegistry(
+    loadPublicEventPacks(),
+  );
+}
+
 describe(
   'public event packs',
   () => {
@@ -132,6 +140,7 @@ describe(
           registry.getEventIds(),
         ).toEqual([
           'event_media_01',
+          'event_media_02',
         ]);
       },
     );
@@ -139,13 +148,8 @@ describe(
     it(
       'defines the interviewer ambush as the first mandatory event',
       () => {
-        const eventPacks =
-          loadPublicEventPacks();
-
         const registry =
-          createEventRegistry(
-            eventPacks,
-          );
+          loadPublicEventRegistry();
 
         const event =
           registry.getEvent(
@@ -181,13 +185,8 @@ describe(
     it(
       'provides all four medical-record responses',
       () => {
-        const eventPacks =
-          loadPublicEventPacks();
-
         const registry =
-          createEventRegistry(
-            eventPacks,
-          );
+          loadPublicEventRegistry();
 
         const event =
           registry.getEvent(
@@ -216,6 +215,85 @@ describe(
           'Bribe a doctor to say the Senator is “strong as an ox.”',
           'Declare that medical records are an unconstitutional invasion of privacy.',
           'No comment.',
+        ]);
+      },
+    );
+
+    it(
+      'queues the voicemail follow-up from every opening response',
+      () => {
+        const registry =
+          loadPublicEventRegistry();
+
+        const event =
+          registry.getEvent(
+            'event_media_01',
+          );
+
+        expect(
+          event?.decisions.map(
+            (decision) =>
+              decision.queueEventIds,
+          ),
+        ).toEqual([
+          [
+            'event_media_02',
+          ],
+          [
+            'event_media_02',
+          ],
+          [
+            'event_media_02',
+          ],
+          [
+            'event_media_02',
+          ],
+        ]);
+      },
+    );
+
+    it(
+      'defines the voicemail event as a queued manual follow-up',
+      () => {
+        const registry =
+          loadPublicEventRegistry();
+
+        const event =
+          registry.getEvent(
+            'event_media_02',
+          );
+
+        expect(
+          event,
+        ).not.toBeNull();
+
+        expect(
+          event?.title,
+        ).toBe(
+          'The Voicemail That Shouldn’t Exist',
+        );
+
+        expect(
+          event?.trigger,
+        ).toEqual({
+          type:
+            'manual',
+        });
+
+        expect(
+          event?.repeatable,
+        ).toBe(false);
+
+        expect(
+          event?.decisions.map(
+            (decision) =>
+              decision.id,
+          ),
+        ).toEqual([
+          'decision_call_it_deepfake',
+          'decision_buy_the_recording',
+          'decision_blame_staffer',
+          'decision_release_audio_splice',
         ]);
       },
     );

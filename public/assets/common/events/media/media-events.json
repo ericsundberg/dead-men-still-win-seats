@@ -25,6 +25,9 @@
           "addFlags": [
             "flag_medical_records_recycled"
           ],
+          "queueEventIds": [
+            "event_media_02"
+          ],
           "newsItems": [
             {
               "headline": "Buster Campaign Releases Medical Records; Date Not Included",
@@ -50,6 +53,9 @@
           "addFlags": [
             "flag_doctor_bribed"
           ],
+          "queueEventIds": [
+            "event_media_02"
+          ],
           "newsItems": [
             {
               "headline": "Local Doctor Says Senator Buster Is “Strong as an Ox”",
@@ -72,6 +78,9 @@
           "addFlags": [
             "flag_medical_privacy_attack"
           ],
+          "queueEventIds": [
+            "event_media_02"
+          ],
           "newsItems": [
             {
               "headline": "Buster Campaign Calls Medical Records Request “Unconstitutional”",
@@ -90,9 +99,116 @@
           "addFlags": [
             "flag_reporter_stonewalled"
           ],
+          "queueEventIds": [
+            "event_media_02"
+          ],
           "newsItems": [
             {
               "headline": "Buster Campaign Refuses to Discuss Senator’s Health",
+              "category": "campaign"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "event_media_02",
+      "title": "The Voicemail That Shouldn’t Exist",
+      "description": "The same reporter obtains a voicemail in which a campaign aide says, “The Senator hasn’t moved in three days.” The station plans to air it at six.",
+      "trigger": {
+        "type": "manual"
+      },
+      "repeatable": false,
+      "decisions": [
+        {
+          "id": "decision_call_it_deepfake",
+          "label": "Call the voicemail an AI-generated deepfake.",
+          "requirements": {
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "actionPoints": -1,
+            "publicSuspicion": 7,
+            "partyConfidence": 1,
+            "voterEnergy": 2
+          },
+          "addFlags": [
+            "flag_voicemail_deepfake_claim"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Campaign Blames Artificial Intelligence for Damaging Voicemail",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_buy_the_recording",
+          "label": "Buy the recording and every backup copy.",
+          "requirements": {
+            "minimumCash": 25000,
+            "minimumFavors": 1,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "cash": -25000,
+            "favors": -1,
+            "actionPoints": -1,
+            "publicSuspicion": 2,
+            "partyConfidence": 4
+          },
+          "addFlags": [
+            "flag_voicemail_buried"
+          ],
+          "newsItems": [
+            {
+              "headline": "Local Station Abruptly Cancels Senator Buster Voicemail Report",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_blame_staffer",
+          "label": "Fire the aide and call the voicemail an emotional breakdown.",
+          "requirements": {
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "actionPoints": -1,
+            "publicSuspicion": 5,
+            "partyConfidence": -3,
+            "voterEnergy": -2
+          },
+          "addFlags": [
+            "flag_staffer_scapegoated"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Campaign Fires Aide Behind Troubling Voicemail",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_release_audio_splice",
+          "label": "Release a longer edit assembled from unrelated recordings.",
+          "requirements": {
+            "minimumCash": 5000,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "cash": -5000,
+            "actionPoints": -1,
+            "publicSuspicion": 9,
+            "partyConfidence": 2,
+            "voterEnergy": 3
+          },
+          "addFlags": [
+            "flag_audio_splice_released"
+          ],
+          "newsItems": [
+            {
+              "headline": "Campaign Releases Extended Audio of Senator Buster Speaking",
               "category": "campaign"
             }
           ]
