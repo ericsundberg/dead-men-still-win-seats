@@ -12,6 +12,11 @@ import {
   makeCampaignActionPanel,
 } from './campaign/campaign-action-panel';
 import {
+  makeCampaignEndingFmvPlayer,
+  resolveCampaignEndingFmv,
+  type CampaignEndingFmvPlayer,
+} from './campaign/campaign-ending-fmv';
+import {
   makeCampaignEventPanel,
 } from './campaign/campaign-event-panel';
 import {
@@ -120,6 +125,14 @@ export function renderCampaignScene(
     ),
   );
 
+  let endingFmvPlayer:
+    CampaignEndingFmvPlayer | null =
+      null;
+
+  let endingFmvStartTimeoutId:
+    number | null =
+      null;
+
   if (
     campaignState.phase
     === 'game-over'
@@ -136,12 +149,56 @@ export function renderCampaignScene(
       );
     }
 
-    campaignContent.append(
+    const gameOverPanel =
       makeCampaignGameOverPanel(
         context,
         campaignState
           .endGameState,
-      ),
+      );
+
+    const endingFmvDefinition =
+      resolveCampaignEndingFmv(
+        campaignState
+          .endGameState,
+      );
+
+    if (
+      endingFmvDefinition
+    ) {
+      gameOverPanel.hidden =
+        true;
+
+      endingFmvPlayer =
+        makeCampaignEndingFmvPlayer({
+          definition:
+            endingFmvDefinition,
+
+          onFinished:
+            (
+              reason,
+            ) => {
+              console.log(
+                [
+                  '[video] campaign ending video finished',
+                  `video: ${endingFmvDefinition.id}`,
+                  `reason: ${reason}`,
+                ].join('; '),
+              );
+
+              gameOverPanel.hidden =
+                false;
+
+              endingFmvPlayer
+                ?.dispose();
+
+              endingFmvPlayer =
+                null;
+            },
+        });
+    }
+
+    campaignContent.append(
+      gameOverPanel,
     );
   } else if (
     campaignState.phase
@@ -196,19 +253,77 @@ export function renderCampaignScene(
     );
 
   const pauseMenu =
-    makeCampaignPauseMenu(
-      context,
-    );
+    campaignState.phase
+    === 'game-over'
+      ? null
+      : makeCampaignPauseMenu(
+          context,
+        );
 
   scene.append(
     campaignShell.element,
-    pauseMenu.element,
   );
+
+  if (
+    pauseMenu
+  ) {
+    scene.append(
+      pauseMenu.element,
+    );
+  }
+
+  if (
+    endingFmvPlayer
+  ) {
+    const playerToStart =
+      endingFmvPlayer;
+
+    scene.append(
+      playerToStart.element,
+    );
+
+    context.audio.music.stop();
+
+    /*
+     * Wait until SceneRouter has inserted the campaign scene into
+     * the document before requesting video playback.
+     */
+    endingFmvStartTimeoutId =
+      window.setTimeout(
+        () => {
+          endingFmvStartTimeoutId =
+            null;
+
+          void playerToStart.start();
+        },
+        0,
+      );
+  }
 
   scene.addEventListener(
     sceneDisposeEventName,
     () => {
-      pauseMenu.dispose();
+      if (
+        endingFmvStartTimeoutId
+        !== null
+      ) {
+        window.clearTimeout(
+          endingFmvStartTimeoutId,
+        );
+
+        endingFmvStartTimeoutId =
+          null;
+      }
+
+      endingFmvPlayer
+        ?.dispose();
+
+      endingFmvPlayer =
+        null;
+
+      pauseMenu
+        ?.dispose();
+
       campaignShell.dispose();
     },
     {
