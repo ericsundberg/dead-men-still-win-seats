@@ -13,7 +13,7 @@
   "gameSetup.description": "Choose how long the campaign must conceal the Senator’s death before Election Day.",
   "gameSetup.difficultyHeading": "Select Difficulty",
   "gameSetup.difficultyDescription": "Longer campaigns mean more turns, more time, and more chances for the truth to leak.",
-  "gameSetup.difficulty.easy.label": "Easy",
+  "gameSetup.difficulty.easy.label": "Freshman",
   "gameSetup.difficulty.easy.duration": "3 months (13 turns)",
   "gameSetup.difficulty.easy.description": "The election is close. Keep smiling through the final sprint.",
   "gameSetup.difficulty.moderate.label": "Moderate",

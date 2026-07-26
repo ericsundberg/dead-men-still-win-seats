@@ -28,6 +28,7 @@ describe('localized text', () => {
     setLocalizedText(publicLocalization);
 
     expect(text('gameSetup.title')).toBe('Game Setup');
+    expect(text('gameSetup.difficulty.easy.label')).toBe('Freshman');
     expect(text('gameSetup.difficulty.easy.duration')).toBe('3 months (13 turns)');
     expect(text('characterDefaults.childGivenName')).toBe('Child');
   });
