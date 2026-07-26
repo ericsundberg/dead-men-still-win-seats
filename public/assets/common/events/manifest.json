@@ -1,5 +1,6 @@
 {
   "eventPacks": [
+    "characters/character-events.json",
     "media/media-events.json"
   ]
 }

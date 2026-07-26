@@ -90,6 +90,12 @@ describe(
         expect(
           imagePaths,
         ).toEqual([
+          'characters/buster-at-the-podium.webp',
+          'characters/judge.webp',
+          'characters/odd-staffer.webp',
+          'characters/staffer.webp',
+          'characters/surrogate.webp',
+          'characters/totally-alive-buster.webp',
           'media/newscast.webp',
           'media/podcast.webp',
           'medical/hospital.webp',

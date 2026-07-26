@@ -134,6 +134,7 @@ describe(
         expect(
           manifest.eventPacks,
         ).toEqual([
+          'characters/character-events.json',
           'media/media-events.json',
         ]);
       },
@@ -164,12 +165,19 @@ describe(
         expect(
           registry.getEventPackIds(),
         ).toEqual([
+          'events_characters',
           'events_media',
         ]);
 
         expect(
           registry.getEventIds(),
         ).toEqual([
+          'event_characters_01',
+          'event_characters_02',
+          'event_characters_03',
+          'event_characters_04',
+          'event_characters_05',
+          'event_characters_06',
           'event_media_01',
           'event_media_02',
           'event_media_03',

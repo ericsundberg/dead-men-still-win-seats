@@ -1,0 +1,596 @@
+{
+  "eventPackId": "events_characters",
+  "events": [
+    {
+      "id": "event_characters_01",
+      "title": "The Podium Has a Pulse",
+      "description": "During rehearsal, two volunteers swear Senator Buster blinked while strapped behind the campaign podium. A television crew now wants a live close-up.",
+      "trigger": {
+        "type": "chance",
+        "chancePercent": 25
+      },
+      "repeatable": false,
+      "decisions": [
+        {
+          "id": "decision_prerecord_podium_speech",
+          "label": "Produce a prerecorded speech and synchronize the podium lights to it.",
+          "requirements": {
+            "minimumCash": 5000,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "cash": -5000,
+            "actionPoints": -1,
+            "publicSuspicion": 5,
+            "partyConfidence": 2,
+            "voterEnergy": 3
+          },
+          "addFlags": [
+            "flag_podium_speech_prerecorded"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Delivers Perfectly Timed Address from Custom Podium",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_keep_camera_wide",
+          "label": "Allow the speech, but require every camera to remain fifty feet away.",
+          "requirements": {
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "actionPoints": -1,
+            "publicSuspicion": 3,
+            "partyConfidence": 1,
+            "voterEnergy": -1
+          },
+          "addFlags": [
+            "flag_podium_camera_distance"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Campaign Imposes Unusually Wide Camera Angles",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_blame_podium_lighting",
+          "label": "Say the apparent blinking was caused by faulty stage lighting.",
+          "effects": {
+            "publicSuspicion": 6,
+            "partyConfidence": -1
+          },
+          "addFlags": [
+            "flag_podium_blink_lighting"
+          ],
+          "newsItems": [
+            {
+              "headline": "Campaign Blames Lighting Rig for Reports Senator Blinked",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_cancel_podium_event",
+          "label": "Cancel the appearance and blame a scheduling conflict.",
+          "effects": {
+            "publicSuspicion": 4,
+            "partyConfidence": -3,
+            "voterEnergy": -3
+          },
+          "addFlags": [
+            "flag_podium_event_cancelled"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Cancels Podium Appearance Minutes Before Broadcast",
+              "category": "campaign"
+            }
+          ]
+        }
+      ],
+      "imagePath": "characters/buster-at-the-podium.webp"
+    },
+    {
+      "id": "event_characters_02",
+      "title": "The Judge Wants the Senator in Court",
+      "description": "A judge orders Senator Buster to appear personally at an emergency ballot hearing. The order uses the phrase “in the flesh” three separate times.",
+      "trigger": {
+        "type": "chance",
+        "chancePercent": 25
+      },
+      "repeatable": false,
+      "decisions": [
+        {
+          "id": "decision_request_remote_hearing",
+          "label": "Request a remote appearance with the camera fixed at an extremely flattering angle.",
+          "requirements": {
+            "minimumCash": 10000,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "cash": -10000,
+            "actionPoints": -1,
+            "publicSuspicion": 5,
+            "partyConfidence": 1
+          },
+          "addFlags": [
+            "flag_remote_ballot_hearing"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Attorneys Request Remote Ballot Hearing",
+              "category": "legal"
+            }
+          ]
+        },
+        {
+          "id": "decision_spend_favor_for_continuance",
+          "label": "Spend a favor securing a continuance until after Election Day.",
+          "requirements": {
+            "minimumFavors": 1,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "favors": -1,
+            "actionPoints": -1,
+            "publicSuspicion": 1,
+            "partyConfidence": 2
+          },
+          "addFlags": [
+            "flag_ballot_hearing_delayed"
+          ],
+          "newsItems": [
+            {
+              "headline": "Court Delays Buster Ballot Hearing Until After Election",
+              "category": "legal"
+            }
+          ]
+        },
+        {
+          "id": "decision_send_sealed_affidavit",
+          "label": "Send a staffer carrying a sealed affidavit and strict instructions not to open it.",
+          "requirements": {
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "actionPoints": -1,
+            "publicSuspicion": 4,
+            "partyConfidence": -1,
+            "voterEnergy": 1
+          },
+          "addFlags": [
+            "flag_sealed_buster_affidavit"
+          ],
+          "newsItems": [
+            {
+              "headline": "Campaign Submits Sealed Affidavit Instead of Senator",
+              "category": "legal"
+            }
+          ]
+        },
+        {
+          "id": "decision_ignore_subpoena",
+          "label": "Ignore the order and accuse the court of campaign interference.",
+          "effects": {
+            "publicSuspicion": 9,
+            "partyConfidence": -5,
+            "voterEnergy": 2
+          },
+          "addFlags": [
+            "flag_ballot_subpoena_ignored"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Campaign Defies Court Order for Personal Appearance",
+              "category": "legal"
+            }
+          ]
+        }
+      ],
+      "imagePath": "characters/judge.webp"
+    },
+    {
+      "id": "event_characters_03",
+      "title": "The New Staffer Counts Breaths",
+      "description": "A newly hired staffer has spent the afternoon watching Senator Buster and quietly recording the number zero in a notebook every thirty seconds.",
+      "trigger": {
+        "type": "chance",
+        "chancePercent": 25
+      },
+      "repeatable": false,
+      "decisions": [
+        {
+          "id": "decision_promote_health_liaison",
+          "label": "Promote the staffer to Deputy Director of Senatorial Vitality.",
+          "requirements": {
+            "minimumCash": 5000,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "cash": -5000,
+            "actionPoints": -1,
+            "publicSuspicion": 2,
+            "partyConfidence": 2
+          },
+          "addFlags": [
+            "flag_breath_counter_promoted"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Campaign Creates New Senatorial Vitality Office",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_send_to_rural_office",
+          "label": "Transfer the staffer to the most distant field office in the state.",
+          "requirements": {
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "actionPoints": -1,
+            "publicSuspicion": 1,
+            "partyConfidence": -1,
+            "voterEnergy": 1
+          },
+          "addFlags": [
+            "flag_breath_counter_transferred"
+          ],
+          "newsItems": [
+            {
+              "headline": "Campaign Expands Staffing in Remote County Office",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_buy_breath_counter_silence",
+          "label": "Offer a bonus and a nondisclosure agreement.",
+          "requirements": {
+            "minimumCash": 5000,
+            "minimumFavors": 1,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "cash": -5000,
+            "favors": -1,
+            "actionPoints": -1,
+            "publicSuspicion": 0,
+            "partyConfidence": 1
+          },
+          "addFlags": [
+            "flag_breath_counter_silenced"
+          ],
+          "newsItems": [
+            {
+              "headline": "Junior Buster Staffer Receives Unexpected Retention Bonus",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_fire_breath_counter",
+          "label": "Fire the staffer before anyone asks what the zeros mean.",
+          "effects": {
+            "publicSuspicion": 4,
+            "partyConfidence": -3,
+            "voterEnergy": -1
+          },
+          "addFlags": [
+            "flag_breath_counter_fired"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Campaign Fires New Hire After One Afternoon",
+              "category": "campaign"
+            }
+          ]
+        }
+      ],
+      "imagePath": "characters/odd-staffer.webp"
+    },
+    {
+      "id": "event_characters_04",
+      "title": "The Staff Demands a Meeting",
+      "description": "Campaign staffers refuse to make another phone call until they receive an in-person meeting with the Senator. Someone has already reserved a conference room.",
+      "trigger": {
+        "type": "chance",
+        "chancePercent": 25
+      },
+      "repeatable": false,
+      "decisions": [
+        {
+          "id": "decision_dark_conference_meeting",
+          "label": "Wheel the Senator through a dark conference room while playing recorded greetings.",
+          "requirements": {
+            "minimumCash": 10000,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "cash": -10000,
+            "actionPoints": -1,
+            "publicSuspicion": 6,
+            "partyConfidence": 3,
+            "voterEnergy": 1
+          },
+          "addFlags": [
+            "flag_dark_staff_meeting"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Holds Private Meeting with Campaign Staff",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_staff_audio_call",
+          "label": "Hold an audio-only call using clips from three previous speeches.",
+          "requirements": {
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "actionPoints": -1,
+            "publicSuspicion": 4,
+            "partyConfidence": 1
+          },
+          "addFlags": [
+            "flag_staff_audio_meeting"
+          ],
+          "newsItems": [
+            {
+              "headline": "Senator Addresses Staff During Audio-Only Strategy Call",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_pay_staff_retention_bonuses",
+          "label": "Replace the meeting with retention bonuses.",
+          "requirements": {
+            "minimumCash": 15000
+          },
+          "effects": {
+            "cash": -15000,
+            "publicSuspicion": 1,
+            "partyConfidence": 3
+          },
+          "addFlags": [
+            "flag_staff_retention_bonuses"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Campaign Announces Staff Retention Initiative",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_refuse_staff_meeting",
+          "label": "Refuse the meeting and remind everyone that campaign work is voluntary.",
+          "effects": {
+            "publicSuspicion": 8,
+            "partyConfidence": -4,
+            "voterEnergy": -2
+          },
+          "addFlags": [
+            "flag_staff_meeting_refused"
+          ],
+          "newsItems": [
+            {
+              "headline": "Internal Dispute Erupts Inside Buster Campaign",
+              "category": "campaign"
+            }
+          ]
+        }
+      ],
+      "imagePath": "characters/staffer.webp"
+    },
+    {
+      "id": "event_characters_05",
+      "title": "The Surrogate Goes Off Script",
+      "description": "A campaign surrogate tells a cheering crowd that Senator Buster will appear live at tomorrow’s rally. The campaign has not scheduled tomorrow’s rally.",
+      "trigger": {
+        "type": "chance",
+        "chancePercent": 25
+      },
+      "repeatable": false,
+      "decisions": [
+        {
+          "id": "decision_cut_surrogate_microphone",
+          "label": "Cut the microphone and claim a technical failure.",
+          "requirements": {
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "actionPoints": -1,
+            "publicSuspicion": 4,
+            "partyConfidence": -1,
+            "voterEnergy": -2
+          },
+          "addFlags": [
+            "flag_surrogate_microphone_cut"
+          ],
+          "newsItems": [
+            {
+              "headline": "Technical Failure Interrupts Buster Surrogate Mid-Speech",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_stage_surprise_rally",
+          "label": "Stage a surprise rally built around a distant silhouette of the Senator.",
+          "requirements": {
+            "minimumCash": 10000,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "cash": -10000,
+            "actionPoints": -1,
+            "publicSuspicion": 6,
+            "partyConfidence": 2,
+            "voterEnergy": 4
+          },
+          "addFlags": [
+            "flag_silhouette_rally"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Makes Mysterious Silhouette Appearance at Rally",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_redirect_surrogate_coverage",
+          "label": "Spend a favor redirecting coverage toward the surrogate’s policy remarks.",
+          "requirements": {
+            "minimumFavors": 1,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "favors": -1,
+            "actionPoints": -1,
+            "publicSuspicion": 2,
+            "partyConfidence": 3
+          },
+          "addFlags": [
+            "flag_surrogate_coverage_redirected"
+          ],
+          "newsItems": [
+            {
+              "headline": "Coverage Focuses on Buster Surrogate’s Policy Address",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_praise_surrogate_enthusiasm",
+          "label": "Praise the surrogate’s enthusiasm without confirming any appearance.",
+          "effects": {
+            "publicSuspicion": 5,
+            "partyConfidence": 1,
+            "voterEnergy": 3
+          },
+          "addFlags": [
+            "flag_surrogate_promise_unresolved"
+          ],
+          "newsItems": [
+            {
+              "headline": "Campaign Praises Surrogate as Questions Swirl Around Rally",
+              "category": "campaign"
+            }
+          ]
+        }
+      ],
+      "imagePath": "characters/surrogate.webp"
+    },
+    {
+      "id": "event_characters_06",
+      "title": "Proof of Life Photo Day",
+      "description": "The party requests a fresh photograph of Senator Buster holding today’s newspaper. The photographer has brought studio lights, three assistants, and a very high-resolution camera.",
+      "trigger": {
+        "type": "chance",
+        "chancePercent": 25
+      },
+      "repeatable": false,
+      "decisions": [
+        {
+          "id": "decision_retouch_proof_photo",
+          "label": "Retouch the photograph until the Senator looks recently alive.",
+          "requirements": {
+            "minimumCash": 10000,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "cash": -10000,
+            "actionPoints": -1,
+            "publicSuspicion": 3,
+            "partyConfidence": 2,
+            "voterEnergy": 2
+          },
+          "addFlags": [
+            "flag_proof_photo_retouched"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Campaign Releases Striking New Portrait",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_animate_proof_photo",
+          "label": "Animate the photograph so the Senator blinks when viewed online.",
+          "requirements": {
+            "minimumCash": 5000,
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "cash": -5000,
+            "actionPoints": -1,
+            "publicSuspicion": 7,
+            "partyConfidence": 1,
+            "voterEnergy": 4
+          },
+          "addFlags": [
+            "flag_proof_photo_animated"
+          ],
+          "newsItems": [
+            {
+              "headline": "Interactive Buster Portrait Appears to Blink at Viewers",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_release_grainy_polaroid",
+          "label": "Release a grainy instant photograph taken from across the room.",
+          "requirements": {
+            "minimumActionPoints": 1
+          },
+          "effects": {
+            "actionPoints": -1,
+            "publicSuspicion": 4,
+            "partyConfidence": 1
+          },
+          "addFlags": [
+            "flag_grainy_proof_photo"
+          ],
+          "newsItems": [
+            {
+              "headline": "Campaign Releases Grainy New Photo of Senator Buster",
+              "category": "campaign"
+            }
+          ]
+        },
+        {
+          "id": "decision_cancel_proof_photo",
+          "label": "Cancel the photo session and accuse the party of disrespect.",
+          "effects": {
+            "publicSuspicion": 6,
+            "partyConfidence": -3,
+            "voterEnergy": -2
+          },
+          "addFlags": [
+            "flag_proof_photo_refused"
+          ],
+          "newsItems": [
+            {
+              "headline": "Buster Campaign Rejects Party Request for Current Photograph",
+              "category": "campaign"
+            }
+          ]
+        }
+      ],
+      "imagePath": "characters/totally-alive-buster.webp"
+    }
+  ]
+}
