@@ -2,6 +2,9 @@ import type {
   SceneContext,
 } from '../../app/scene-router';
 import type {
+  CampaignSession,
+} from '../../game/campaign/campaign-session';
+import type {
   CampaignState,
 } from '../../game/campaign/campaign-state';
 import type {
@@ -57,6 +60,17 @@ export interface ResolveCampaignHudSnapshotOptions {
 
   readonly fallbackNewsItems?:
     readonly string[];
+}
+
+export interface CampaignEndTurnRequestContext {
+  readonly campaign:
+    Pick<
+      CampaignSession,
+      'endTurn'
+    >;
+
+  readonly navigate:
+    SceneContext['navigate'];
 }
 
 /**
@@ -156,8 +170,51 @@ export function canCampaignEndTurn(
   );
 }
 
+/**
+ * Requests turn advancement directly from CampaignSession.
+ *
+ * The campaign scene is rendered again after every successful
+ * advancement so the countdown, event panel, campaign actions,
+ * news ticker, and end-game state reflect the committed result.
+ */
+export function requestCampaignEndTurn(
+  context:
+    CampaignEndTurnRequestContext,
+): CampaignState | null {
+  const nextState =
+    context.campaign
+      .endTurn();
+
+  if (!nextState) {
+    console.warn(
+      [
+        '[campaign] end turn request was rejected',
+        'the campaign is not in the player-actions phase',
+      ].join('; '),
+    );
+
+    return null;
+  }
+
+  console.log(
+    [
+      '[campaign] turn advanced',
+      `turn: ${nextState.currentTurn}`,
+      `phase: ${nextState.phase}`,
+    ].join('; '),
+  );
+
+  context.navigate(
+    'campaign',
+  );
+
+  return nextState;
+}
+
 export function makeCampaignShell(
-  context: SceneContext,
+  context:
+    SceneContext,
+
   campaignContent:
     HTMLElement,
 
@@ -235,35 +292,15 @@ export function makeCampaignShell(
       },
     );
 
-  /**
-   * Temporary submission bridge.
-   *
-   * The sticky note still submits the legacy command form.
-   * That form now advances both the legacy GameSession and the
-   * new CampaignSession in a synchronized operation.
-   */
   const requestEndTurn =
     (): void => {
-      const commandForm =
-        campaignContent
-          .querySelector<
-            HTMLFormElement
-          >(
-            '.yearly-command-form',
-          );
+      requestCampaignEndTurn({
+        campaign:
+          context.campaign,
 
-      if (!commandForm) {
-        console.warn(
-          [
-            '[campaign] cannot end turn',
-            'because the active campaign form was not found',
-          ].join('; '),
-        );
-
-        return;
-      }
-
-      commandForm.requestSubmit();
+        navigate:
+          context.navigate,
+      });
     };
 
   const electionCountdown =

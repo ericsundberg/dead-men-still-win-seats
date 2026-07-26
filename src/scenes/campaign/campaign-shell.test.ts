@@ -2,12 +2,14 @@ import {
   describe,
   expect,
   it,
+  vi,
 } from 'vitest';
 import {
   createInitialCampaignState,
 } from '../../game/campaign/campaign-state';
 import {
   canCampaignEndTurn,
+  requestCampaignEndTurn,
   resolveCampaignHudSnapshot,
 } from './campaign-shell';
 
@@ -317,6 +319,131 @@ describe(
             true,
           ),
         ).toBe(false);
+      },
+    );
+  },
+);
+
+describe(
+  'campaign end-turn requests',
+  () => {
+    it(
+      'advances the campaign and renders the resulting state',
+      () => {
+        const nextState = {
+          ...createInitialCampaignState(
+            'easy',
+          ),
+
+          currentTurn:
+            2,
+
+          phase:
+            'player-actions' as const,
+        };
+
+        const endTurn =
+          vi.fn(
+            () =>
+              nextState,
+          );
+
+        const navigate =
+          vi.fn();
+
+        const consoleLog =
+          vi.spyOn(
+            console,
+            'log',
+          ).mockImplementation(
+            () => undefined,
+          );
+
+        try {
+          const result =
+            requestCampaignEndTurn({
+              campaign: {
+                endTurn,
+              },
+
+              navigate,
+            });
+
+          expect(
+            result,
+          ).toBe(
+            nextState,
+          );
+
+          expect(
+            endTurn,
+          ).toHaveBeenCalledTimes(
+            1,
+          );
+
+          expect(
+            navigate,
+          ).toHaveBeenCalledTimes(
+            1,
+          );
+
+          expect(
+            navigate,
+          ).toHaveBeenCalledWith(
+            'campaign',
+          );
+        } finally {
+          consoleLog.mockRestore();
+        }
+      },
+    );
+
+    it(
+      'does not navigate when campaign turn advancement is rejected',
+      () => {
+        const endTurn =
+          vi.fn(
+            () =>
+              null,
+          );
+
+        const navigate =
+          vi.fn();
+
+        const consoleWarn =
+          vi.spyOn(
+            console,
+            'warn',
+          ).mockImplementation(
+            () => undefined,
+          );
+
+        try {
+          const result =
+            requestCampaignEndTurn({
+              campaign: {
+                endTurn,
+              },
+
+              navigate,
+            });
+
+          expect(
+            result,
+          ).toBeNull();
+
+          expect(
+            endTurn,
+          ).toHaveBeenCalledTimes(
+            1,
+          );
+
+          expect(
+            navigate,
+          ).not.toHaveBeenCalled();
+        } finally {
+          consoleWarn.mockRestore();
+        }
       },
     );
   },
