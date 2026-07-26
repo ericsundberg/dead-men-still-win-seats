@@ -10,6 +10,9 @@ import {
   game_version,
 } from '../version';
 import {
+  unavailableDifficultyMessage,
+} from './game-setup/difficulty-selection-fields';
+import {
   makeTitleBackground,
 } from './title/title-background';
 import {
@@ -165,6 +168,69 @@ export function renderTitleScene(
       );
     };
 
+  const loadGameMessageId =
+    'load-game-unavailable-message';
+
+  const loadGameOption =
+    makeElement(
+      'div',
+      {
+        className:
+          'title-menu-option is-unavailable',
+      },
+    );
+
+  loadGameOption.tabIndex =
+    0;
+
+  loadGameOption.title =
+    unavailableDifficultyMessage;
+
+  loadGameOption.setAttribute(
+    'aria-describedby',
+    loadGameMessageId,
+  );
+
+  const loadGameButton =
+    makeButton(
+      'Load Game',
+      () => undefined,
+      'menu-button',
+    );
+
+  loadGameButton.disabled =
+    true;
+
+  loadGameButton.setAttribute(
+    'aria-disabled',
+    'true',
+  );
+
+  const loadGameMessage =
+    makeElement(
+      'span',
+      {
+        className:
+          'difficulty-unavailable-message',
+
+        textContent:
+          unavailableDifficultyMessage,
+      },
+    );
+
+  loadGameMessage.id =
+    loadGameMessageId;
+
+  loadGameMessage.setAttribute(
+    'role',
+    'tooltip',
+  );
+
+  loadGameOption.append(
+    loadGameButton,
+    loadGameMessage,
+  );
+
   menu.append(
     makeButton(
       'New Game',
@@ -180,19 +246,7 @@ export function renderTitleScene(
       },
     ),
 
-    makeButton(
-      'Load Game',
-      () => {
-        context.navigate(
-          'load-game',
-        );
-      },
-      'menu-button',
-      {
-        onBeforeClick:
-          playButtonClick,
-      },
-    ),
+    loadGameOption,
 
     makeButton(
       'Settings',

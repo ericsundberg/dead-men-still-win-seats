@@ -1,20 +1,28 @@
 /*
-  Difficulty availability
-  -----------------------
-  Longer campaigns remain visible but cannot be selected until
-  they receive enough event content and balancing work.
+  Unavailable features
+  --------------------
+  Incomplete options remain visible but cannot be selected until
+  they receive enough development and testing work.
 */
 
-.difficulty-option {
+.difficulty-option,
+.title-menu-option {
   position: relative;
 }
 
-.difficulty-option.is-unavailable {
+.title-menu-option {
+  width: 100%;
+}
+
+.difficulty-option.is-unavailable,
+.title-menu-option.is-unavailable {
   cursor: not-allowed;
 }
 
 .difficulty-option.is-unavailable
-.difficulty-button {
+.difficulty-button,
+.title-menu-option.is-unavailable
+.menu-button {
   color:
     rgb(235 235 235 / 72%);
 
@@ -133,6 +141,10 @@
 .difficulty-option.is-unavailable:hover
 .difficulty-unavailable-message,
 .difficulty-option.is-unavailable:focus-visible
+.difficulty-unavailable-message,
+.title-menu-option.is-unavailable:hover
+.difficulty-unavailable-message,
+.title-menu-option.is-unavailable:focus-visible
 .difficulty-unavailable-message {
   opacity:
     1;
@@ -141,7 +153,8 @@
     visible;
 }
 
-.difficulty-option.is-unavailable:focus-visible {
+.difficulty-option.is-unavailable:focus-visible,
+.title-menu-option.is-unavailable:focus-visible {
   outline:
     calc(0.18rem * var(--ui-scale))
     solid
