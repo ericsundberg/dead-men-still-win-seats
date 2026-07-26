@@ -8,6 +8,9 @@ export interface CampaignEffects {
   readonly publicSuspicion?: number;
   readonly partyConfidence?: number;
   readonly voterEnergy?: number;
+
+  readonly staffers?: number;
+  readonly surrogates?: number;
 }
 
 export function applyCampaignEffects(
@@ -57,6 +60,20 @@ export function applyCampaignEffects(
         effects.voterEnergy,
         0,
         100,
+      ),
+    },
+
+    personnel: {
+      staffers: applyBoundedChange(
+        campaignState.personnel.staffers,
+        effects.staffers,
+        0,
+      ),
+
+      surrogates: applyBoundedChange(
+        campaignState.personnel.surrogates,
+        effects.surrogates,
+        0,
       ),
     },
   };

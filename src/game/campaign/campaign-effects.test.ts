@@ -3,7 +3,7 @@ import { applyCampaignEffects } from './campaign-effects';
 import { createInitialCampaignState } from './campaign-state';
 
 describe('campaign effects', () => {
-  it('applies resource and metric changes', () => {
+  it('applies resource, metric, and personnel changes', () => {
     const campaignState = createInitialCampaignState();
 
     const nextState = applyCampaignEffects(campaignState, {
@@ -13,6 +13,8 @@ describe('campaign effects', () => {
       publicSuspicion: 15,
       partyConfidence: -20,
       voterEnergy: -30,
+      staffers: 2,
+      surrogates: 1,
     });
 
     expect(nextState.resources).toEqual({
@@ -25,6 +27,11 @@ describe('campaign effects', () => {
       publicSuspicion: 15,
       partyConfidence: 80,
       voterEnergy: 70,
+    });
+
+    expect(nextState.personnel).toEqual({
+      staffers: 2,
+      surrogates: 1,
     });
   });
 
@@ -41,6 +48,37 @@ describe('campaign effects', () => {
       cash: 0,
       favors: 0,
       actionPoints: 0,
+    });
+  });
+
+  it('prevents personnel counts from falling below zero', () => {
+    const campaignState = createInitialCampaignState('easy', {
+      resources: {
+        cash: 100_000,
+        favors: 3,
+        actionPoints: 3,
+      },
+
+      metrics: {
+        publicSuspicion: 0,
+        partyConfidence: 100,
+        voterEnergy: 100,
+      },
+
+      personnel: {
+        staffers: 2,
+        surrogates: 1,
+      },
+    });
+
+    const nextState = applyCampaignEffects(campaignState, {
+      staffers: -100,
+      surrogates: -100,
+    });
+
+    expect(nextState.personnel).toEqual({
+      staffers: 0,
+      surrogates: 0,
     });
   });
 
@@ -66,6 +104,8 @@ describe('campaign effects', () => {
     const nextState = applyCampaignEffects(campaignState, {
       cash: Number.NaN,
       publicSuspicion: Number.POSITIVE_INFINITY,
+      staffers: Number.NaN,
+      surrogates: Number.NEGATIVE_INFINITY,
     });
 
     expect(nextState.resources.cash).toBe(
@@ -74,6 +114,9 @@ describe('campaign effects', () => {
     expect(nextState.metrics.publicSuspicion).toBe(
       campaignState.metrics.publicSuspicion,
     );
+    expect(nextState.personnel).toEqual(
+      campaignState.personnel,
+    );
   });
 
   it('does not mutate the previous campaign state', () => {
@@ -81,11 +124,17 @@ describe('campaign effects', () => {
 
     const nextState = applyCampaignEffects(campaignState, {
       cash: -1_000,
+      staffers: 1,
     });
 
     expect(nextState).not.toBe(campaignState);
     expect(nextState.resources).not.toBe(campaignState.resources);
+    expect(nextState.personnel).not.toBe(campaignState.personnel);
+
     expect(campaignState.resources.cash).toBe(100_000);
     expect(nextState.resources.cash).toBe(99_000);
+
+    expect(campaignState.personnel.staffers).toBe(0);
+    expect(nextState.personnel.staffers).toBe(1);
   });
 });
