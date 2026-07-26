@@ -14,9 +14,6 @@ import {
   type GameSession,
 } from '../game/game-session';
 import {
-  startBrowserConsoleRunner,
-} from '../headless/browser-console-runner';
-import {
   renderBrandingScene,
 } from '../scenes/branding-scene';
 import {
@@ -113,8 +110,6 @@ export class AppController {
       this.rootElement,
       this.audioServices,
     );
-
-    startBrowserConsoleRunner();
 
     this.router.navigate(
       'branding',
