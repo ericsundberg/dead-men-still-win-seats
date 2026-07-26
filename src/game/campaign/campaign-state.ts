@@ -17,6 +17,11 @@ export interface CampaignMetrics {
   readonly voterEnergy: number;
 }
 
+export interface CampaignPersonnel {
+  readonly staffers: number;
+  readonly surrogates: number;
+}
+
 export type CampaignTurnPhase =
   | 'turn-start'
   | 'resolving-events'
@@ -27,6 +32,7 @@ export type CampaignTurnPhase =
 export interface CampaignStartingValues {
   readonly resources: CampaignResources;
   readonly metrics: CampaignMetrics;
+  readonly personnel?: Partial<CampaignPersonnel>;
 }
 
 export interface CampaignState {
@@ -37,6 +43,7 @@ export interface CampaignState {
 
   readonly resources: CampaignResources;
   readonly metrics: CampaignMetrics;
+  readonly personnel: CampaignPersonnel;
 
   readonly flags: readonly string[];
 
@@ -47,6 +54,11 @@ export interface CampaignState {
   readonly newsFeed: readonly string[];
   readonly endGameState: CampaignEndGameState | null;
 }
+
+export const defaultCampaignPersonnel: CampaignPersonnel = {
+  staffers: 0,
+  surrogates: 0,
+};
 
 export const defaultCampaignStartingValues: CampaignStartingValues = {
   resources: {
@@ -60,6 +72,8 @@ export const defaultCampaignStartingValues: CampaignStartingValues = {
     partyConfidence: 100,
     voterEnergy: 100,
   },
+
+  personnel: defaultCampaignPersonnel,
 };
 
 export function createInitialCampaignState(
@@ -80,6 +94,11 @@ export function createInitialCampaignState(
 
     metrics: {
       ...startingValues.metrics,
+    },
+
+    personnel: {
+      ...defaultCampaignPersonnel,
+      ...startingValues.personnel,
     },
 
     flags: [],
