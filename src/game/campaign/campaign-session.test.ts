@@ -345,6 +345,39 @@ describe(
     );
 
     it(
+      'adds one replenished action point per staffer',
+      () => {
+        const session =
+          createCampaignSession();
+
+        session.startCampaign(
+          'easy',
+        );
+
+        session.applyEffects({
+          actionPoints:
+            -3,
+
+          staffers:
+            2,
+        });
+
+        const nextState =
+          session.endTurn();
+
+        expect(
+          nextState?.personnel
+            .staffers,
+        ).toBe(2);
+
+        expect(
+          nextState?.resources
+            .actionPoints,
+        ).toBe(5);
+      },
+    );
+
+    it(
       'resolves the election after the final turn',
       () => {
         const session =

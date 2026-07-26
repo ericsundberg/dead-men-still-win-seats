@@ -401,7 +401,10 @@ export class CampaignSession {
           actionPoints:
             defaultCampaignStartingValues
               .resources
-              .actionPoints,
+              .actionPoints
+            + turnEndState
+              .personnel
+              .staffers,
         },
 
         activeEventInstanceId:
