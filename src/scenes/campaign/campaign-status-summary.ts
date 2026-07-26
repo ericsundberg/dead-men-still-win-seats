@@ -9,6 +9,8 @@ export type CampaignStatusSummaryItemId =
   | 'cash'
   | 'favors'
   | 'action-points'
+  | 'staffers'
+  | 'surrogates'
   | 'public-suspicion'
   | 'party-confidence'
   | 'voter-energy';
@@ -31,7 +33,7 @@ export interface CampaignStatusSummaryItem {
     string;
 
   /*
-   * Resource entries do not use a progress indicator.
+   * Non-metric entries do not use a progress indicator.
    * Metric entries use a value from zero through one hundred.
    */
   readonly progressValue:
@@ -86,6 +88,20 @@ export function createCampaignStatusSummaryItems(
       campaignState
         .resources
         .actionPoints,
+    );
+
+  const staffers =
+    normalizeNonNegativeWholeNumber(
+      campaignState
+        .personnel
+        .staffers,
+    );
+
+  const surrogates =
+    normalizeNonNegativeWholeNumber(
+      campaignState
+        .personnel
+        .surrogates,
     );
 
   const publicSuspicion =
@@ -166,6 +182,42 @@ export function createCampaignStatusSummaryItems(
 
     {
       id:
+        'staffers',
+
+      kind:
+        'resource',
+
+      label:
+        'Staffers',
+
+      displayValue:
+        wholeNumberFormatter
+          .format(staffers),
+
+      progressValue:
+        null,
+    },
+
+    {
+      id:
+        'surrogates',
+
+      kind:
+        'resource',
+
+      label:
+        'Surrogates',
+
+      displayValue:
+        wholeNumberFormatter
+          .format(surrogates),
+
+      progressValue:
+        null,
+    },
+
+    {
+      id:
         'public-suspicion',
 
       kind:
@@ -232,7 +284,7 @@ export function makeCampaignStatusSummary(
 
   summary.setAttribute(
     'aria-label',
-    'Campaign resources and metrics',
+    'Campaign resources, personnel, and metrics',
   );
 
   const title =

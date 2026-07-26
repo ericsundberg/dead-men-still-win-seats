@@ -79,6 +79,40 @@ describe(
 
           {
             id:
+              'staffers',
+
+            kind:
+              'resource',
+
+            label:
+              'Staffers',
+
+            displayValue:
+              '0',
+
+            progressValue:
+              null,
+          },
+
+          {
+            id:
+              'surrogates',
+
+            kind:
+              'resource',
+
+            label:
+              'Surrogates',
+
+            displayValue:
+              '0',
+
+            progressValue:
+              null,
+          },
+
+          {
+            id:
               'public-suspicion',
 
             kind:
@@ -132,7 +166,7 @@ describe(
     );
 
     it(
-      'formats custom resource and metric values',
+      'formats custom resource, personnel, and metric values',
       () => {
         const campaignState = {
           ...createInitialCampaignState(
@@ -148,6 +182,14 @@ describe(
 
             actionPoints:
               1.2,
+          },
+
+          personnel: {
+            staffers:
+              2.6,
+
+            surrogates:
+              4.4,
           },
 
           metrics: {
@@ -176,6 +218,8 @@ describe(
           '$12,346',
           '9',
           '1',
+          '3',
+          '4',
           '38%',
           '64%',
           '52%',
@@ -228,6 +272,8 @@ describe(
           '$0',
           '0',
           '0',
+          '0',
+          '0',
           '0%',
           '100%',
           '0%',
@@ -239,6 +285,8 @@ describe(
               item.progressValue,
           ),
         ).toEqual([
+          null,
+          null,
           null,
           null,
           null,
