@@ -31,6 +31,7 @@ export type CampaignEndingFmvFinishReason =
   | 'ended'
   | 'error'
   | 'playback-blocked'
+  | 'skipped'
   | 'manual';
 
 export interface CampaignEndingFmvDefinition {
@@ -216,6 +217,18 @@ export function reduceCampaignEndingFmvPlaybackState(
   }
 }
 
+export function isCampaignEndingFmvSkipKey(
+  key:
+    string,
+): boolean {
+  return (
+    key === 'Escape'
+    || key === 'Enter'
+    || key === ' '
+    || key === 'Spacebar'
+  );
+}
+
 export function makeCampaignEndingFmvPlayer(
   options:
     CampaignEndingFmvPlayerOptions,
@@ -245,6 +258,9 @@ export function makeCampaignEndingFmvPlayer(
     'Campaign ending video',
   );
 
+  element.tabIndex =
+    -1;
+
   const video =
     document.createElement(
       'video',
@@ -270,8 +286,59 @@ export function makeCampaignEndingFmvPlayer(
     options.definition.ariaLabel,
   );
 
+  const skipButton =
+    document.createElement(
+      'button',
+    );
+
+  skipButton.type =
+    'button';
+
+  skipButton.className =
+    'campaign-ending-fmv-skip-button';
+
+  skipButton.textContent =
+    'Skip Video';
+
+  skipButton.setAttribute(
+    'aria-label',
+    'Skip campaign ending video',
+  );
+
+  const skipHint =
+    makeElement(
+      'span',
+      {
+        className:
+          'campaign-ending-fmv-skip-hint',
+
+        textContent:
+          'Click or press Esc, Enter, or Space',
+      },
+    );
+
+  skipHint.setAttribute(
+    'aria-hidden',
+    'true',
+  );
+
+  const skipControls =
+    makeElement(
+      'div',
+      {
+        className:
+          'campaign-ending-fmv-skip-controls',
+      },
+    );
+
+  skipControls.append(
+    skipButton,
+    skipHint,
+  );
+
   element.append(
     video,
+    skipControls,
   );
 
   const updateState =
@@ -315,6 +382,61 @@ export function makeCampaignEndingFmvPlayer(
         reason,
       );
     };
+
+  const skip =
+    (): void => {
+      finish(
+        'skipped',
+      );
+    };
+
+  const onSkipButtonClick =
+    (
+      event:
+        MouseEvent,
+    ): void => {
+      event.stopPropagation();
+
+      skip();
+    };
+
+  const onLayerClick =
+    (): void => {
+      skip();
+    };
+
+  const onKeyDown =
+    (
+      event:
+        KeyboardEvent,
+    ): void => {
+      if (
+        !isCampaignEndingFmvSkipKey(
+          event.key,
+        )
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+
+      skip();
+    };
+
+  skipButton.addEventListener(
+    'click',
+    onSkipButtonClick,
+  );
+
+  element.addEventListener(
+    'click',
+    onLayerClick,
+  );
+
+  window.addEventListener(
+    'keydown',
+    onKeyDown,
+  );
 
   const onEnded =
     (): void => {
@@ -368,6 +490,11 @@ export function makeCampaignEndingFmvPlayer(
       updateState(
         'request-start',
       );
+
+      element.focus({
+        preventScroll:
+          true,
+      });
 
       try {
         await video.play();
@@ -475,6 +602,21 @@ export function makeCampaignEndingFmvPlayer(
         video.removeEventListener(
           'error',
           onError,
+        );
+
+        skipButton.removeEventListener(
+          'click',
+          onSkipButtonClick,
+        );
+
+        element.removeEventListener(
+          'click',
+          onLayerClick,
+        );
+
+        window.removeEventListener(
+          'keydown',
+          onKeyDown,
         );
 
         video.pause();

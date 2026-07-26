@@ -5,6 +5,7 @@ import {
 } from 'vitest';
 import {
   createInitialCampaignEndingFmvPlaybackState,
+  isCampaignEndingFmvSkipKey,
   reduceCampaignEndingFmvPlaybackState,
   resolveCampaignEndingFmv,
 } from './campaign-ending-fmv';
@@ -244,6 +245,34 @@ describe(
           phase:
             'finished',
         });
+      },
+    );
+
+    it(
+      'recognizes keyboard controls that skip the video',
+      () => {
+        expect(
+          [
+            'Escape',
+            'Enter',
+            ' ',
+            'Spacebar',
+          ].every(
+            isCampaignEndingFmvSkipKey,
+          ),
+        ).toBe(true);
+
+        expect(
+          isCampaignEndingFmvSkipKey(
+            'Tab',
+          ),
+        ).toBe(false);
+
+        expect(
+          isCampaignEndingFmvSkipKey(
+            'a',
+          ),
+        ).toBe(false);
       },
     );
 
