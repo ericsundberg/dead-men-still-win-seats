@@ -20,8 +20,8 @@ export interface CampaignWeekPanelModel {
 }
 
 /**
- * Converts current campaign state into the compact weekly briefing
- * displayed beneath the campaign action panel.
+ * Converts current campaign state into the weekly briefing shown
+ * on the campaign's compact canary legal pad.
  */
 export function createCampaignWeekPanelModel(
   campaignState:
@@ -56,19 +56,22 @@ export function createCampaignWeekPanelModel(
         ? [
             'Choose any campaign actions you want to take.',
             'End the week using the election countdown when ready.',
-          ].join(' ')
+          ].join(
+            ' ',
+          )
         : [
             'The campaign has exhausted its actions for this week.',
             'End the week using the election countdown to continue.',
-          ].join(' '),
+          ].join(
+            ' ',
+          ),
 
     latestHeadline,
   };
 }
 
 /**
- * Builds the campaign-native weekly briefing that replaces the
- * temporary Hamurabi yearly-turn content.
+ * Builds the freestanding weekly campaign memo.
  */
 export function makeCampaignWeekPanel(
   campaignState:
@@ -84,7 +87,7 @@ export function makeCampaignWeekPanel(
       'section',
       {
         className:
-          'campaign-week-panel',
+          'campaign-week-panel canary-legal-pad',
       },
     );
 
@@ -117,6 +120,18 @@ export function makeCampaignWeekPanel(
       },
     );
 
+  const instructionHeading =
+    makeElement(
+      'h3',
+      {
+        className:
+          'campaign-week-section-title',
+
+        textContent:
+          'This Week',
+      },
+    );
+
   const instruction =
     makeElement(
       'p',
@@ -146,7 +161,7 @@ export function makeCampaignWeekPanel(
           'campaign-week-headline-title',
 
         textContent:
-          'Latest Campaign Headline',
+          'Latest Headline',
       },
     );
 
@@ -170,6 +185,7 @@ export function makeCampaignWeekPanel(
   panel.append(
     heading,
     actionPointSummary,
+    instructionHeading,
     instruction,
     headlineSection,
   );

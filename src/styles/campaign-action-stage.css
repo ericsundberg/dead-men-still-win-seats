@@ -1,28 +1,25 @@
 /*
   Fixed-stage campaign actions
   ----------------------------
-  Compact action cards and the weekly briefing fit inside the
-  centered campaign report without scrolling.
+  The action panel now lives inside the selected printed-paper tab
+  rather than sharing its paper with the weekly briefing.
 */
 
-.campaign-content
+.campaign-workspace-paper
 .campaign-action-panel {
-  margin:
-    0
-    0
-    calc(0.55rem * var(--ui-scale));
+  margin: 0;
 
   padding:
     calc(0.62rem * var(--ui-scale));
 }
 
-.campaign-content
+.campaign-workspace-paper
 .campaign-action-panel-title {
   font-size:
     calc(1.08rem * var(--ui-scale));
 }
 
-.campaign-content
+.campaign-workspace-paper
 .campaign-action-panel-introduction {
   margin:
     calc(0.28rem * var(--ui-scale))
@@ -35,7 +32,7 @@
   line-height: 1.25;
 }
 
-.campaign-content
+.campaign-workspace-paper
 .campaign-action-list {
   grid-template-columns:
     repeat(
@@ -43,17 +40,22 @@
       minmax(0, 1fr)
     );
 
+  grid-auto-rows:
+    1fr;
+
   gap:
     calc(0.5rem * var(--ui-scale));
 }
 
-.campaign-content
+.campaign-workspace-paper
 .campaign-action-card {
+  height: 100%;
+
   padding:
     calc(0.58rem * var(--ui-scale));
 }
 
-.campaign-content
+.campaign-workspace-paper
 .campaign-action-card-title {
   font-size:
     calc(0.88rem * var(--ui-scale));
@@ -61,7 +63,7 @@
   line-height: 1.05;
 }
 
-.campaign-content
+.campaign-workspace-paper
 .campaign-action-card-description {
   margin:
     calc(0.32rem * var(--ui-scale))
@@ -74,7 +76,7 @@
   line-height: 1.22;
 }
 
-.campaign-content
+.campaign-workspace-paper
 .campaign-action-card-details {
   gap:
     calc(0.4rem * var(--ui-scale));
@@ -83,7 +85,7 @@
     calc(0.48rem * var(--ui-scale));
 }
 
-.campaign-content
+.campaign-workspace-paper
 .campaign-action-detail-title {
   margin-bottom:
     calc(0.18rem * var(--ui-scale));
@@ -92,7 +94,7 @@
     calc(0.53rem * var(--ui-scale));
 }
 
-.campaign-content
+.campaign-workspace-paper
 .campaign-action-detail-list {
   gap:
     calc(0.12rem * var(--ui-scale));
@@ -106,7 +108,7 @@
   line-height: 1.18;
 }
 
-.campaign-content
+.campaign-workspace-paper
 .campaign-action-button {
   padding:
     calc(0.44rem * var(--ui-scale))
@@ -116,7 +118,7 @@
     calc(0.68rem * var(--ui-scale));
 }
 
-.campaign-content
+.campaign-workspace-paper
 .campaign-action-unavailable {
   margin-top:
     calc(0.28rem * var(--ui-scale));
@@ -125,94 +127,4 @@
     calc(0.56rem * var(--ui-scale));
 
   line-height: 1.15;
-}
-
-/*
-  Weekly briefing
-  ---------------
-  The briefing remains one compact horizontal strip below the
-  campaign action cards.
-*/
-
-.campaign-content
-.campaign-week-panel {
-  display: grid;
-
-  grid-template-columns:
-    auto
-    auto
-    minmax(0, 1fr)
-    minmax(0, 1.25fr);
-
-  align-items: center;
-
-  gap:
-    calc(0.65rem * var(--ui-scale));
-
-  margin: 0;
-
-  padding:
-    calc(0.55rem * var(--ui-scale))
-    calc(0.7rem * var(--ui-scale));
-
-  border:
-    calc(0.07rem * var(--ui-scale))
-    solid
-    rgb(32 34 38 / 0.3);
-
-  background:
-    rgb(255 255 255 / 0.42);
-}
-
-.campaign-content
-.campaign-week-panel-title {
-  margin: 0;
-
-  font-size:
-    calc(0.88rem * var(--ui-scale));
-
-  white-space: nowrap;
-}
-
-.campaign-content
-.campaign-week-action-summary,
-.campaign-content
-.campaign-week-instruction,
-.campaign-content
-.campaign-week-headline-text {
-  margin: 0;
-
-  font-size:
-    calc(0.64rem * var(--ui-scale));
-
-  line-height: 1.2;
-}
-
-.campaign-content
-.campaign-week-action-summary {
-  white-space: nowrap;
-}
-
-.campaign-content
-.campaign-week-headline {
-  min-width: 0;
-}
-
-.campaign-content
-.campaign-week-headline-title {
-  margin:
-    0
-    0
-    calc(0.12rem * var(--ui-scale));
-
-  font-size:
-    calc(0.56rem * var(--ui-scale));
-}
-
-.campaign-content
-.campaign-week-headline-text {
-  overflow: hidden;
-
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }

@@ -12,9 +12,6 @@ import {
   makeElement,
 } from '../ui/dom-helpers';
 import {
-  makeCampaignActionPanel,
-} from './campaign/campaign-action-panel';
-import {
   makeCampaignEndingFmvPlayer,
   resolveCampaignEndingFmv,
   type CampaignEndingFmvPlayer,
@@ -35,6 +32,10 @@ import {
 import {
   makeCampaignWeekPanel,
 } from './campaign/campaign-week-panel';
+import {
+  makeCampaignWorkspace,
+  type CampaignWorkspace,
+} from './campaign/campaign-workspace';
 import {
   makeNoActiveGamePanel,
 } from './yearly-turn/no-active-game-panel';
@@ -109,12 +110,16 @@ export function renderCampaignScene(
       'main',
       {
         className:
-          'campaign-content printed-report-paper',
+          'campaign-content',
       },
     );
 
   let activeEvent:
     GameEventDefinition | null =
+      null;
+
+  let campaignWorkspace:
+    CampaignWorkspace | null =
       null;
 
   let campaignEventWindow:
@@ -133,6 +138,11 @@ export function renderCampaignScene(
     campaignState.phase
     === 'game-over'
   ) {
+    campaignContent.classList.add(
+      'campaign-content--game-over',
+      'printed-report-paper',
+    );
+
     endingFmvPlayer =
       appendCampaignGameOverContent(
         context,
@@ -150,11 +160,12 @@ export function renderCampaignScene(
     if (
       activeEvent
     ) {
-      appendCampaignActionContent(
-        context,
-        campaignState,
-        campaignContent,
-      );
+      campaignWorkspace =
+        appendCampaignWorkspaceContent(
+          context,
+          campaignState,
+          campaignContent,
+        );
 
       campaignContent.classList.add(
         'campaign-content--event-background',
@@ -179,16 +190,22 @@ export function renderCampaignScene(
         ),
       );
 
+      campaignContent.classList.add(
+        'campaign-content--runtime-error',
+        'printed-report-paper',
+      );
+
       campaignContent.append(
         makeCampaignEventRuntimeErrorPanel(),
       );
     }
   } else {
-    appendCampaignActionContent(
-      context,
-      campaignState,
-      campaignContent,
-    );
+    campaignWorkspace =
+      appendCampaignWorkspaceContent(
+        context,
+        campaignState,
+        campaignContent,
+      );
   }
 
   const pauseMenu =
@@ -277,6 +294,12 @@ export function renderCampaignScene(
           null;
       }
 
+      campaignWorkspace
+        ?.dispose();
+
+      campaignWorkspace =
+        null;
+
       campaignEventWindow
         ?.dispose();
 
@@ -303,7 +326,7 @@ export function renderCampaignScene(
   return scene;
 }
 
-function appendCampaignActionContent(
+function appendCampaignWorkspaceContent(
   context:
     SceneContext,
 
@@ -312,17 +335,39 @@ function appendCampaignActionContent(
 
   campaignContent:
     HTMLElement,
-): void {
-  campaignContent.append(
-    makeCampaignActionPanel(
+): CampaignWorkspace {
+  const workspace =
+    makeCampaignWorkspace(
       context,
       campaignState,
-    ),
+    );
 
+  const briefingRail =
+    makeElement(
+      'aside',
+      {
+        className:
+          'campaign-briefing-rail',
+      },
+    );
+
+  briefingRail.setAttribute(
+    'aria-label',
+    'Campaign briefing',
+  );
+
+  briefingRail.append(
     makeCampaignWeekPanel(
       campaignState,
     ),
   );
+
+  campaignContent.append(
+    workspace.element,
+    briefingRail,
+  );
+
+  return workspace;
 }
 
 function appendCampaignGameOverContent(

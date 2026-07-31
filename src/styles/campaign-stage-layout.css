@@ -1,10 +1,8 @@
 /*
   Fixed campaign stage
   --------------------
-  The browser scales the complete 1600 by 900 logical viewport.
-
-  Inside that viewport, the campaign workspace remains centered
-  and no page, scene, paper, or panel scrolling is permitted.
+  The complete interactive workspace is centered as one composite
+  group: manila folder on the left and briefing rail on the right.
 */
 
 .campaign-scene {
@@ -12,7 +10,13 @@
     calc(0.75rem * var(--ui-scale));
 
   --campaign-content-width:
-    calc(74rem * var(--ui-scale));
+    calc(94rem * var(--ui-scale));
+
+  --campaign-briefing-width:
+    calc(18rem * var(--ui-scale));
+
+  --campaign-workspace-gap:
+    calc(1.25rem * var(--ui-scale));
 
   --campaign-music-hud-width:
     calc(22rem * var(--ui-scale));
@@ -52,18 +56,20 @@
   min-height: 0;
 }
 
-/*
-  The interactable report is centered across the full stage.
-
-  Fixed HUD elements may occupy the surrounding desk area, but
-  the workspace itself is no longer pushed toward the left.
-*/
-
 .campaign-content {
   grid-row: 2;
 
   align-self: stretch;
   justify-self: center;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    var(--campaign-briefing-width);
+
+  gap:
+    var(--campaign-workspace-gap);
 
   width:
     min(
@@ -77,12 +83,9 @@
   min-height: 0;
 
   margin: 0;
+  padding: 0;
 
-  padding:
-    calc(1rem * var(--ui-scale))
-    calc(1.15rem * var(--ui-scale));
-
-  overflow: hidden;
+  overflow: visible;
 
   transform: none;
 }
@@ -91,8 +94,27 @@
   pointer-events: none;
 }
 
+.campaign-content--game-over,
+.campaign-content--runtime-error {
+  display: block;
+
+  width:
+    min(
+      calc(74rem * var(--ui-scale)),
+      100%
+    );
+
+  padding:
+    calc(1rem * var(--ui-scale))
+    calc(1.15rem * var(--ui-scale));
+
+  overflow: hidden;
+}
+
 .campaign-scene
-.campaign-content.printed-report-paper {
+.campaign-content--game-over.printed-report-paper,
+.campaign-scene
+.campaign-content--runtime-error.printed-report-paper {
   max-width: none;
   max-height: none;
 

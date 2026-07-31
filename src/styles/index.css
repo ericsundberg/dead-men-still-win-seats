@@ -35,13 +35,15 @@
 */
 
 @import './campaign-stage-layout.css';
+@import './campaign-workspace.css';
 @import './campaign-action-stage.css';
+@import './campaign-briefing-pad.css';
 @import './campaign-hud-layer.css';
 @import './game-setup-stage.css';
 
 /*
-  Initial floating-window placement loads last so component styles
-  cannot offset the event from the logical stage center.
+  Floating event placement loads last so ordinary campaign layout
+  cannot offset the initial centered position.
 */
 
 @import './campaign-event-window-layout.css';

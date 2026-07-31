@@ -21,7 +21,7 @@
   */
 
   max-height:
-    calc(45.5rem * var(--ui-scale));
+    calc(52.5rem * var(--ui-scale));
 
   transform:
     translate(
@@ -40,5 +40,5 @@
 
 .campaign-event-image-frame {
   flex-basis:
-    calc(21.5rem * var(--ui-scale));
+    calc(30.0rem * var(--ui-scale));
 }
