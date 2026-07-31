@@ -937,3 +937,196 @@ background:
       calc(1.3rem * var(--ui-scale));
   }
 }
+
+/*
+  Compact election countdown
+  --------------------------
+  Preserve the full sticky-note presentation on large desktops,
+  but reduce its footprint when it would otherwise cover the
+  campaign report.
+*/
+
+@media (max-width: 960px) {
+  .sticky-note-hud {
+    right:
+      calc(2rem * var(--ui-scale));
+
+    bottom:
+      calc(
+        var(--campaign-chyron-total-height)
+        + calc(0.65rem * var(--ui-scale))
+      );
+
+    width:
+      calc(7.6rem * var(--ui-scale));
+
+    min-height:
+      calc(7rem * var(--ui-scale));
+
+    padding:
+      calc(0.58rem * var(--ui-scale))
+      calc(0.45rem * var(--ui-scale))
+      calc(0.5rem * var(--ui-scale));
+  }
+
+  .sticky-note-countdown-label {
+    font-size:
+      calc(0.95rem * var(--ui-scale));
+
+    line-height: 0.85;
+  }
+
+  .sticky-note-countdown-number {
+    margin-top:
+      calc(-0.02rem * var(--ui-scale));
+
+    margin-bottom:
+      calc(-0.18rem * var(--ui-scale));
+
+    font-size:
+      calc(3.75rem * var(--ui-scale));
+
+    line-height: 0.76;
+  }
+
+  .sticky-note-countdown-unit {
+    font-size:
+      calc(1.05rem * var(--ui-scale));
+
+    line-height: 0.8;
+  }
+
+  .sticky-note-end-turn-label {
+    right:
+      calc(0.45rem * var(--ui-scale));
+
+    bottom:
+      calc(0.38rem * var(--ui-scale));
+
+    left:
+      calc(0.45rem * var(--ui-scale));
+
+    padding:
+      calc(0.16rem * var(--ui-scale))
+      calc(0.22rem * var(--ui-scale));
+  }
+
+  .sticky-note-end-turn-label-default {
+    font-size:
+      calc(0.48rem * var(--ui-scale));
+
+    letter-spacing: 0.2em;
+  }
+
+  .sticky-note-end-turn-label-hover {
+    font-size:
+      calc(0.36rem * var(--ui-scale));
+  }
+
+  .sticky-note-end-turn-overlay {
+    padding:
+      calc(0.5rem * var(--ui-scale));
+
+    font-size:
+      calc(0.92rem * var(--ui-scale));
+  }
+
+  /*
+    The large ambient hover shadows are decorative and can create
+    viewport overflow on narrower screens.
+  */
+  .sticky-note-hover-veil,
+  .campaign-end-turn-ambient-veil {
+    display: none;
+  }
+
+  .sticky-note-hud:hover,
+  .sticky-note-hud:focus-visible {
+    transform:
+      translateY(
+        calc(-0.18rem * var(--ui-scale))
+      )
+      rotate(0.25deg)
+      scale(1.04);
+  }
+}
+
+@media (max-width: 640px) {
+  .sticky-note-hud {
+    right:
+      calc(1.25rem * var(--ui-scale));
+
+    bottom:
+      calc(
+        var(--campaign-chyron-total-height)
+        + calc(0.4rem * var(--ui-scale))
+      );
+
+    width:
+      calc(6.7rem * var(--ui-scale));
+
+    min-height:
+      calc(6.1rem * var(--ui-scale));
+
+    padding:
+      calc(0.46rem * var(--ui-scale))
+      calc(0.34rem * var(--ui-scale))
+      calc(0.4rem * var(--ui-scale));
+  }
+
+  .sticky-note-countdown-label {
+    font-size:
+      calc(0.78rem * var(--ui-scale));
+  }
+
+  .sticky-note-countdown-number {
+    margin-bottom:
+      calc(-0.14rem * var(--ui-scale));
+
+    font-size:
+      calc(3.15rem * var(--ui-scale));
+  }
+
+  .sticky-note-countdown-unit {
+    font-size:
+      calc(0.86rem * var(--ui-scale));
+  }
+
+  .sticky-note-end-turn-label {
+    right:
+      calc(0.36rem * var(--ui-scale));
+
+    bottom:
+      calc(0.3rem * var(--ui-scale));
+
+    left:
+      calc(0.36rem * var(--ui-scale));
+  }
+
+  .sticky-note-end-turn-label-default {
+    font-size:
+      calc(0.43rem * var(--ui-scale));
+
+    letter-spacing: 0.16em;
+  }
+
+  .sticky-note-end-turn-label-hover {
+    font-size:
+      calc(0.32rem * var(--ui-scale));
+  }
+
+  .sticky-note-end-turn-overlay {
+    font-size:
+      calc(0.78rem * var(--ui-scale));
+  }
+
+  .sticky-note-hud:hover,
+  .sticky-note-hud:focus-visible {
+    transform:
+      translateY(
+        calc(-0.12rem * var(--ui-scale))
+      )
+      rotate(0.25deg)
+      scale(1.02);
+  }
+}

@@ -33,6 +33,9 @@ describe(
             kind:
               'resource',
 
+            icon:
+              '$',
+
             label:
               'Cash',
 
@@ -49,6 +52,9 @@ describe(
 
             kind:
               'resource',
+
+            icon:
+              '★',
 
             label:
               'Favors',
@@ -67,6 +73,9 @@ describe(
             kind:
               'resource',
 
+            icon:
+              '⚡',
+
             label:
               'Action Points',
 
@@ -83,6 +92,9 @@ describe(
 
             kind:
               'resource',
+
+            icon:
+              '♟',
 
             label:
               'Staffers',
@@ -101,6 +113,9 @@ describe(
             kind:
               'resource',
 
+            icon:
+              '◆',
+
             label:
               'Surrogates',
 
@@ -117,6 +132,9 @@ describe(
 
             kind:
               'metric',
+
+            icon:
+              null,
 
             label:
               'Public Suspicion',
@@ -135,6 +153,9 @@ describe(
             kind:
               'metric',
 
+            icon:
+              null,
+
             label:
               'Party Confidence',
 
@@ -151,6 +172,9 @@ describe(
 
             kind:
               'metric',
+
+            icon:
+              null,
 
             label:
               'Voter Energy',

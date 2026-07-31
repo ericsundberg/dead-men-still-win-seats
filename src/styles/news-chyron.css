@@ -533,3 +533,19 @@
     transform: none;
   }
 }
+
+/*
+  Responsive viewport containment
+  -------------------------------
+  Fixed positioning already defines the ticker width through its
+  left and right edges. Avoid 100vw scrollbar-width rounding and
+  prevent the animated track from producing page-level horizontal
+  overflow.
+*/
+
+.campaign-news-ticker {
+  width: auto;
+  max-width: 100%;
+
+  overflow-x: clip;
+}

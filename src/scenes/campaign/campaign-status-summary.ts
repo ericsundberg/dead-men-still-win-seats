@@ -26,6 +26,13 @@ export interface CampaignStatusSummaryItem {
   readonly kind:
     CampaignStatusSummaryItemKind;
 
+  /*
+   * Resource entries use compact visual symbols. Metric entries
+   * retain their full text labels without a symbol.
+   */
+  readonly icon:
+    string | null;
+
   readonly label:
     string;
 
@@ -44,9 +51,14 @@ const currencyFormatter =
   new Intl.NumberFormat(
     'en-US',
     {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
+      style:
+        'currency',
+
+      currency:
+        'USD',
+
+      maximumFractionDigits:
+        0,
     },
   );
 
@@ -54,7 +66,8 @@ const wholeNumberFormatter =
   new Intl.NumberFormat(
     'en-US',
     {
-      maximumFractionDigits: 0,
+      maximumFractionDigits:
+        0,
     },
   );
 
@@ -133,12 +146,17 @@ export function createCampaignStatusSummaryItems(
       kind:
         'resource',
 
+      icon:
+        '$',
+
       label:
         'Cash',
 
       displayValue:
         currencyFormatter
-          .format(cash),
+          .format(
+            cash,
+          ),
 
       progressValue:
         null,
@@ -151,12 +169,17 @@ export function createCampaignStatusSummaryItems(
       kind:
         'resource',
 
+      icon:
+        '★',
+
       label:
         'Favors',
 
       displayValue:
         wholeNumberFormatter
-          .format(favors),
+          .format(
+            favors,
+          ),
 
       progressValue:
         null,
@@ -169,12 +192,17 @@ export function createCampaignStatusSummaryItems(
       kind:
         'resource',
 
+      icon:
+        '⚡',
+
       label:
         'Action Points',
 
       displayValue:
         wholeNumberFormatter
-          .format(actionPoints),
+          .format(
+            actionPoints,
+          ),
 
       progressValue:
         null,
@@ -187,12 +215,17 @@ export function createCampaignStatusSummaryItems(
       kind:
         'resource',
 
+      icon:
+        '♟',
+
       label:
         'Staffers',
 
       displayValue:
         wholeNumberFormatter
-          .format(staffers),
+          .format(
+            staffers,
+          ),
 
       progressValue:
         null,
@@ -205,12 +238,17 @@ export function createCampaignStatusSummaryItems(
       kind:
         'resource',
 
+      icon:
+        '◆',
+
       label:
         'Surrogates',
 
       displayValue:
         wholeNumberFormatter
-          .format(surrogates),
+          .format(
+            surrogates,
+          ),
 
       progressValue:
         null,
@@ -222,6 +260,9 @@ export function createCampaignStatusSummaryItems(
 
       kind:
         'metric',
+
+      icon:
+        null,
 
       label:
         'Public Suspicion',
@@ -240,6 +281,9 @@ export function createCampaignStatusSummaryItems(
       kind:
         'metric',
 
+      icon:
+        null,
+
       label:
         'Party Confidence',
 
@@ -256,6 +300,9 @@ export function createCampaignStatusSummaryItems(
 
       kind:
         'metric',
+
+      icon:
+        null,
 
       label:
         'Voter Energy',
@@ -313,7 +360,10 @@ export function makeCampaignStatusSummary(
       campaignState,
     );
 
-  for (const item of items) {
+  for (
+    const item
+    of items
+  ) {
     const itemElement =
       makeElement(
         'div',
@@ -324,9 +374,14 @@ export function makeCampaignStatusSummary(
             `campaign-status-summary-item--${item.kind}`,
 
             `campaign-status-summary-item--${item.id}`,
-          ].join(' '),
+          ].join(
+            ' ',
+          ),
         },
       );
+
+    itemElement.title =
+      `${item.label}: ${item.displayValue}`;
 
     const label =
       makeElement(
@@ -334,11 +389,50 @@ export function makeCampaignStatusSummary(
         {
           className:
             'campaign-status-summary-label',
+        },
+      );
+
+    if (
+      item.icon
+      !== null
+    ) {
+      const icon =
+        makeElement(
+          'span',
+          {
+            className:
+              'campaign-status-summary-icon',
+
+            textContent:
+              item.icon,
+          },
+        );
+
+      icon.setAttribute(
+        'aria-hidden',
+        'true',
+      );
+
+      label.append(
+        icon,
+      );
+    }
+
+    const labelText =
+      makeElement(
+        'span',
+        {
+          className:
+            'campaign-status-summary-label-text',
 
           textContent:
             item.label,
         },
       );
+
+    label.append(
+      labelText,
+    );
 
     const detail =
       makeElement(
@@ -378,7 +472,9 @@ export function makeCampaignStatusSummary(
         'campaign-status-summary-progress',
 
         `campaign-status-summary-progress--${item.id}`,
-      ].join(' ');
+      ].join(
+        ' ',
+      );
 
       progress.max =
         100;
@@ -415,22 +511,34 @@ export function makeCampaignStatusSummary(
 }
 
 function normalizeNonNegativeWholeNumber(
-  value: number,
+  value:
+    number,
 ): number {
-  if (!Number.isFinite(value)) {
+  if (
+    !Number.isFinite(
+      value,
+    )
+  ) {
     return 0;
   }
 
   return Math.max(
     0,
-    Math.round(value),
+    Math.round(
+      value,
+    ),
   );
 }
 
 function normalizePercentage(
-  value: number,
+  value:
+    number,
 ): number {
-  if (!Number.isFinite(value)) {
+  if (
+    !Number.isFinite(
+      value,
+    )
+  ) {
     return 0;
   }
 
@@ -438,7 +546,9 @@ function normalizePercentage(
     100,
     Math.max(
       0,
-      Math.round(value),
+      Math.round(
+        value,
+      ),
     ),
   );
 }
