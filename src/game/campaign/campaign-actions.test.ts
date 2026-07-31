@@ -155,7 +155,7 @@ describe(
             .personnel,
         ).toEqual({
           staffers:
-            1,
+            4,
 
           surrogates:
             0,
@@ -225,7 +225,7 @@ describe(
             .personnel,
         ).toEqual({
           staffers:
-            1,
+            4,
 
           surrogates:
             1,
@@ -243,7 +243,7 @@ describe(
           campaignState.personnel,
         ).toEqual({
           staffers:
-            0,
+            3,
 
           surrogates:
             0,
@@ -433,9 +433,6 @@ describe(
           fundraiserHeadline,
         ]);
 
-        /*
-         * Confirm that the original state remains unchanged.
-         */
         expect(
           campaignState.resources,
         ).toEqual({

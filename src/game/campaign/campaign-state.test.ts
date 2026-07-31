@@ -1,116 +1,676 @@
-import { describe, expect, it } from 'vitest';
 import {
-  createInitialCampaignState,
-  defaultCampaignPersonnel,
-  defaultCampaignStartingValues,
-} from './campaign-state';
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
+import {
+  createCampaignSession,
+} from './campaign-session';
 
-describe('campaign state', () => {
-  it('creates the default easy campaign state', () => {
-    expect(createInitialCampaignState()).toEqual({
-      difficultyId: 'easy',
-      currentTurn: 1,
-      totalTurns: 13,
-      phase: 'turn-start',
+describe(
+  'CampaignSession',
+  () => {
+    it(
+      'starts without an active campaign',
+      () => {
+        const session =
+          createCampaignSession();
 
-      resources: {
-        cash: 100_000,
-        favors: 3,
-        actionPoints: 3,
+        expect(
+          session.hasActiveCampaign(),
+        ).toBe(false);
+
+        expect(
+          session.getState(),
+        ).toBeNull();
+
+        expect(
+          session.getDifficultyId(),
+        ).toBeNull();
+
+        expect(
+          session.getCurrentTurn(),
+        ).toBeNull();
+
+        expect(
+          session.getTotalTurns(),
+        ).toBeNull();
+
+        expect(
+          session.isGameOver(),
+        ).toBe(false);
       },
-
-      metrics: {
-        publicSuspicion: 0,
-        partyConfidence: 100,
-        voterEnergy: 100,
-      },
-
-      personnel: {
-        staffers: 0,
-        surrogates: 0,
-      },
-
-      flags: [],
-
-      activeEventInstanceId: null,
-      queuedEventIds: [],
-      completedEventIds: [],
-
-      newsFeed: [],
-      endGameState: null,
-    });
-  });
-
-  it('uses the selected difficulty campaign length', () => {
-    const campaignState = createInitialCampaignState('far-gone');
-
-    expect(campaignState.difficultyId).toBe('far-gone');
-    expect(campaignState.totalTurns).toBe(78);
-  });
-
-  it('copies custom starting resources, metrics, and personnel', () => {
-    const campaignState = createInitialCampaignState('moderate', {
-      resources: {
-        cash: 50_000,
-        favors: 5,
-        actionPoints: 4,
-      },
-
-      metrics: {
-        publicSuspicion: 10,
-        partyConfidence: 80,
-        voterEnergy: 70,
-      },
-
-      personnel: {
-        staffers: 2,
-        surrogates: 1,
-      },
-    });
-
-    expect(campaignState.totalTurns).toBe(26);
-    expect(campaignState.resources).toEqual({
-      cash: 50_000,
-      favors: 5,
-      actionPoints: 4,
-    });
-    expect(campaignState.metrics).toEqual({
-      publicSuspicion: 10,
-      partyConfidence: 80,
-      voterEnergy: 70,
-    });
-    expect(campaignState.personnel).toEqual({
-      staffers: 2,
-      surrogates: 1,
-    });
-
-    expect(campaignState.resources).not.toBe(
-      defaultCampaignStartingValues.resources,
     );
-    expect(campaignState.metrics).not.toBe(
-      defaultCampaignStartingValues.metrics,
-    );
-    expect(campaignState.personnel).not.toBe(
-      defaultCampaignStartingValues.personnel,
-    );
-  });
 
-  it('defaults omitted custom personnel values to zero', () => {
-    const campaignState = createInitialCampaignState('easy', {
-      resources: {
-        cash: 80_000,
-        favors: 4,
-        actionPoints: 3,
+    it(
+      'starts the selected campaign',
+      () => {
+        const session =
+          createCampaignSession();
+
+        const state =
+          session.startCampaign(
+            'moderate',
+          );
+
+        expect(
+          session.hasActiveCampaign(),
+        ).toBe(true);
+
+        expect(
+          state.difficultyId,
+        ).toBe(
+          'moderate',
+        );
+
+        expect(
+          state.currentTurn,
+        ).toBe(
+          1,
+        );
+
+        expect(
+          state.totalTurns,
+        ).toBe(
+          26,
+        );
+
+        expect(
+          state.phase,
+        ).toBe(
+          'player-actions',
+        );
+
+        expect(
+          state.personnel,
+        ).toEqual({
+          staffers:
+            3,
+
+          surrogates:
+            0,
+        });
+
+        expect(
+          session.getState(),
+        ).toBe(
+          state,
+        );
       },
+    );
 
-      metrics: {
-        publicSuspicion: 5,
-        partyConfidence: 90,
-        voterEnergy: 85,
+    it(
+      'applies campaign resource and metric effects',
+      () => {
+        const session =
+          createCampaignSession();
+
+        session.startCampaign(
+          'easy',
+        );
+
+        const nextState =
+          session.applyEffects({
+            cash:
+              -2_500,
+
+            actionPoints:
+              -1,
+
+            publicSuspicion:
+              12,
+
+            partyConfidence:
+              -7,
+
+            voterEnergy:
+              -9,
+          });
+
+        expect(
+          nextState?.resources,
+        ).toEqual({
+          cash:
+            97_500,
+
+          favors:
+            3,
+
+          actionPoints:
+            2,
+        });
+
+        expect(
+          nextState?.metrics,
+        ).toEqual({
+          publicSuspicion:
+            12,
+
+          partyConfidence:
+            93,
+
+          voterEnergy:
+            91,
+        });
+
+        expect(
+          nextState?.phase,
+        ).toBe(
+          'player-actions',
+        );
+
+        expect(
+          nextState?.endGameState,
+        ).toBeNull();
+
+        expect(
+          session.getState(),
+        ).toBe(
+          nextState,
+        );
       },
-    });
+    );
 
-    expect(campaignState.personnel).toEqual(defaultCampaignPersonnel);
-    expect(campaignState.personnel).not.toBe(defaultCampaignPersonnel);
-  });
-});
+    it(
+      'does not apply effects before a campaign starts',
+      () => {
+        const session =
+          createCampaignSession();
+
+        expect(
+          session.applyEffects({
+            cash:
+              -1_000,
+
+            publicSuspicion:
+              10,
+          }),
+        ).toBeNull();
+
+        expect(
+          session.getState(),
+        ).toBeNull();
+      },
+    );
+
+    it(
+      'ends the campaign immediately when effects trigger a loss condition',
+      () => {
+        const session =
+          createCampaignSession();
+
+        session.startCampaign(
+          'easy',
+        );
+
+        const completedState =
+          session.applyEffects({
+            publicSuspicion:
+              100,
+          });
+
+        expect(
+          completedState?.metrics
+            .publicSuspicion,
+        ).toBe(
+          100,
+        );
+
+        expect(
+          completedState?.phase,
+        ).toBe(
+          'game-over',
+        );
+
+        expect(
+          completedState?.endGameState,
+        ).toEqual({
+          type:
+            'public-discovers-death',
+
+          triggeredOnTurn:
+            1,
+        });
+
+        expect(
+          session.isGameOver(),
+        ).toBe(true);
+      },
+    );
+
+    it(
+      'does not apply additional effects after game over',
+      () => {
+        const session =
+          createCampaignSession();
+
+        session.startCampaign(
+          'easy',
+        );
+
+        session.applyEffects({
+          publicSuspicion:
+            100,
+        });
+
+        const completedState =
+          session.getState();
+
+        expect(
+          session.applyEffects({
+            cash:
+              -50_000,
+
+            voterEnergy:
+              -50,
+          }),
+        ).toBeNull();
+
+        expect(
+          session.getState(),
+        ).toBe(
+          completedState,
+        );
+
+        expect(
+          session.getState()
+            ?.resources
+            .cash,
+        ).toBe(
+          100_000,
+        );
+      },
+    );
+
+    it(
+      'advances to the next campaign turn',
+      () => {
+        const session =
+          createCampaignSession();
+
+        session.startCampaign(
+          'easy',
+        );
+
+        const nextState =
+          session.endTurn();
+
+        expect(
+          nextState?.currentTurn,
+        ).toBe(
+          2,
+        );
+
+        expect(
+          nextState?.phase,
+        ).toBe(
+          'player-actions',
+        );
+
+        expect(
+          nextState?.resources
+            .actionPoints,
+        ).toBe(
+          6,
+        );
+
+        expect(
+          nextState?.endGameState,
+        ).toBeNull();
+      },
+    );
+
+    it(
+      'replenishes action points while preserving other effects at turn end',
+      () => {
+        const session =
+          createCampaignSession();
+
+        session.startCampaign(
+          'easy',
+        );
+
+        session.applyEffects({
+          cash:
+            -5_000,
+
+          favors:
+            2,
+
+          actionPoints:
+            -2,
+
+          publicSuspicion:
+            15,
+        });
+
+        const nextState =
+          session.endTurn();
+
+        expect(
+          nextState?.resources,
+        ).toEqual({
+          cash:
+            95_000,
+
+          favors:
+            5,
+
+          actionPoints:
+            6,
+        });
+
+        expect(
+          nextState?.metrics
+            .publicSuspicion,
+        ).toBe(
+          15,
+        );
+      },
+    );
+
+    it(
+      'adds one replenished action point per staffer',
+      () => {
+        const session =
+          createCampaignSession();
+
+        session.startCampaign(
+          'easy',
+        );
+
+        session.applyEffects({
+          actionPoints:
+            -3,
+
+          staffers:
+            2,
+        });
+
+        const nextState =
+          session.endTurn();
+
+        expect(
+          nextState?.personnel
+            .staffers,
+        ).toBe(
+          5,
+        );
+
+        expect(
+          nextState?.resources
+            .actionPoints,
+        ).toBe(
+          8,
+        );
+      },
+    );
+
+    it(
+      'applies weekly surrogate benefits and suspicion',
+      () => {
+        const session =
+          createCampaignSession();
+
+        session.startCampaign(
+          'easy',
+        );
+
+        session.applyEffects({
+          surrogates:
+            2,
+
+          publicSuspicion:
+            10,
+
+          partyConfidence:
+            -20,
+
+          voterEnergy:
+            -30,
+        });
+
+        const nextState =
+          session.endTurn();
+
+        expect(
+          nextState?.personnel
+            .surrogates,
+        ).toBe(
+          2,
+        );
+
+        expect(
+          nextState?.metrics,
+        ).toEqual({
+          publicSuspicion:
+            12,
+
+          partyConfidence:
+            82,
+
+          voterEnergy:
+            74,
+        });
+      },
+    );
+
+    it(
+      'can end the campaign from surrogate suspicion',
+      () => {
+        const session =
+          createCampaignSession();
+
+        session.startCampaign(
+          'easy',
+        );
+
+        session.applyEffects({
+          surrogates:
+            1,
+
+          publicSuspicion:
+            99,
+        });
+
+        const completedState =
+          session.endTurn();
+
+        expect(
+          completedState?.metrics
+            .publicSuspicion,
+        ).toBe(
+          100,
+        );
+
+        expect(
+          completedState?.phase,
+        ).toBe(
+          'game-over',
+        );
+
+        expect(
+          completedState?.endGameState,
+        ).toEqual({
+          type:
+            'public-discovers-death',
+
+          triggeredOnTurn:
+            1,
+        });
+      },
+    );
+
+    it(
+      'resolves the election after the final turn',
+      () => {
+        const session =
+          createCampaignSession();
+
+        session.startCampaign(
+          'easy',
+        );
+
+        for (
+          let completedTurns = 0;
+          completedTurns < 12;
+          completedTurns += 1
+        ) {
+          session.endTurn();
+        }
+
+        expect(
+          session.getCurrentTurn(),
+        ).toBe(
+          13,
+        );
+
+        expect(
+          session.isGameOver(),
+        ).toBe(false);
+
+        const finalState =
+          session.endTurn();
+
+        expect(
+          finalState?.currentTurn,
+        ).toBe(
+          13,
+        );
+
+        expect(
+          finalState?.phase,
+        ).toBe(
+          'game-over',
+        );
+
+        expect(
+          finalState?.endGameState,
+        ).toEqual({
+          type:
+            'win-reelection',
+
+          triggeredOnTurn:
+            13,
+        });
+
+        expect(
+          session.isGameOver(),
+        ).toBe(true);
+      },
+    );
+
+    it(
+      'does not advance after game over',
+      () => {
+        const session =
+          createCampaignSession();
+
+        session.startCampaign(
+          'easy',
+        );
+
+        for (
+          let completedTurns = 0;
+          completedTurns < 13;
+          completedTurns += 1
+        ) {
+          session.endTurn();
+        }
+
+        const completedState =
+          session.getState();
+
+        expect(
+          session.endTurn(),
+        ).toBeNull();
+
+        expect(
+          session.getState(),
+        ).toBe(
+          completedState,
+        );
+
+        expect(
+          session.getCurrentTurn(),
+        ).toBe(
+          13,
+        );
+      },
+    );
+
+    it(
+      'notifies subscribers when campaign state changes',
+      () => {
+        const session =
+          createCampaignSession();
+
+        const listener =
+          vi.fn();
+
+        const unsubscribe =
+          session.subscribe(
+            listener,
+          );
+
+        expect(
+          listener,
+        ).toHaveBeenCalledTimes(
+          1,
+        );
+
+        expect(
+          listener,
+        ).toHaveBeenLastCalledWith(
+          null,
+        );
+
+        const startedState =
+          session.startCampaign(
+            'easy',
+          );
+
+        expect(
+          listener,
+        ).toHaveBeenCalledTimes(
+          2,
+        );
+
+        expect(
+          listener,
+        ).toHaveBeenLastCalledWith(
+          startedState,
+        );
+
+        const affectedState =
+          session.applyEffects({
+            actionPoints:
+              -1,
+          });
+
+        expect(
+          listener,
+        ).toHaveBeenCalledTimes(
+          3,
+        );
+
+        expect(
+          listener,
+        ).toHaveBeenLastCalledWith(
+          affectedState,
+        );
+
+        unsubscribe();
+
+        session.endTurn();
+
+        expect(
+          listener,
+        ).toHaveBeenCalledTimes(
+          3,
+        );
+      },
+    );
+  },
+);

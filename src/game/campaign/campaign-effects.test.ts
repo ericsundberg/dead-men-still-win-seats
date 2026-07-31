@@ -30,7 +30,7 @@ describe('campaign effects', () => {
     });
 
     expect(nextState.personnel).toEqual({
-      staffers: 2,
+      staffers: 5,
       surrogates: 1,
     });
   });
@@ -134,7 +134,7 @@ describe('campaign effects', () => {
     expect(campaignState.resources.cash).toBe(100_000);
     expect(nextState.resources.cash).toBe(99_000);
 
-    expect(campaignState.personnel.staffers).toBe(0);
-    expect(nextState.personnel.staffers).toBe(1);
+    expect(campaignState.personnel.staffers).toBe(3);
+    expect(nextState.personnel.staffers).toBe(4);
   });
 });

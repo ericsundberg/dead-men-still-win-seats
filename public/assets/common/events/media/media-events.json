@@ -3,8 +3,8 @@
   "events": [
     {
       "id": "event_media_01",
-      "title": "The Camera Is Already Rolling",
-      "description": "A local reporter corners the campaign outside a fundraiser and asks when Senator Phil A. Buster will release his annual medical report.",
+      "title": "So, We Heard the Senator Fell",
+      "description": "A local reporter corners the campaign outside a fundraiser. ‘So, we heard the Senator fell,’ she says, before asking when Senator Phil A. Buster will release his annual medical report.",
       "trigger": {
         "type": "turn",
         "turn": 1

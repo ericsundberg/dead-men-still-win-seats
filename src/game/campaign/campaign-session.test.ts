@@ -60,15 +60,21 @@ describe(
 
         expect(
           state.difficultyId,
-        ).toBe('moderate');
+        ).toBe(
+          'moderate',
+        );
 
         expect(
           state.currentTurn,
-        ).toBe(1);
+        ).toBe(
+          1,
+        );
 
         expect(
           state.totalTurns,
-        ).toBe(26);
+        ).toBe(
+          26,
+        );
 
         expect(
           state.phase,
@@ -77,8 +83,20 @@ describe(
         );
 
         expect(
+          state.personnel,
+        ).toEqual({
+          staffers:
+            3,
+
+          surrogates:
+            0,
+        });
+
+        expect(
           session.getState(),
-        ).toBe(state);
+        ).toBe(
+          state,
+        );
       },
     );
 
@@ -195,7 +213,9 @@ describe(
         expect(
           completedState?.metrics
             .publicSuspicion,
-        ).toBe(100);
+        ).toBe(
+          100,
+        );
 
         expect(
           completedState?.phase,
@@ -278,7 +298,9 @@ describe(
 
         expect(
           nextState?.currentTurn,
-        ).toBe(2);
+        ).toBe(
+          2,
+        );
 
         expect(
           nextState?.phase,
@@ -289,7 +311,9 @@ describe(
         expect(
           nextState?.resources
             .actionPoints,
-        ).toBe(3);
+        ).toBe(
+          6,
+        );
 
         expect(
           nextState?.endGameState,
@@ -334,13 +358,15 @@ describe(
             5,
 
           actionPoints:
-            3,
+            6,
         });
 
         expect(
           nextState?.metrics
             .publicSuspicion,
-        ).toBe(15);
+        ).toBe(
+          15,
+        );
       },
     );
 
@@ -368,12 +394,16 @@ describe(
         expect(
           nextState?.personnel
             .staffers,
-        ).toBe(2);
+        ).toBe(
+          5,
+        );
 
         expect(
           nextState?.resources
             .actionPoints,
-        ).toBe(5);
+        ).toBe(
+          8,
+        );
       },
     );
 
@@ -407,7 +437,9 @@ describe(
         expect(
           nextState?.personnel
             .surrogates,
-        ).toBe(2);
+        ).toBe(
+          2,
+        );
 
         expect(
           nextState?.metrics,
@@ -448,7 +480,9 @@ describe(
         expect(
           completedState?.metrics
             .publicSuspicion,
-        ).toBe(100);
+        ).toBe(
+          100,
+        );
 
         expect(
           completedState?.phase,
@@ -494,7 +528,9 @@ describe(
 
         expect(
           session.getCurrentTurn(),
-        ).toBe(13);
+        ).toBe(
+          13,
+        );
 
         expect(
           session.isGameOver(),
@@ -505,7 +541,9 @@ describe(
 
         expect(
           finalState?.currentTurn,
-        ).toBe(13);
+        ).toBe(
+          13,
+        );
 
         expect(
           finalState?.phase,
@@ -562,7 +600,9 @@ describe(
 
         expect(
           session.getCurrentTurn(),
-        ).toBe(13);
+        ).toBe(
+          13,
+        );
       },
     );
 

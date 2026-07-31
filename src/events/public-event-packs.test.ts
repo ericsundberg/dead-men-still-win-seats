@@ -194,7 +194,7 @@ describe(
     );
 
     it(
-      'defines the interviewer ambush as the first mandatory event',
+      'defines the fall rumor as the first mandatory event',
       () => {
         const registry =
           loadPublicEventRegistry();
@@ -211,7 +211,7 @@ describe(
         expect(
           event?.title,
         ).toBe(
-          'The Camera Is Already Rolling',
+          'So, We Heard the Senator Fell',
         );
 
         expect(

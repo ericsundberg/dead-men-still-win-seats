@@ -100,7 +100,7 @@ describe(
               'Staffers',
 
             displayValue:
-              '0',
+              '3',
 
             progressValue:
               null,
@@ -268,6 +268,14 @@ describe(
 
             actionPoints:
               Number.NEGATIVE_INFINITY,
+          },
+
+          personnel: {
+            staffers:
+              -3,
+
+            surrogates:
+              Number.NaN,
           },
 
           metrics: {
