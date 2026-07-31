@@ -4,7 +4,7 @@
     {
       "id": "event_media_01",
       "title": "So, We Heard the Senator Fell",
-      "description": "A local reporter corners the campaign outside a fundraiser. ‘So, we heard the Senator fell,’ she says, before asking when Senator Phil A. Buster will release his annual medical report.",
+      "description": "A local reporter corners the chief of staff outside of Senator's Congressional office. ‘So, we heard the Senator fell,’ she says, before asking when Senator Phil A. Buster will release his annual medical report.",
       "trigger": {
         "type": "turn",
         "turn": 1

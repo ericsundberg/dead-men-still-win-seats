@@ -444,7 +444,7 @@ function makeCampaignWorkspacePlaceholder(
           'campaign-workspace-placeholder-status',
 
         textContent:
-          'Detailed campaign records will be added in the next checkpoint.',
+          'Detailed campaign records will be added in a future update.',
       },
     );
 
