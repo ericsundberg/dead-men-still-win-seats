@@ -10,6 +10,9 @@ import {
   loadLocalizedText,
 } from './localization/localized-text';
 import {
+  mountGameViewport,
+} from './ui/game-viewport';
+import {
   applyUiScale,
 } from './ui/ui-scale';
 
@@ -36,9 +39,30 @@ async function startApp():
 
   applyUiScale();
 
+  /*
+   * Mount one persistent 1600 by 900 logical game surface.
+   *
+   * Scene routing occurs inside this surface. Its automatic
+   * viewport scale remains independent from the user-controlled
+   * accessibility UI scale.
+   */
+  const gameViewport =
+    mountGameViewport(
+      app,
+    );
+
+  globalThis.addEventListener(
+    'pagehide',
+    gameViewport.dispose,
+    {
+      once:
+        true,
+    },
+  );
+
   const controller =
     new AppController(
-      app,
+      gameViewport.sceneRoot,
       eventRegistry,
     );
 
@@ -46,7 +70,10 @@ async function startApp():
 }
 
 startApp().catch(
-  (error: unknown) => {
+  (
+    error:
+      unknown,
+  ) => {
     console.error(
       '[app] failed to start',
       error,

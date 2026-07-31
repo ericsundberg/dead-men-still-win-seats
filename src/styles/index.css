@@ -1,9 +1,8 @@
 /*
   Application stylesheet bootstrap
   --------------------------------
-  Foundational styles load first. Reusable skeuomorphic themes
-  load after scene styling so their narrowly scoped selectors can
-  provide the intended visual treatment.
+  Foundational styles load first. Component and skeuomorphic
+  themes follow. Logical-stage composition modules load last.
 */
 
 @import './base.css';
@@ -30,3 +29,19 @@
 @import './campaign-game-over-panel.css';
 @import './campaign-ending-fmv.css';
 @import './campaign-pause-menu.css';
+
+/*
+  Final logical-stage composition.
+*/
+
+@import './campaign-stage-layout.css';
+@import './campaign-action-stage.css';
+@import './campaign-hud-layer.css';
+@import './game-setup-stage.css';
+
+/*
+  Initial floating-window placement loads last so component styles
+  cannot offset the event from the logical stage center.
+*/
+
+@import './campaign-event-window-layout.css';

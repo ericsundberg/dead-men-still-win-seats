@@ -1,0 +1,44 @@
+/*
+  Floating campaign event layout
+  ------------------------------
+  Event windows initially open at the exact center of the logical
+  1600 by 900 game stage.
+
+  Their position remains independent of the election countdown,
+  music player, campaign paper, and other HUD elements. Once the
+  player drags the window, the draggable-window controller replaces
+  this centered transform with explicit logical coordinates.
+*/
+
+.campaign-event-window {
+  top: 50%;
+  left: 50%;
+
+  /*
+    The available draggable area permits a slightly taller event
+    paper while retaining safe space above the chyron and below the
+    permanent campaign HUD.
+  */
+
+  max-height:
+    calc(45.5rem * var(--ui-scale));
+
+  transform:
+    translate(
+      -50%,
+      -50%
+    );
+}
+
+/*
+  Taller illustration
+  -------------------
+  Preserve more of the source artwork before object-fit cropping.
+  This final stage-layout rule overrides the component's default
+  image height without mixing placement concerns into its theme.
+*/
+
+.campaign-event-image-frame {
+  flex-basis:
+    calc(21.5rem * var(--ui-scale));
+}

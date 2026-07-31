@@ -1,0 +1,83 @@
+/*
+  Campaign HUD layer
+  ------------------
+  Campaign resources and music are permanent HUD controls.
+
+  They share one top-level layer above floating event papers and
+  all ordinary game interactables.
+*/
+
+.campaign-scene {
+  --campaign-layer-event:
+    600;
+
+  --campaign-layer-hud:
+    800;
+}
+
+/*
+  Leave enough room at the top right for the music player while
+  preserving most of the row for campaign resources.
+*/
+
+.campaign-status-hud {
+  position: relative;
+  z-index:
+    var(--campaign-layer-hud);
+
+  grid-row: 1;
+
+  display: flex;
+  align-items: stretch;
+  justify-self: start;
+
+  gap:
+    calc(0.55rem * var(--ui-scale));
+
+  width:
+    calc(
+      100%
+      - var(--campaign-music-hud-width)
+      - var(--campaign-stage-gap)
+    );
+
+  min-width: 0;
+
+  margin: 0;
+
+  pointer-events: none;
+}
+
+.campaign-status-hud
+.campaign-pause-hud-button {
+  flex:
+    0
+    0
+    calc(5.2rem * var(--ui-scale));
+
+  min-width:
+    calc(5.2rem * var(--ui-scale));
+
+  pointer-events: auto;
+}
+
+/*
+  The music player shares the top HUD row instead of occupying
+  the interactable campaign workspace below it.
+*/
+
+.campaign-hud {
+  z-index:
+    var(--campaign-layer-hud);
+
+  top:
+    calc(1rem * var(--ui-scale));
+
+  right:
+    calc(1.2rem * var(--ui-scale));
+
+  width:
+    var(--campaign-music-hud-width);
+
+  pointer-events: auto;
+}

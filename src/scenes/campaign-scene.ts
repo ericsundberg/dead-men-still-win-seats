@@ -3,6 +3,9 @@ import {
   type SceneContext,
 } from '../app/scene-router';
 import type {
+  GameEventDefinition,
+} from '../events/event-types';
+import type {
   CampaignState,
 } from '../game/campaign/campaign-state';
 import {
@@ -17,7 +20,8 @@ import {
   type CampaignEndingFmvPlayer,
 } from './campaign/campaign-ending-fmv';
 import {
-  makeCampaignEventPanel,
+  makeCampaignEventWindow,
+  type CampaignEventWindow,
 } from './campaign/campaign-event-panel';
 import {
   makeCampaignGameOverPanel,
@@ -48,13 +52,6 @@ export interface CampaignSceneRuntimeSnapshot {
     readonly string[];
 }
 
-/**
- * Resolves the campaign route exclusively from CampaignSession
- * state.
- *
- * The legacy GameSession is no longer consulted when determining
- * whether the campaign exists or what the campaign scene displays.
- */
 export function resolveCampaignSceneRuntime(
   options:
     ResolveCampaignSceneRuntimeOptions,
@@ -116,6 +113,14 @@ export function renderCampaignScene(
       },
     );
 
+  let activeEvent:
+    GameEventDefinition | null =
+      null;
+
+  let campaignEventWindow:
+    CampaignEventWindow | null =
+      null;
+
   let endingFmvPlayer:
     CampaignEndingFmvPlayer | null =
       null;
@@ -128,109 +133,61 @@ export function renderCampaignScene(
     campaignState.phase
     === 'game-over'
   ) {
-    if (
-      !campaignState
-        .endGameState
-    ) {
-      console.warn(
-        [
-          '[campaign] campaign reached game over',
-          'without a recorded end-game result',
-        ].join('; '),
-      );
-    }
-
-    const gameOverPanel =
-      makeCampaignGameOverPanel(
+    endingFmvPlayer =
+      appendCampaignGameOverContent(
         context,
-        campaignState
-          .endGameState,
+        campaignState,
+        campaignContent,
       );
-
-    const endingFmvDefinition =
-      resolveCampaignEndingFmv(
-        campaignState
-          .endGameState,
-      );
-
-    if (
-      endingFmvDefinition
-    ) {
-      gameOverPanel.hidden =
-        true;
-
-      endingFmvPlayer =
-        makeCampaignEndingFmvPlayer({
-          definition:
-            endingFmvDefinition,
-
-          onFinished:
-            (
-              reason,
-            ) => {
-              console.log(
-                [
-                  '[video] campaign ending video finished',
-                  `video: ${endingFmvDefinition.id}`,
-                  `reason: ${reason}`,
-                ].join('; '),
-              );
-
-              gameOverPanel.hidden =
-                false;
-
-              endingFmvPlayer
-                ?.dispose();
-
-              endingFmvPlayer =
-                null;
-            },
-        });
-    }
-
-    campaignContent.append(
-      gameOverPanel,
-    );
   } else if (
     campaignState.phase
     === 'resolving-events'
   ) {
-    const activeEvent =
+    activeEvent =
       context.campaign
         .getActiveEventDefinition();
 
     if (
-      !activeEvent
+      activeEvent
     ) {
+      appendCampaignActionContent(
+        context,
+        campaignState,
+        campaignContent,
+      );
+
+      campaignContent.classList.add(
+        'campaign-content--event-background',
+      );
+
+      campaignContent.setAttribute(
+        'inert',
+        '',
+      );
+
+      campaignContent.setAttribute(
+        'aria-hidden',
+        'true',
+      );
+    } else {
       console.warn(
         [
           '[campaign] resolving-events phase has no active event',
           `turn: ${campaignState.currentTurn}`,
-        ].join('; '),
+        ].join(
+          '; ',
+        ),
       );
 
       campaignContent.append(
         makeCampaignEventRuntimeErrorPanel(),
       );
-    } else {
-      campaignContent.append(
-        makeCampaignEventPanel(
-          context,
-          campaignState,
-          activeEvent,
-        ),
-      );
     }
   } else {
-    campaignContent.append(
-      makeCampaignActionPanel(
-        context,
-        campaignState,
-      ),
-
-      makeCampaignWeekPanel(
-        campaignState,
-      ),
+    appendCampaignActionContent(
+      context,
+      campaignState,
+      campaignContent,
     );
   }
 
@@ -247,8 +204,7 @@ export function renderCampaignScene(
       context,
       campaignState,
       campaignContent,
-      runtimeSnapshot
-        .newsItems,
+      runtimeSnapshot.newsItems,
       pauseMenu
         ?.menuButton
       ?? null,
@@ -257,6 +213,22 @@ export function renderCampaignScene(
   scene.append(
     campaignShell.element,
   );
+
+  if (
+    activeEvent
+  ) {
+    campaignEventWindow =
+      makeCampaignEventWindow(
+        context,
+        campaignState,
+        activeEvent,
+        scene,
+      );
+
+    scene.append(
+      campaignEventWindow.element,
+    );
+  }
 
   if (
     pauseMenu
@@ -278,10 +250,6 @@ export function renderCampaignScene(
 
     context.audio.music.stop();
 
-    /*
-     * Wait until SceneRouter has inserted the campaign scene into
-     * the document before requesting video playback.
-     */
     endingFmvStartTimeoutId =
       window.setTimeout(
         () => {
@@ -309,6 +277,12 @@ export function renderCampaignScene(
           null;
       }
 
+      campaignEventWindow
+        ?.dispose();
+
+      campaignEventWindow =
+        null;
+
       endingFmvPlayer
         ?.dispose();
 
@@ -329,6 +303,115 @@ export function renderCampaignScene(
   return scene;
 }
 
+function appendCampaignActionContent(
+  context:
+    SceneContext,
+
+  campaignState:
+    CampaignState,
+
+  campaignContent:
+    HTMLElement,
+): void {
+  campaignContent.append(
+    makeCampaignActionPanel(
+      context,
+      campaignState,
+    ),
+
+    makeCampaignWeekPanel(
+      campaignState,
+    ),
+  );
+}
+
+function appendCampaignGameOverContent(
+  context:
+    SceneContext,
+
+  campaignState:
+    CampaignState,
+
+  campaignContent:
+    HTMLElement,
+): CampaignEndingFmvPlayer | null {
+  if (
+    !campaignState.endGameState
+  ) {
+    console.warn(
+      [
+        '[campaign] campaign reached game over',
+        'without a recorded end-game result',
+      ].join(
+        '; ',
+      ),
+    );
+  }
+
+  const gameOverPanel =
+    makeCampaignGameOverPanel(
+      context,
+      campaignState.endGameState,
+    );
+
+  const endingFmvDefinition =
+    resolveCampaignEndingFmv(
+      campaignState.endGameState,
+    );
+
+  if (
+    !endingFmvDefinition
+  ) {
+    campaignContent.append(
+      gameOverPanel,
+    );
+
+    return null;
+  }
+
+  gameOverPanel.hidden =
+    true;
+
+  let player:
+    CampaignEndingFmvPlayer | null =
+      null;
+
+  player =
+    makeCampaignEndingFmvPlayer({
+      definition:
+        endingFmvDefinition,
+
+      onFinished:
+        (
+          reason,
+        ) => {
+          console.log(
+            [
+              '[video] campaign ending video finished',
+              `video: ${endingFmvDefinition.id}`,
+              `reason: ${reason}`,
+            ].join(
+              '; ',
+            ),
+          );
+
+          gameOverPanel.hidden =
+            false;
+
+          player?.dispose();
+
+          player =
+            null;
+        },
+    });
+
+  campaignContent.append(
+    gameOverPanel,
+  );
+
+  return player;
+}
+
 function makeCampaignEventRuntimeErrorPanel():
   HTMLElement {
   const panel =
@@ -336,10 +419,7 @@ function makeCampaignEventRuntimeErrorPanel():
       'section',
       {
         className:
-          [
-            'campaign-event-panel',
-            'campaign-event-runtime-error',
-          ].join(' '),
+          'campaign-event-runtime-error',
       },
     );
 
@@ -347,9 +427,6 @@ function makeCampaignEventRuntimeErrorPanel():
     makeElement(
       'h2',
       {
-        className:
-          'campaign-event-title',
-
         textContent:
           'Campaign Event Unavailable',
       },
@@ -358,14 +435,12 @@ function makeCampaignEventRuntimeErrorPanel():
     makeElement(
       'p',
       {
-        className:
-          'campaign-event-description',
-
-        textContent:
-          [
-            'The campaign entered its event phase,',
-            'but the event definition could not be found.',
-          ].join(' '),
+        textContent: [
+          'The campaign entered its event phase,',
+          'but the event definition could not be found.',
+        ].join(
+          ' ',
+        ),
       },
     ),
   );

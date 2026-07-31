@@ -14,7 +14,7 @@ import {
   createCampaignEventPanelModel,
   formatCampaignEventDecisionFailureReasons,
   resolveCampaignEventImageUrl,
-} from './campaign-event-panel';
+} from './campaign-event-model';
 
 const eventWithImage:
   GameEventDefinition = {
@@ -46,6 +46,7 @@ const eventWithImage:
         label:
           'Answer the question.',
       },
+
       {
         id:
           'decision_pay',
@@ -77,7 +78,7 @@ function createResolvingState():
 }
 
 describe(
-  'campaign event panel',
+  'campaign event model',
   () => {
     it(
       'resolves event images beneath the public event-art directory',
@@ -92,7 +93,9 @@ describe(
             '/dead-men/',
             'assets/art/events/',
             'media/reporter-arrives.webp',
-          ].join(''),
+          ].join(
+            '',
+          ),
         );
       },
     );
@@ -172,6 +175,7 @@ describe(
             unavailableMessage:
               null,
           },
+
           {
             id:
               'decision_pay',
@@ -203,7 +207,9 @@ describe(
             'Not enough cash.',
             'Not enough favors.',
             'Required campaign conditions have not been met.',
-          ].join(' '),
+          ].join(
+            ' ',
+          ),
         );
       },
     );

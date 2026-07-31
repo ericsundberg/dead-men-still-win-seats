@@ -2,207 +2,34 @@ import type {
   SceneContext,
 } from '../../app/scene-router';
 import type {
-  EventDecisionDefinition,
-  EventDecisionId,
   GameEventDefinition,
 } from '../../events/event-types';
-import {
-  evaluateCampaignEventDecisionAvailability,
-  type CampaignEventDecisionFailureReason,
-} from '../../game/campaign/campaign-event-decisions';
 import type {
   CampaignState,
 } from '../../game/campaign/campaign-state';
 import {
+  bindDraggableWindow,
+  type DraggableWindowController,
+} from '../../ui/draggable-window';
+import {
   makeButton,
   makeElement,
 } from '../../ui/dom-helpers';
+import {
+  createCampaignEventPanelModel,
+  type CampaignEventDecisionModel,
+  type CampaignEventPanelModel,
+} from './campaign-event-model';
 
-export interface CampaignEventDecisionModel {
-  readonly id:
-    EventDecisionId;
+export interface CampaignEventWindow {
+  readonly element:
+    HTMLElement;
 
-  readonly label:
-    string;
-
-  readonly disabled:
-    boolean;
-
-  readonly unavailableMessage:
-    string | null;
+  readonly dispose:
+    () => void;
 }
 
-export interface CampaignEventPanelModel {
-  readonly eventId:
-    GameEventDefinition['id'];
-
-  readonly title:
-    string;
-
-  readonly description:
-    string;
-
-  readonly imageUrl:
-    string | null;
-
-  readonly decisions:
-    readonly CampaignEventDecisionModel[];
-}
-
-/**
- * Converts an active event definition into the presentation model
- * used by the campaign event panel.
- */
-export function createCampaignEventPanelModel(
-  campaignState:
-    CampaignState,
-
-  event:
-    GameEventDefinition,
-
-  baseUrl:
-    string =
-      import.meta.env.BASE_URL,
-): CampaignEventPanelModel {
-  return {
-    eventId:
-      event.id,
-
-    title:
-      event.title,
-
-    description:
-      event.description,
-
-    imageUrl:
-      resolveCampaignEventImageUrl(
-        event.imagePath,
-        baseUrl,
-      ),
-
-    decisions:
-      event.decisions.map(
-        (decision) =>
-          createCampaignEventDecisionModel(
-            campaignState,
-            decision,
-          ),
-      ),
-  };
-}
-
-/**
- * Resolves an optional event image beneath:
- *
- * public/assets/art/events/
- *
- * The JSON path is relative to that directory. For example:
- *
- * "media/interviewer-ambush.webp"
- */
-export function resolveCampaignEventImageUrl(
-  imagePath:
-    string | undefined,
-
-  baseUrl:
-    string =
-      import.meta.env.BASE_URL,
-): string | null {
-  if (
-    imagePath
-    === undefined
-  ) {
-    return null;
-  }
-
-  const trimmedPath =
-    imagePath.trim();
-
-  if (
-    trimmedPath.length
-    === 0
-  ) {
-    return null;
-  }
-
-  const normalizedPath =
-    trimmedPath.replace(
-      /\\/g,
-      '/',
-    );
-
-  const pathSegments =
-    normalizedPath.split('/');
-
-  if (
-    normalizedPath.startsWith('/')
-    || pathSegments.some(
-      (pathSegment) =>
-        pathSegment.length
-          === 0
-        || pathSegment === '.'
-        || pathSegment === '..',
-    )
-  ) {
-    return null;
-  }
-
-  const normalizedBaseUrl =
-    baseUrl.length === 0
-      ? ''
-      : baseUrl.endsWith('/')
-        ? baseUrl
-        : `${baseUrl}/`;
-
-  return [
-    normalizedBaseUrl,
-    'assets/art/events/',
-    normalizedPath,
-  ].join('');
-}
-
-export function formatCampaignEventDecisionFailureReasons(
-  failureReasons:
-    readonly CampaignEventDecisionFailureReason[],
-): string | null {
-  if (
-    failureReasons.length
-    === 0
-  ) {
-    return null;
-  }
-
-  return failureReasons
-    .map(
-      (failureReason) => {
-        switch (failureReason) {
-          case 'unknown-decision':
-            return 'This decision is no longer available.';
-
-          case 'not-resolving-events':
-            return 'There is no event awaiting a decision.';
-
-          case 'insufficient-cash':
-            return 'Not enough cash.';
-
-          case 'insufficient-favors':
-            return 'Not enough favors.';
-
-          case 'insufficient-action-points':
-            return 'Not enough action points.';
-
-          case 'missing-required-flags':
-            return 'Required campaign conditions have not been met.';
-
-          case 'excluded-flags-present':
-            return 'Current campaign conditions block this decision.';
-        }
-      },
-    )
-    .join(' ');
-}
-
-export function makeCampaignEventPanel(
+export function makeCampaignEventWindow(
   context:
     SceneContext,
 
@@ -211,50 +38,85 @@ export function makeCampaignEventPanel(
 
   event:
     GameEventDefinition,
-): HTMLElement {
+
+  dragContainer:
+    HTMLElement,
+): CampaignEventWindow {
   const model =
     createCampaignEventPanelModel(
       campaignState,
       event,
     );
 
-  const panel =
+  const eventWindow =
     makeElement(
       'article',
       {
-        className:
-          'campaign-event-panel',
+        className: [
+          'campaign-event-window',
+
+          model.imageUrl
+            ? 'campaign-event-window--with-image'
+            : 'campaign-event-window--without-image',
+        ].join(
+          ' ',
+        ),
       },
     );
+
+  eventWindow.setAttribute(
+    'role',
+    'dialog',
+  );
+
+  eventWindow.setAttribute(
+    'aria-modal',
+    'true',
+  );
 
   const titleId =
     [
       'campaign-event-title',
       model.eventId,
-    ].join('-');
+    ].join(
+      '-',
+    );
 
   const descriptionId =
     [
       'campaign-event-description',
       model.eventId,
-    ].join('-');
+    ].join(
+      '-',
+    );
 
-  panel.setAttribute(
+  eventWindow.setAttribute(
     'aria-labelledby',
     titleId,
   );
 
-  panel.setAttribute(
+  eventWindow.setAttribute(
     'aria-describedby',
     descriptionId,
+  );
+
+  const header =
+    makeCampaignEventWindowHeader(
+      model,
+      titleId,
+    );
+
+  eventWindow.append(
+    header,
   );
 
   if (
     model.imageUrl
   ) {
-    panel.append(
+    eventWindow.append(
       makeCampaignEventImage(
         model,
+        eventWindow,
       ),
     );
   } else if (
@@ -265,18 +127,111 @@ export function makeCampaignEventPanel(
         '[campaign] event image path was rejected',
         `event: ${event.id}`,
         `image: ${event.imagePath}`,
-      ].join('; '),
+      ].join(
+        '; ',
+      ),
     );
   }
 
-  const body =
+  eventWindow.append(
+    makeCampaignEventBody(
+      context,
+      model,
+      descriptionId,
+    ),
+  );
+
+  const dragController:
+    DraggableWindowController =
+      bindDraggableWindow({
+        element:
+          eventWindow,
+
+        handle:
+          header,
+
+        container:
+          dragContainer,
+
+        bounds: {
+          top:
+            92,
+
+          right:
+            20,
+
+          bottom:
+            72,
+
+          left:
+            20,
+        },
+      });
+
+  return {
+    element:
+      eventWindow,
+
+    dispose:
+      () => {
+        dragController.dispose();
+      },
+  };
+}
+
+function makeCampaignEventWindowHeader(
+  model:
+    CampaignEventPanelModel,
+
+  titleId:
+    string,
+): HTMLElement {
+  const header =
     makeElement(
-      'div',
+      'header',
       {
         className:
-          'campaign-event-body',
+          'campaign-event-window-header',
       },
     );
+
+  header.tabIndex =
+    0;
+
+  header.setAttribute(
+    'role',
+    'button',
+  );
+
+  header.setAttribute(
+    'aria-label',
+    `Move ${model.title} event window`,
+  );
+
+  header.setAttribute(
+    'aria-keyshortcuts',
+    'ArrowUp ArrowDown ArrowLeft ArrowRight',
+  );
+
+  header.title =
+    'Drag to move. Arrow keys also move this window.';
+
+  const grip =
+    makeElement(
+      'span',
+      {
+        className:
+          'campaign-event-window-grip',
+
+        textContent:
+          '⠿',
+      },
+    );
+
+  grip.setAttribute(
+    'aria-hidden',
+    'true',
+  );
 
   const heading =
     makeElement(
@@ -292,6 +247,112 @@ export function makeCampaignEventPanel(
 
   heading.id =
     titleId;
+
+  const movementLabel =
+    makeElement(
+      'span',
+      {
+        className:
+          'campaign-event-window-move-label',
+
+        textContent:
+          'Move',
+      },
+    );
+
+  movementLabel.setAttribute(
+    'aria-hidden',
+    'true',
+  );
+
+  header.append(
+    grip,
+    heading,
+    movementLabel,
+  );
+
+  return header;
+}
+
+function makeCampaignEventImage(
+  model:
+    CampaignEventPanelModel,
+
+  eventWindow:
+    HTMLElement,
+): HTMLElement {
+  const imageFrame =
+    makeElement(
+      'figure',
+      {
+        className:
+          'campaign-event-image-frame',
+      },
+    );
+
+  const image =
+    makeElement(
+      'img',
+      {
+        className:
+          'campaign-event-image',
+      },
+    );
+
+  image.src =
+    model.imageUrl
+    ?? '';
+
+  image.alt =
+    `Illustration for ${model.title}`;
+
+  image.decoding =
+    'async';
+
+  image.addEventListener(
+    'error',
+    () => {
+      imageFrame.remove();
+
+      eventWindow.classList.remove(
+        'campaign-event-window--with-image',
+      );
+
+      eventWindow.classList.add(
+        'campaign-event-window--without-image',
+      );
+    },
+    {
+      once:
+        true,
+    },
+  );
+
+  imageFrame.append(
+    image,
+  );
+
+  return imageFrame;
+}
+
+function makeCampaignEventBody(
+  context:
+    SceneContext,
+
+  model:
+    CampaignEventPanelModel,
+
+  descriptionId:
+    string,
+): HTMLElement {
+  const body =
+    makeElement(
+      'div',
+      {
+        className:
+          'campaign-event-body',
+      },
+    );
 
   const description =
     makeElement(
@@ -343,101 +404,12 @@ export function makeCampaignEventPanel(
   }
 
   body.append(
-    heading,
     description,
     decisionHeading,
     decisionList,
   );
 
-  panel.append(
-    body,
-  );
-
-  return panel;
-}
-
-function createCampaignEventDecisionModel(
-  campaignState:
-    CampaignState,
-
-  decision:
-    EventDecisionDefinition,
-): CampaignEventDecisionModel {
-  const availability =
-    evaluateCampaignEventDecisionAvailability(
-      campaignState,
-      decision,
-    );
-
-  return {
-    id:
-      decision.id,
-
-    label:
-      decision.label,
-
-    disabled:
-      !availability.canChoose,
-
-    unavailableMessage:
-      formatCampaignEventDecisionFailureReasons(
-        availability.failureReasons,
-      ),
-  };
-}
-
-function makeCampaignEventImage(
-  model:
-    CampaignEventPanelModel,
-): HTMLElement {
-  const imageFrame =
-    makeElement(
-      'figure',
-      {
-        className:
-          'campaign-event-image-frame',
-      },
-    );
-
-  const image =
-    makeElement(
-      'img',
-      {
-        className:
-          'campaign-event-image',
-      },
-    );
-
-  image.src =
-    model.imageUrl
-    ?? '';
-
-  image.alt =
-    `Illustration for ${model.title}`;
-
-  image.decoding =
-    'async';
-
-  image.addEventListener(
-    'error',
-    () => {
-      /*
-       * A missing image must not leave an empty image region in
-       * the event window.
-       */
-      imageFrame.remove();
-    },
-    {
-      once:
-        true,
-    },
-  );
-
-  imageFrame.append(
-    image,
-  );
-
-  return imageFrame;
+  return body;
 }
 
 function makeCampaignEventDecision(
@@ -464,7 +436,9 @@ function makeCampaignEventDecision(
       'campaign-event-decision-unavailable',
       eventId,
       decision.id,
-    ].join('-');
+    ].join(
+      '-',
+    );
 
   const button =
     makeButton(
@@ -477,13 +451,17 @@ function makeCampaignEventDecision(
               decision.id,
             );
 
-        if (!result) {
+        if (
+          !result
+        ) {
           console.warn(
             [
               '[campaign] event decision could not be resolved',
               `event: ${eventId}`,
               `decision: ${decision.id}`,
-            ].join('; '),
+            ].join(
+              '; ',
+            ),
           );
 
           return;
@@ -498,7 +476,9 @@ function makeCampaignEventDecision(
               `event: ${eventId}`,
               `decision: ${decision.id}`,
               `reasons: ${result.failureReasons.join(', ')}`,
-            ].join('; '),
+            ].join(
+              '; ',
+            ),
           );
 
           return;
@@ -510,7 +490,9 @@ function makeCampaignEventDecision(
             `event: ${eventId}`,
             `decision: ${decision.id}`,
             `turn: ${result.nextState.currentTurn}`,
-          ].join('; '),
+          ].join(
+            '; ',
+          ),
         );
 
         context.navigate(
@@ -521,7 +503,9 @@ function makeCampaignEventDecision(
       [
         'menu-button',
         'campaign-event-decision-button',
-      ].join(' '),
+      ].join(
+        ' ',
+      ),
 
       {
         onBeforeClick:

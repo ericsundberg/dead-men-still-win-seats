@@ -10,7 +10,7 @@ export function renderGameSetupScene(
   context: SceneContext,
 ): HTMLElement {
   const scene = makeElement('section', {
-    className: 'scene',
+    className: 'scene game-setup-scene',
   });
 
   appendTertiaryMenuBackground(scene);

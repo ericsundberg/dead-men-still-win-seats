@@ -1,0 +1,139 @@
+/*
+  Fixed-stage game setup
+  ----------------------
+  The entire setup form fits within the 1600 by 900 logical stage
+  without panel or browser scrolling.
+*/
+
+.game-setup-scene {
+  padding:
+    calc(0.85rem * var(--ui-scale));
+
+  overflow: hidden;
+}
+
+.game-setup-scene
+> .scene-panel {
+  width:
+    min(
+      calc(48rem * var(--ui-scale)),
+      100%
+    );
+
+  max-height: 100%;
+
+  padding:
+    calc(0.9rem * var(--ui-scale))
+    calc(1.35rem * var(--ui-scale));
+
+  overflow: hidden;
+}
+
+.game-setup-scene
+.scene-panel
+> h1 {
+  font-size:
+    calc(2.75rem * var(--ui-scale));
+
+  line-height: 0.92;
+}
+
+.game-setup-scene
+.scene-description {
+  margin:
+    calc(0.25rem * var(--ui-scale))
+    auto;
+
+  font-size:
+    calc(0.82rem * var(--ui-scale));
+
+  line-height: 1.22;
+}
+
+.game-setup-scene
+.game-setup-form {
+  gap:
+    calc(0.42rem * var(--ui-scale));
+
+  margin-top:
+    calc(0.5rem * var(--ui-scale));
+}
+
+.game-setup-scene
+.difficulty-selector {
+  gap:
+    calc(0.38rem * var(--ui-scale));
+
+  margin-top:
+    calc(0.5rem * var(--ui-scale));
+}
+
+.game-setup-scene
+.difficulty-selector-heading {
+  font-size:
+    calc(1.08rem * var(--ui-scale));
+}
+
+.game-setup-scene
+.difficulty-button-grid {
+  gap:
+    calc(0.32rem * var(--ui-scale));
+}
+
+.game-setup-scene
+.difficulty-button {
+  gap:
+    calc(0.08rem * var(--ui-scale));
+
+  padding:
+    calc(0.42rem * var(--ui-scale))
+    calc(0.64rem * var(--ui-scale));
+}
+
+.game-setup-scene
+.difficulty-button-label {
+  font-size:
+    calc(0.9rem * var(--ui-scale));
+}
+
+.game-setup-scene
+.difficulty-button-duration {
+  font-size:
+    calc(0.7rem * var(--ui-scale));
+}
+
+.game-setup-scene
+.difficulty-button-description {
+  font-size:
+    calc(0.72rem * var(--ui-scale));
+
+  line-height: 1.15;
+}
+
+.game-setup-scene
+.difficulty-unavailable-message {
+  padding:
+    calc(0.38rem * var(--ui-scale))
+    calc(0.5rem * var(--ui-scale));
+
+  font-size:
+    calc(0.72rem * var(--ui-scale));
+}
+
+.game-setup-scene
+.game-setup-form
+.menu-button {
+  padding:
+    calc(0.48rem * var(--ui-scale))
+    calc(0.7rem * var(--ui-scale));
+}
+
+.game-setup-scene
+.secondary-button {
+  margin-top:
+    calc(0.48rem * var(--ui-scale));
+
+  padding:
+    calc(0.48rem * var(--ui-scale))
+    calc(0.7rem * var(--ui-scale));
+}

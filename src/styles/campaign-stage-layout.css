@@ -1,0 +1,101 @@
+/*
+  Fixed campaign stage
+  --------------------
+  The browser scales the complete 1600 by 900 logical viewport.
+
+  Inside that viewport, the campaign workspace remains centered
+  and no page, scene, paper, or panel scrolling is permitted.
+*/
+
+.campaign-scene {
+  --campaign-stage-gap:
+    calc(0.75rem * var(--ui-scale));
+
+  --campaign-content-width:
+    calc(74rem * var(--ui-scale));
+
+  --campaign-music-hud-width:
+    calc(22rem * var(--ui-scale));
+
+  place-items: stretch;
+
+  isolation: isolate;
+
+  padding:
+    calc(1rem * var(--ui-scale))
+    calc(1.2rem * var(--ui-scale))
+    calc(
+      var(--campaign-chyron-total-height)
+      + calc(0.6rem * var(--ui-scale))
+    );
+
+  overflow: hidden;
+}
+
+.campaign-shell {
+  display: grid;
+
+  grid-template-rows:
+    auto
+    minmax(0, 1fr);
+
+  row-gap:
+    var(--campaign-stage-gap);
+
+  align-items: stretch;
+  justify-items: stretch;
+
+  width: 100%;
+  height: 100%;
+
+  min-width: 0;
+  min-height: 0;
+}
+
+/*
+  The interactable report is centered across the full stage.
+
+  Fixed HUD elements may occupy the surrounding desk area, but
+  the workspace itself is no longer pushed toward the left.
+*/
+
+.campaign-content {
+  grid-row: 2;
+
+  align-self: stretch;
+  justify-self: center;
+
+  width:
+    min(
+      var(--campaign-content-width),
+      100%
+    );
+
+  height: 100%;
+
+  min-width: 0;
+  min-height: 0;
+
+  margin: 0;
+
+  padding:
+    calc(1rem * var(--ui-scale))
+    calc(1.15rem * var(--ui-scale));
+
+  overflow: hidden;
+
+  transform: none;
+}
+
+.campaign-content--event-background {
+  pointer-events: none;
+}
+
+.campaign-scene
+.campaign-content.printed-report-paper {
+  max-width: none;
+  max-height: none;
+
+  border-radius:
+    calc(0.04rem * var(--ui-scale));
+}
